@@ -104,6 +104,32 @@ function migrate() {
    pressure unless the origin is "persisted"; asking is free and, on Chrome,
    granted automatically for an installed or frequently-used site. Safari grants
    it far more sparingly, which is why Add to Home Screen still matters more. */
+/* Whether "not persisted" is worth telling the reader about.
+ *
+ * `navigator.storage.persist()` is a request, and Chrome answers it from
+ * engagement heuristics the reader can neither see nor satisfy on demand — a
+ * bookmark is one signal among several and frequently not enough. Reporting
+ * that denial as a warning handed a desktop reader an alarm with no action
+ * attached to it, which is the definition of noise.
+ *
+ * WebKit is the case where the warning earns its place: it deletes all
+ * script-writable storage for an origin with no user interaction in seven
+ * days, spaced repetition schedules intervals well past that, and adding the
+ * site to the Home Screen is exempt. There the sentence names a real rule and
+ * a real fix, so that is the only place it is shown.
+ */
+const webkitEviction = () => {
+  const ua = navigator.userAgent || "";
+  const ios = /iP(hone|ad|od)/.test(ua) ||
+              (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const safari = /Safari\//.test(ua) && !/Chrome|Chromium|Edg\//.test(ua);
+  return ios || safari;
+};
+
+export async function evictionRisk() {
+  return (await durable()) === false && webkitEviction();
+}
+
 export async function durable() {
   if (!navigator.storage || !navigator.storage.persisted) return null;
   try {

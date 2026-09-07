@@ -134,6 +134,71 @@ if (single) {
      await page.locator(".modal").count() === 0 &&
      await page.locator(".lcard").count() === before);
 
+  /* An icon set is only correct if the page points at it and the platform
+     constraints hold: iOS needs an opaque 180, Android crops to a circle, and
+     the tab falls back to favicon.ico when SVG is not understood. */
+  const icons = await page.evaluate(async () => {
+    const link = sel => document.querySelector(sel)?.getAttribute("href") || "";
+    const head = {
+      svg: link('link[rel="icon"][type="image/svg+xml"]'),
+      ico: link('link[rel="alternate icon"]'),
+      apple: link('link[rel="apple-touch-icon"]'),
+      themes: [...document.querySelectorAll('meta[name="theme-color"]')]
+        .map(m => m.getAttribute("content"))
+    };
+    const status = {};
+    for (const [k, href] of Object.entries(head)) {
+      if (typeof href !== "string" || !href) continue;
+      status[k] = (await fetch(href, { method: "GET" })).status;
+    }
+    const manifest = await (await fetch(link('link[rel="manifest"]'))).json();
+    /* Every pixel opaque: iOS composites transparency onto black. */
+    const img = new Image();
+    img.src = head.apple;
+    await img.decode();
+    const c = document.createElement("canvas");
+    c.width = c.height = img.width;
+    c.getContext("2d").drawImage(img, 0, 0);
+    const data = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
+    let clear = 0;
+    for (let i = 3; i < data.length; i += 4) if (data[i] !== 255) clear++;
+    return { head, status, manifest, appleSize: img.width, clear };
+  });
+  ck("the page points at an SVG favicon and an ICO fallback",
+     /icon\.svg/.test(icons.head.svg) && /favicon\.ico/.test(icons.head.ico));
+  ck("every icon the head names is actually served",
+     Object.values(icons.status).every(s => s === 200), JSON.stringify(icons.status));
+  ck("the apple icon is 180 square", icons.appleSize === 180, String(icons.appleSize));
+  ck("and fully opaque, as iOS requires", icons.clear === 0, `${icons.clear} translucent pixels`);
+  ck("the manifest declares a maskable icon",
+     (icons.manifest.icons || []).some(i => i.purpose === "maskable"));
+  ck("the browser chrome uses the app's own ground, per scheme",
+     icons.head.themes.includes("#DFE3E9") && icons.head.themes.includes("#101319"),
+     icons.head.themes.join(" "));
+
+  /* The backup belongs to whoever holds the secret, and the site is public, so
+     a reader without one must not be shown it, told about it, or able to spend
+     its quota. The setup route is reachable only by knowing it. */
+  const seenByVisitor = await page.evaluate(() => ({
+    panel: document.querySelectorAll(".cloud").length,
+    words: /backup|cloudflare|secret/i.test(document.querySelector(".lib").innerText)
+  }));
+  ck("a reader without the secret sees no backup panel", seenByVisitor.panel === 0);
+  ck("and is told nothing about a backend", !seenByVisitor.words);
+
+  await go("#/sync");
+  ck("the setup route exists for whoever knows it",
+     await page.locator("#cloud-secret").count() === 1);
+  await page.fill("#cloud-secret", "suite-secret");
+  await page.locator("#cloud-sync").click(); await page.waitForTimeout(400);
+  await go();
+  ck("entering a secret is what makes a device the owner's",
+     await page.locator(".cloud").count() === 1);
+  /* Put it back: the rest of the suite runs as an ordinary reader. */
+  await page.locator("#cloud-forget").click(); await page.waitForTimeout(400);
+  await go();
+  ck("forgetting the secret removes it again", await page.locator(".cloud").count() === 0);
+
   /* The bundled guide: hidden, then brought back from the Add dialog. Its
      entry survives the hiding, so a link to it still opens. */
   const demo = await page.evaluate(() =>

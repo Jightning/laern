@@ -1,7 +1,7 @@
 import { render } from "preact";
 import App from "./app.jsx";
 import { init, flush, onError, durable } from "./lib/store.js";
-import { auto } from "./lib/sync.js";
+import { auto } from "./lib/cloud.js";
 import { refresh } from "./lib/library.js";
 
 /* one stylesheet per UI element; filename order is load order */

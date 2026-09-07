@@ -5,7 +5,6 @@ dist/
 .katex-faces.json
 .author/
 packed/
-.sync/
 
 .env
 .env.*

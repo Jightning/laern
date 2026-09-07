@@ -2,7 +2,11 @@
 
 /* ---------------------------------------------------------------- geometry */
 :root{
-  --hue:0;                                    /* per-course accent rotation */
+  /* Per-course accent rotation. A course sets its own in course.yaml; this is
+     what the library and any course without one wear. It is not 0 because the
+     four base hues below put 0 in amber, and amber on every hover across the
+     picker reads as a warning rather than as an accent. */
+  --hue:170;
   --h-hi:63; --h-lo:254; --h-dc:301; --h-hz:261; --h-wn:15;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --sans:"IBM Plex Serif",Georgia,"Times New Roman",serif;

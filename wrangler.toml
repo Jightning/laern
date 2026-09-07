@@ -1,14 +1,31 @@
-# Static hosting only. There is deliberately no Function here.
+# The site is static assets plus two Functions, and the split is deliberate.
 #
-# Pages serves static assets with unlimited requests and unlimited bandwidth, on
-# a quota separate from Workers. A Pages Function would instead draw on the
-# account-wide 100,000 Workers requests/day — shared with every other project —
-# and every unauthenticated request would count against it before being
-# rejected. Anyone can find this hostname in Certificate Transparency logs, so
-# that endpoint was a way for a stranger to spend another project's quota.
+# Pages serves the assets with unlimited requests and unlimited bandwidth, on a
+# quota separate from Workers. `functions/api/*` is the exception: those draw on
+# the account-wide Workers budget, so they are written to be called rarely — one
+# round trip per sync, at most once a day per device, and never at all by a
+# reader who does not hold the secret. Everything else about the site works with
+# no backend at all.
 #
-# Sync therefore runs on the reader's own machine (tools/sync-server.mjs),
-# reachable only inside their private network.
+# The endpoint refuses before it reads: no SYNC_SECRET configured answers 404,
+# a wrong one answers 401, and neither touches the database.
+#
+#   npx wrangler pages secret put SYNC_SECRET     # the owner's key
+#   npm run backend:init                          # create the tables
+#
+# Two optional guards, both dashboard settings rather than code:
+#   * a WAF rate-limiting rule on /api/* stops a flood before a Function runs,
+#     which is the only way to spend nothing on a request you refuse;
+#   * SYNC_OPEN_UNTIL (a ms timestamp) closes the endpoint outright between
+#     backups — set it and even the right secret gets 503.
 name = "learn"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-09-01"
+
+# The log and the course bodies. Created once with:
+#   npx wrangler d1 create learn-sync
+# then paste the id it prints here.
+[[d1_databases]]
+binding = "DB"
+database_name = "learn-sync"
+database_id = "8a6bfbd5-b2cc-4f62-9185-aa84fd8f0cb6"

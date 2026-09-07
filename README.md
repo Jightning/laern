@@ -16,6 +16,7 @@ npm run new -- ma26600 "Ordinary Differential Equations"
 ```
 
 This will add a course to `courses/ma26600`.
+
 [This document](docs/create_course.md) details how to write out a course.
 The changes can be validated with:
 
@@ -27,18 +28,6 @@ npm run check
 `npm run author` walks through the creation process one piece at a time for better token efficiency.
 
 Lastly import your course to actual site (stored via indexedDB, if you don't use it for a week it'll get deleted so careful).
-
-## Syncing
-
-Quiz data and such is stored within the browser, do the following if you wanna setup a sync (has to be done manually):
-
-```sh
-npm run sync
-tailscale serve --bg 8787 # in a new terminal tab
-```
-
-This will print an address and a token which you then input into the site.
-This will stop on its own after ten minutes if idle.
 
 ## Development
 

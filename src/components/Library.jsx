@@ -4,10 +4,11 @@ import { stateFor } from "../lib/state.js";
 import { counts } from "../lib/retention.js";
 import { importedIndex, filesOf, removeCourse } from "../lib/courses.js";
 import { refresh, dismissed, setDismissed } from "../lib/library.js";
-import { durable } from "../lib/store.js";
+import { queueDelete } from "../lib/cloud.js";
+import { evictionRisk } from "../lib/store.js";
 import CourseIO from "./CourseIO.jsx";
 import Modal from "./Modal.jsx";
-import SyncPanel from "./SyncPanel.jsx";
+import CloudPanel from "./CloudPanel.jsx";
 
 /* `courses` is the index, not the courses: a split build has not fetched any
    of them yet, and every number on a card is a scalar the index carries. */
@@ -15,13 +16,14 @@ export default function Library({ courses, order, loading, error, onChange }) {
   const [adding, setAdding] = useState(false);
   const [doomed, setDoomed] = useState(null);   /* the course a confirm is open for */
   const [msg, setMsg] = useState(null);
-  const [safe, setSafe] = useState(null);
+  const [atRisk, setAtRisk] = useState(false);
   const mine = importedIndex();
 
-  /* A course installed here is the only copy on this device, so whether the
-     browser has promised to keep it is worth saying out loud rather than
-     leaving the reader to find out by losing one. */
-  useEffect(() => { durable().then(setSafe); }, []);
+  /* A course installed here is the only copy on this device, so a browser that
+     will delete it is worth saying out loud — but only where that is a rule
+     rather than a heuristic, and only where the reader can do something about
+     it. See store.evictionRisk. */
+  useEffect(() => { evictionRisk().then(setAtRisk); }, []);
 
   const save = cid => {
     const files = filesOf(cid);
@@ -37,7 +39,13 @@ export default function Library({ courses, order, loading, error, onChange }) {
      can be brought back from the Add dialog. */
   const drop = cid => {
     const name = (courses[cid] || {}).title || cid;
-    if (mine[cid]) { removeCourse(cid); refresh(); }
+    if (mine[cid]) {
+      /* Tell the account, if this device is connected to one: a course removed
+         here is meant to be gone everywhere, and the queue is carried on the
+         next sync rather than costing a request of its own. */
+      queueDelete(cid);
+      removeCourse(cid); refresh();
+    }
     else setDismissed(cid, true);
     onChange && onChange();
     setDoomed(null);
@@ -136,15 +144,14 @@ export default function Library({ courses, order, loading, error, onChange }) {
 
       {msg && <p class="cio-msg">{msg}</p>}
 
-      {Object.keys(mine).length > 0 && safe === false && (
+      {Object.keys(mine).length > 0 && atRisk && (
         <p class="cio-warn">
-          This browser has not promised to keep site data, so an installed course
-          can be evicted when storage runs low. Add this site to your Home Screen
-          or bookmark it, and keep the folders you imported from.
+          On iPhone and iPad, a site's stored data is deleted after seven days
+          without a visit. <b>Add this site to your Home Screen</b> to fix it.
         </p>
       )}
 
-      <SyncPanel />
+      <CloudPanel onChange={onChange} />
 
       {adding && (
         <Modal title="Add a course" onClose={() => setAdding(false)}>

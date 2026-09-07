@@ -78,8 +78,6 @@ export function markSynced(cid, version) {
   return true;
 }
 
-/** Courses this device holds that the server has never seen. */
-export const unsynced = () => allBooks().filter(b => !b.version).map(b => b.id);
 
 /** Everything needed to write the course back out, unchanged. */
 export const filesOf = cid => (getBook(cid) || {}).files || null;

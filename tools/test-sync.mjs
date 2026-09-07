@@ -50,7 +50,7 @@ function server() {
   };
 }
 
-/* The client pull loop from src/lib/sync.js, over a local store. */
+/* The client pull loop from src/lib/cloud.js, over a local store. */
 function pullAll(srv, device, cursor, into) {
   let pages = 0;
   for (;;) {

@@ -42,11 +42,23 @@
 
 /* Sync: a settings block, not a surface the reader watches. Kept quiet and
    below the numbers, since it is touched once per device and then never. */
-.sync{margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--rule)}
-.sync h2{margin:0 0 .4rem}
+/* The owner's backup panel. It renders for nobody else, so these rules are
+   dead weight on every other reader's page — which is the right trade: one
+   block of CSS against a control that must not exist for them. */
+.cloud{margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--rule)}
+.cloud h2{margin:0 0 .4rem}
+.cloud-note{max-width:60ch;margin-top:var(--sp-2)}
+.cloud-bin{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;
+  margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px solid var(--rule)}
+.cloud-bin .cal-cap{margin:0}
 .sync-row{display:flex;gap:.9rem;flex-wrap:wrap;margin:var(--sp-2) 0}
 .sync-row label{display:flex;flex-direction:column;gap:.25rem;flex:1 1 15rem;min-width:0}
 .sync-row label span{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+/* A secret, masked without being a password field — see CloudPanel.jsx. Where
+   the property is unsupported the token is simply visible, which is a local
+   secret on the reader's own device and is the same thing a "show" toggle
+   would produce. */
+.sync-row input.secret{-webkit-text-security:disc;text-security:disc}
 .sync-row input{font:400 14px/1.4 var(--mono);padding:.5rem .6rem;min-width:0;
   color:var(--ink);background:var(--surface-2);border:1px solid var(--rule);border-radius:4px}
 .sync-row input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}

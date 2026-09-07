@@ -1,11 +1,16 @@
-import { configured } from "../lib/sync.js";
+import { configured } from "../lib/cloud.js";
 
 /* The one place the site says what leaves the device.
  *
  * It belongs here, next to the reader's own numbers, rather than beside the
- * sync settings — the question "what happens to my data" is asked while looking
- * at the data, not while configuring a server. It states the truth for *this*
- * device: with no sync set up, nothing leaves at all.
+ * backup settings — the question "what happens to my data" is asked while
+ * looking at the data, not while configuring anything. It states the truth for
+ * *this* device, and for a reader who has set nothing up that truth is the
+ * short one: nothing leaves at all, ever, because there is nothing to leave to.
+ *
+ * The connected case has to be exact rather than reassuring. Something does
+ * leave — that is the point of a backup — and what protects it is that it is
+ * sealed before it goes, not that it is trusted after it arrives.
  */
 export default function PrivacyNote() {
   if (!configured()) return (
@@ -16,10 +21,11 @@ export default function PrivacyNote() {
   );
   return (
     <p class="lede cal-priv">
-      Sent to your sync server: which item you answered, when, how confident you
-      were, whether you were right, and how long you took. Your written notes,
-      the reasons you type, and your course files stay on this device.
-      Schedules are recomputed from the log rather than sent.
+      This device backs up to your own account once a day. Your answer log and
+      your courses are encrypted in this browser first, with a key derived from
+      your secret — so they can be stored there but not read there. What the
+      backup can see is the shape of it: which device wrote a row, when, and how
+      big it was. Schedules are recomputed from the log rather than sent.
     </p>
   );
 }

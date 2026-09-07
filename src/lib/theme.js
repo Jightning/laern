@@ -9,6 +9,17 @@
  * scrollbar gutters render outside it.
  */
 export function applyHue(course) {
-  const hue = Number(course && course.theme && course.theme.hue) || 0;
-  document.documentElement.style.setProperty("--hue", String(hue));
+  /* Not `Number(course && …)`: with no course that expression is null, and
+     Number(null) is 0 — a perfectly finite rotation, which is how the library
+     kept ending up in amber even after the default moved. */
+  const declared = course && course.theme ? course.theme.hue : undefined;
+  const hue = Number(declared);
+  const el = document.documentElement;
+  /* A declared rotation is set inline; anything else *removes* the property so
+     the stylesheet's own default applies. It used to write 0 in that case,
+     which is a rotation like any other — and 0 puts the accent in amber, so
+     the library and every course without a declared hue wore a colour that
+     reads as a warning on hover. */
+  if (declared != null && declared !== "" && Number.isFinite(hue)) el.style.setProperty("--hue", String(hue));
+  else el.style.removeProperty("--hue");
 }

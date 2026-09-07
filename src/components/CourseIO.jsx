@@ -60,8 +60,13 @@ export default function CourseIO({ onChange }) {
 
   /* Throws on refusal; callers collect failures so one bad course in a
      selection does not stop the others. */
-  const install = async ({ id, files }) => {
-    if (!id) throw new Error("could not tell what this course is called");
+  const install = async ({ id, files }, label = "that course") => {
+    /* Naming the source is the whole value of the message: a batch of five
+       folders reporting "could not tell what this course is called" says
+       nothing about which one to go and look at. */
+    if (!id) throw new Error(
+      `${label}: could not tell what this course is called — pick the course ` +
+      `folder itself (the one holding course.yaml), not the files inside it`);
     const bad = refuse(files);
     if (bad) throw new Error(bad);
 
@@ -94,7 +99,11 @@ export default function CourseIO({ onChange }) {
     e.currentTarget.value = "";
     if (!list.length) return;
     setBusy(true); setMsg(null);
-    try { report([await install(await fromFolder(list))], []); }
+    /* Every entry from a directory picker carries the folder it came from, so
+       the failure can name it even when the course id could not be derived. */
+    const folder = (list[0].webkitRelativePath || list[0].name || "").split("/")[0]
+      || "that folder";
+    try { report([await install(await fromFolder(list), folder)], []); }
     catch (err) { report([], [err.message]); }
   };
 
@@ -109,8 +118,12 @@ export default function CourseIO({ onChange }) {
     for (const f of picked) {
       try {
         if (f.size > MAX_BYTES) throw new Error(`${kb(f.size)} exceeds the ${kb(MAX_BYTES)} limit`);
-        ok.push(await install(/\.zip$/i.test(f.name) ? await fromZip(f) : await fromJSON(f)));
-      } catch (err) { failed.push(`${f.name}: ${err.message}`); }
+        ok.push(await install(
+          /\.zip$/i.test(f.name) ? await fromZip(f) : await fromJSON(f), f.name));
+      } catch (err) {
+        /* The label is already inside the message when install() threw it. */
+        failed.push(err.message.startsWith(f.name) ? err.message : `${f.name}: ${err.message}`);
+      }
     }
     report(ok, failed);
   };
@@ -141,8 +154,8 @@ export default function CourseIO({ onChange }) {
 
       {!canPickFolder && (
         <p class="cal-cap">
-          This browser cannot pick a folder. Compress the course folder first —
-          on iPhone, long-press it in Files and choose Compress.
+          This browser cannot pick a folder. Compress the course folder first.
+          On iPhone, long-press it in Files and choose Compress.
         </p>
       )}
 

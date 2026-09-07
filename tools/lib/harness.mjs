@@ -27,7 +27,9 @@ export async function serveDist(root) {
 
   const server = createServer((q, res) => {
     const rel = decodeURIComponent((q.url || "/").split("?")[0]);
-    /* The deployment has no Function; a sync attempt must not read as a fault. */
+    /* The static harness serves no Function, so a backup attempt 404s. That is
+   not a fault here: the suite runs as a reader with no secret, which is the
+   case the client is built to make no request in at all. */
     if (rel.startsWith("/api/")) {
       res.writeHead(200, { "content-type": "application/json" });
       return res.end(JSON.stringify({ cursor: 0, more: false, rows: [] }));

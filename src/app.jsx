@@ -29,6 +29,7 @@ import SearchOverlay from "./components/SearchOverlay.jsx";
 import PageContext from "./components/PageContext.jsx";
 import Review from "./components/Review.jsx";
 import Calibration from "./components/Calibration.jsx";
+import CloudPanel from "./components/CloudPanel.jsx";
 
 /* The width above which the sidebar is a column rather than a drawer. Mirrors
    the 64em breakpoint in 99-responsive.css. */
@@ -37,6 +38,11 @@ const WIDE = "(min-width: 64.01em)";
 export default function App() {
   const { hash, cid, rest } = useHashRoute();
   const inReview = cid === "review";
+  /* `#/sync` is deliberately unlinked. The site is public, and a control for
+     the owner's backup is not something a reader should be shown, told about,
+     or able to spend quota with — so the way in is a route you have to know.
+     Holding the secret is the only identity the system has. */
+  const inSetup = cid === "sync";
   const [searchOpen, setSearchOpen] = useState(false);
   const [expandAll, setExpandAll] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -99,7 +105,7 @@ export default function App() {
   useEffect(() => {
     const onSync = e => {
       if (cid && course && e.detail.courses.includes(cid)) rebuild(cid, course);
-      if (e.detail.installed && e.detail.installed.length) refreshLibrary();
+      if ((e.detail.installed || []).length || (e.detail.removed || []).length) refreshLibrary();
       forceRender(n => n + 1);
     };
     addEventListener("learn:synced", onSync);
@@ -256,6 +262,20 @@ export default function App() {
 
   if (inReview)
     return <Review onClose={() => history.back()} />;
+
+  if (inSetup)
+    return (
+      <div class="shell solo">
+        <main>
+          <div class="wrap">
+            <div class="lib">
+              <CloudPanel setup onChange={() => forceRender(n => n + 1)} />
+              <p class="lempty"><a href="#/">Back to the library</a></p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
 
   return (
     <>

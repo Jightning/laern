@@ -3,9 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0c">
+<!-- The browser chrome takes the page's own ground, per scheme, so the bar
+     above the app is the same colour as the app. It used to be #0b0b0c, which
+     is not a colour this palette contains. -->
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#DFE3E9">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101319">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<!-- Icons. The ?v= is not decoration: the service worker caches by URL, so a
+     file replaced in place is served stale until the cache turns over.
+     src/public/icon.svg is the source; the rest are rendered from it by
+     tools/gen-icons.mjs. -->
+<link rel="icon" type="image/svg+xml" href="./icon.svg?v=2">
+<link rel="alternate icon" href="./favicon.ico?v=2" sizes="32x32 16x16">
+<!-- 180x180 and opaque: iOS applies its own mask and composites any
+     transparency onto black. -->
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2">
 <!-- Installing to the Home Screen is what exempts the app from WebKit's
      seven-day deletion of script-writable storage. -->
 <meta name="apple-mobile-web-app-capable" content="yes">
