@@ -1,0 +1,16 @@
+title: The figure catalogue
+blurb: |-
+  Nine figure kinds, each shown once. Every one is described as data in the YAML and drawn by the engine, theme-aware, in both light and dark. This section is the reference for which kind fits which shape of information.
+primer:
+  - ask: |-
+      A diagram reproduces exactly what its caption already states in words. Keep it or cut it?
+    answer: |-
+      Cut it
+    why: |-
+      <p>A figure must carry information the prose does not. Coherence is subtractive — removing a decorative figure improves learning, it does not cost anything.</p>
+  - ask: |-
+      The picture can be written as data — nodes and edges, or points, or labelled rows. Supplied image, or a declarative figure?
+    answer: |-
+      A declarative figure
+    why: |-
+      <p>A spec stays sharp at any size, follows the reader's theme, and is corrected by editing numbers rather than redrawing. A raster image is the fallback for photographs and scans.</p>

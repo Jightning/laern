@@ -1,0 +1,16 @@
+title: The research behind it
+blurb: |-
+  Why the site behaves the way §1 described. Two loops run over the same material and meet at a single one-way seam; tiers exist on evidence that is real but narrower than it looks. This section is the argument, with the effect sizes and their limits stated rather than implied.
+primer:
+  - ask: |-
+      A reader answers a quiz item confidently and gets it wrong. What happens in the drill loop?
+    answer: |-
+      That concept is pulled into the drill bank
+    why: |-
+      <p>The seam between the loops runs one way: a confident miss in the quiz recruits the concept for spaced review. A drill success never marks a quiz type as covered.</p>
+  - ask: |-
+      A block answers "why does this rule hold" and could never appear on an exam. Which tier does it belong in?
+    answer: |-
+      depth
+    why: |-
+      <p>Anything examinable is spine, however long it is. A block that only answers "why" or "what if", and costs the reader nothing on the exam if collapsed, is depth.</p>

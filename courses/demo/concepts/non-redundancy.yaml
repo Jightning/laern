@@ -1,0 +1,7 @@
+term: Non-redundancy
+body: |-
+  <p>The second rule: every piece of <em>explanation</em> appears exactly once. If two subsections need an idea, one defines it and the other links. If three or more need it, it becomes a concept.</p>
+  <p>It governs explanation, not practice — the drill bank repeats <em>applications</em> on purpose. What it forbids is a second copy of the same words.</p>
+src: Defined in §2.1
+review: true
+confusable_with: [completeness]

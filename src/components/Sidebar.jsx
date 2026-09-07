@@ -1,0 +1,92 @@
+import { IconStart, IconConcept, IconPractice, IconMap, IconTuck } from "./Icon.jsx";
+import CourseActions from "./CourseActions.jsx";
+
+/* State is carried by the number itself — weight, colour and an edge marker.
+   The previous 26x18px pulse was too small to read as a signal and landed as a
+   stray rectangle, which is worse than no device at all. */
+function Cycle({ n, active, visited }) {
+  return (
+    <span class={"cyc" + (active ? " is-on" : "") + (visited ? " is-seen" : "")}>
+      <span class="sec-num">{String(n).padStart(2, "0")}</span>
+    </span>
+  );
+}
+
+export default function Sidebar({ course, cid, rest, open, onNavigate, onTuck, onClose, actions }) {
+  const H = r => `#/${cid}${r ? "/" + r : ""}`;
+  /* the primer belongs to the section it introduces, so the rail marks it too */
+  const target = rest && rest.startsWith("primer/") ? rest.slice(7) : rest;
+  const activeSec = target && target.startsWith("s") ? target.split("-")[0] : null;
+  const curNum = activeSec ? Number(activeSec.slice(1)) : 0;
+
+  const top = [
+    ["", "Overview", IconStart, !rest],
+    ["concepts", "Core concepts", IconConcept, rest === "concepts" || rest.startsWith("c/")],
+    ["practice", "Mixed practice", IconPractice, rest === "practice"],
+    ["map", "Dependency map", IconMap, rest === "map"]
+  ];
+
+  return (
+    <aside class={"sidebar" + (open ? " open" : "")} id="sidebar">
+      {/* Below the sidebar breakpoint this is a drawer over the page, so it
+          needs a way out that is not a sliver of scrim beside it. Above it the
+          sidebar is permanent and there is nothing to close. */}
+      <button class="side-close" onClick={onClose} aria-label="Close navigation">Close</button>
+
+      <div class="brand">
+        {/* Not conditional on there being more than one course: the library
+            is also where a course is installed and removed, so a single-course
+            device needs this link most. */}
+        <a class="backlib" href="#/">All courses</a>
+        <span class="code">{course.code}</span>
+        <span class="name">{course.title}</span>
+        <span class="meta">{course.meta}</span>
+      </div>
+
+      <div class="navtop">
+        {top.map(([route, label, Ico, cur]) => (
+          <a key={label} href={H(route)} class={cur ? "cur" : ""} onClick={onNavigate}>
+            <span class="k"><Ico /></span>{label}
+          </a>
+        ))}
+      </div>
+
+      {/* the control acts on the sidebar, so it lives on the sidebar's edge */}
+      <button class="tuck" onClick={onTuck} title="Hide the section list  (\\)"
+              aria-label="Hide the section list">
+        <IconTuck open />
+      </button>
+
+      {/* The toolbar's secondary actions, on a screen too narrow to carry
+          them permanently. Hidden above the breakpoint, where the toolbar
+          shows them instead. */}
+      <div class="side-actions">
+        <CourseActions inCourse stateOn={actions.stateOn} expanded={actions.expanded}
+                       onExpand={actions.onExpand} onReset={actions.onReset} />
+      </div>
+
+      <nav class="rail" aria-label="Course sections">
+        {course.sections.map(s => {
+          const on = s.id === activeSec;
+          return (
+            <div key={s.id} class={"sec" + (on ? " active open" : "")}>
+              <a class="sec-btn" href={H(s.id)} onClick={onNavigate}>
+                <Cycle n={s.num} active={on} visited={s.num < curNum} />
+                <span class="sec-title">{s.title}</span>
+              </a>
+              <ul class="subs">
+                {s.subs.map((sub, k) => (
+                  <li key={sub.id}>
+                    <a href={H(sub.id)} class={rest === sub.id ? "cur" : ""} onClick={onNavigate}>
+                      {`${s.num}.${k + 1}  ${sub.title}`}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}

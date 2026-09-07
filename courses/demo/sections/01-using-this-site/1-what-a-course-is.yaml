@@ -1,0 +1,69 @@
+title: What a course is
+blocks:
+  - t: p
+    tier: spine
+    source: docs/architecture.md §3
+    h: |-
+      A course is a subject you want to hold: a class, a textbook, a topic you keep failing to remember. It arrives as a folder of data files, the site renders it, and everything you do with it — answers, confidence, schedule — stays in this browser. This course is a course about the site itself, so every page you are about to read is also an example of the thing it describes.
+
+  - t: def
+    tier: spine
+    source: docs/architecture.md §3
+    term: Section and subsection
+    label: How a course is laid out
+    h: |-
+      <p>A course is a list of <b>sections</b>; each section is a list of <b>subsections</b>. A subsection is one sitting: a few blocks of material and a quiz on exactly that material. Only one section is ever on the page, so what you are reading is never mixed with what you are not.</p>
+
+  - t: key
+    tier: spine
+    source: docs/material_truth.md M4
+    label: Every subsection ends in a question
+    h: |-
+      <p>There is no subsection you can finish by reading alone. The quiz is not a checkpoint the author added if they felt like it — the build refuses a subsection without one, because reading something and being able to produce it are different states and only one of them survives the week.</p>
+
+  - t: note
+    tier: spine
+    source: docs/deploy.md
+    label: Where your courses live
+    h: |-
+      <p>Nothing is uploaded. A course you install exists in this browser and nowhere else, which is exactly why it can be private: the site cannot share what it never receives. The library page installs one from a folder or a <code>.zip</code>, and installing a course you already have replaces it while keeping your answer history.</p>
+
+  - t: list
+    tier: spine
+    source: docs/architecture.md §2
+    h: |-
+      The four places a course can take you, all reachable from the sidebar:
+    items:
+      - the <b>sections</b> themselves, in order
+      - <b>core concepts</b> — the ideas the course reuses, each with its own entry
+      - <b>mixed practice</b> — questions drawn across the whole course
+      - the <b>dependency map</b> — which section needs which
+
+  - t: p
+    tier: depth
+    source: docs/architecture.md §2b
+    h: |-
+      Nothing about a course is compiled. The YAML an author writes is the YAML the browser parses, which is why a course can be edited by handing the folder to a model and dropping the changed folder back in. The cost is about a tenth of a second when a course first opens; the gain is that the material is readable by anything, including you.
+
+quiz:
+  - type: Locate a course's boundary
+    concept: completeness
+    q: |-
+      You install a course on your laptop and answer half of it, then open the site on your phone. Is your progress there?
+    a: |-
+      No — not unless you set up sync. A course and its answers live in the browser you used them in.
+    why: |-
+      <p>Nothing is uploaded, so there is no account holding your state and no server to fetch it from. Sync exists and runs between your own devices, but it is something you turn on rather than the default.</p>
+    why_prompt: If nothing is uploaded, where could the phone have got your answers from?
+    verified: 2026-09-06
+
+  - type: Predict the structure
+    concept: completeness
+    q: |-
+      A subsection covers a procedure and the author judges it too short to be worth a question. What does the build do?
+    a: |-
+      It fails. Every subsection carries at least one question.
+    why: |-
+      <p>The rule is mechanical because the judgement is unreliable: a subsection that feels too small to test is exactly the one whose material quietly leaves. If it is worth writing down, it is worth one question.</p>
+    why_prompt: Why is this enforced by the build rather than left to the author?
+    verified: 2026-09-06

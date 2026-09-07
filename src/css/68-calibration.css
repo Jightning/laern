@@ -1,0 +1,54 @@
+/* 68-calibration — What actually happened, as numbers. */
+
+.cal-h{font-family:var(--mono);font-size:.72rem;font-weight:400;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-3);margin:var(--sp-3) 0 .5rem}
+.cal-t{width:100%;border-collapse:collapse;font-size:.82rem}
+.cal-t th{text-align:left;font-family:var(--mono);font-size:.7rem;font-weight:400;
+  color:var(--ink-2);padding:5px 10px 5px 0;white-space:nowrap}
+.cal-t td{padding:5px 10px 5px 0}
+.cal-c{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);width:3rem}
+.cal-v{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+.cal-bar{display:block;height:7px;min-width:6rem;border-radius:4px;background:var(--rule-2)}
+.cal-bar i{display:block;height:100%;border-radius:4px;background:var(--hi)}
+.cal-empty{font-size:.82rem;color:var(--ink-3);margin:0}
+.cal-foot{margin-top:var(--sp-3);display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+  border-top:1px solid var(--rule);padding-top:1rem}
+.cal-cap{font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+
+/* the state strip: the two loops side by side, on course home */
+.strip{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin:0 0 var(--sp-2);
+  border-left:2px solid var(--hi);padding:.55rem 0 .55rem .8rem}
+.strip-i{font-size:.82rem;color:var(--ink-2)}
+.strip-i b{font-family:var(--mono);font-size:.82rem;color:var(--ink);margin-right:.3rem}
+
+/* concept state, on the hub card and on the entry */
+.cphase{font-family:var(--mono);font-size:.64rem;color:var(--hi-ink);display:block;margin-top:3px}
+.cstate{margin:var(--sp-3) 0}
+.cstate-box{display:flex;flex-wrap:wrap;align-items:baseline;gap:.6rem;
+  border:1px solid var(--rule);border-left:2px solid var(--hi);border-radius:8px;
+  background:var(--surface);padding:9px 13px;margin-bottom:.9rem;font-size:.86rem}
+.cstate-due{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.cstate-near{font-size:.84rem;color:var(--ink-2);margin:0 0 .8rem}
+.creasons{list-style:none;padding:0;margin:0;font-size:.84rem}
+.creasons li{border-left:2px solid var(--dc);padding:4px 0 4px 10px;margin-bottom:7px}
+.creason-m{display:block;font-family:var(--mono);font-size:.68rem;color:var(--ink-3);margin-top:2px}
+.ldue{font-family:var(--mono);font-size:.64rem;color:var(--wn-ink);float:right}
+
+.cal-sub{font-size:.8rem;color:var(--ink-3);max-width:64ch;margin:var(--sp-3) 0 0}
+/* One word, and only after a prediction: no AI affordance precedes an attempt. */
+.qstuck{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);text-decoration:none;
+  border-bottom:1px dashed var(--rule)}
+.qstuck:hover{color:var(--hi-ink);border-bottom-color:var(--hi)}
+
+/* Sync: a settings block, not a surface the reader watches. Kept quiet and
+   below the numbers, since it is touched once per device and then never. */
+.sync{margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--rule)}
+.sync h2{margin:0 0 .4rem}
+.sync-row{display:flex;gap:.9rem;flex-wrap:wrap;margin:var(--sp-2) 0}
+.sync-row label{display:flex;flex-direction:column;gap:.25rem;flex:1 1 15rem;min-width:0}
+.sync-row label span{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.sync-row input{font:400 14px/1.4 var(--mono);padding:.5rem .6rem;min-width:0;
+  color:var(--ink);background:var(--surface-2);border:1px solid var(--rule);border-radius:4px}
+.sync-row input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.sync-foot{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.sync-msg{font:400 13px/1.4 var(--mono);color:var(--ink-3)}

@@ -1,0 +1,21 @@
+/* 66-review — The review route. Its own chrome: no sidebar, no rail, no measure. */
+
+.review{
+  max-width:34rem;margin:0 auto;padding:1rem 1.1rem 3rem;
+  min-height:100vh;background:var(--ground);
+}
+.review-bar{
+  display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+  padding:.4rem 0 .9rem;border-bottom:1px solid var(--rule);margin-bottom:1.2rem;
+}
+.review-t{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-2)}
+/* Dots alone are shape and colour with no words, so the count repeats as text. */
+.review-dots{display:inline-flex;gap:4px}
+.review-dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--rule)}
+.review-dots i.on{background:var(--hi);border-color:var(--hi)}
+.review-n{font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+.review-bar .tbtn{margin-left:auto}
+.review h1{font-size:1.4rem;margin:0 0 .5rem}
+.review-nav{display:flex;gap:8px;margin-top:1.2rem}
+.review .drill{margin-bottom:1rem}

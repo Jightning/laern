@@ -1,0 +1,81 @@
+title: Media and edge-case displays
+blocks:
+  - t: p
+    tier: spine
+    source: docs/create_course.md §11.3
+    h: |-
+      An <code>image</code> is a photograph or scan, embedded at build time so the page stays self-contained. It is the fallback for what a declarative figure cannot describe. Everything below the first image is an edge case: a numbered figure with no caption, and the badges a block wears when its claim is not grounded.
+
+  - t: def
+    tier: spine
+    source: docs/material_truth.md M28
+    term: Grounded claim
+    label: Definition
+    h: |-
+      <p>Every explanatory block names where it came from in its <code>source</code> field — a real origin, or the literal <code>unverified</code>, or <code>generated</code>. The audit counts anything that is not a real origin and fails a course over threshold.</p>
+
+  - t: image
+    tier: spine
+    src: assets/gallery.svg
+    alt: Three horizontal bars of decreasing length labelled spine, depth, and apply
+    cap: "image — embedded SVG, with a caption, credit, and fixed width"
+    credit: this repository, courses/demo/assets/
+    width: 300
+
+  - t: image
+    tier: spine
+    id: tiers-img
+    src: assets/gallery.svg
+    alt: The same three bars, shown again without a caption to demonstrate the numbered-only display
+    credit: no caption on this one
+
+  - t: p
+    tier: spine
+    source: src/blocks/index.js
+    h: |-
+      The second copy above is figure <f k="tiers-img"/>: with an <code>id</code> but no caption, the renderer still emits "Figure N" so the cross-reference has something to point at.
+
+  - t: key
+    tier: spine
+    source: unverified
+    label: A claim with no source
+    h: |-
+      <p>This block asserts something with no checkable origin, so its <code>source</code> is <code>unverified</code> — and it renders a badge saying exactly that. The reader is told, in words, not to trust this line the way they trust the rest of the page.</p>
+
+  - t: def
+    tier: depth
+    source: generated
+    term: Generated content
+    label: Definition
+    h: |-
+      <p>A <code>def</code>, <code>key</code> or <code>trap</code> a model drafted without a source in front of it carries <code>source: generated</code>. It counts against the unverified fraction exactly as <code>unverified</code> does; the difference is who to ask — <code>unverified</code> means look it up, <code>generated</code> means check whether it is even true.</p>
+
+  - t: trap
+    tier: spine
+    source: docs/create_course.md §0.3
+    label: A gap you filled from memory is a defect nobody will find
+    h: |-
+      <p>Writing a plausible source on a block you actually guessed is the one thing the audit cannot catch. A flagged gap is a task; a confidently mislabelled one ships.</p>
+
+quiz:
+  - type: Choose the source value
+    concept: non-redundancy
+    q: |-
+      A model writes a <code>key</code> block stating a threshold it cannot cite. What should the <code>source</code> field say, and why not leave it blank?
+    a: |-
+      <code>generated</code>. A blank field reads as "not yet audited" rather than "known-unverified", so the audit would not count it and the badge would not appear.
+    why: |-
+      <p>The three legal values each mean something. Blank is a fourth state — unreviewed — which is why the audit distinguishes it and why a drafted-but-ungrounded claim must be marked, not left empty.</p>
+    why_prompt: What does a blank source field signal, versus the value "generated"?
+    verified: 2026-09-02
+
+  - type: Read the numbered-figure rule
+    concept: tier
+    q: |-
+      A figure has an <code>id</code> but the author wrote no <code>cap</code>. What does a <code>&lt;f k="…"/&gt;</code> reference to it render as?
+    a: |-
+      "Figure N" — the number alone. The number is the citable half and is emitted even with no caption text.
+    why: |-
+      <p>The reference needs a stable label to point at. Requiring a caption just to enable a cross-link would be a redundancy tax, so the number stands on its own.</p>
+    why_prompt: Why is the number emitted even when there is no caption to go with it?
+    verified: 2026-09-02

@@ -1,0 +1,102 @@
+/* 12-sidebar — collapsing the navigation.
+ *
+ * This replaces an earlier "read mode" that also hid the margin cards. That was
+ * the wrong thing to hide: the cards put a reference beside the mention that
+ * needs it (spatial contiguity), so removing them removes a benefit. The
+ * sidebar is navigation chrome and contributes nothing while you are reading,
+ * so that is what collapses. */
+
+.shell.tucked{grid-template-columns:minmax(0,1fr)}
+.shell.tucked .sidebar{display:none}
+/* Centre the *reading column*, not the wrap.
+ *
+ * Hiding the sidebar frees 308px, and centring the whole wrap spent all of it
+ * on outer gutter: at 1440 the text slid 130px left of where it had just been
+ * and the page carried 225px of nothing on each side, with a half-empty margin
+ * rail on top of that. The reader collapsed the navigation to get more of the
+ * material and got more emptiness — the same trade T28 refuses for zoom.
+ *
+ * The measure cannot absorb it: 37.5rem measures 63 characters per line and
+ * widening to 42rem reaches 70, which is further from the 66 T7 targets, not
+ * closer. So the surplus is real and the only question is where it sits. It
+ * sits where the sidebar was: the column the eye tracks is centred in the
+ * viewport, the rail hangs in the margin beside it as it does in a book, and
+ * the text lands within a few pixels of where it was before the tuck. */
+.shell.tucked .wrap{
+  max-width:var(--wrap-max);
+  margin-left:calc(50% - var(--measure) / 2 - var(--wrap-pad));
+  /* A gutter on the right as well, so the rail never sits flush against the
+     edge. Where the two margins leave less than the max-width, the box narrows
+     rather than overflowing, which is what keeps the column centred all the
+     way down to the breakpoint. */
+  margin-right:var(--wrap-pad);
+}
+/* and the bar follows the column it sits above, here too */
+.shell.tucked .topbar{
+  padding-left:calc(50% - var(--measure) / 2);
+  padding-right:var(--wrap-pad);
+}
+
+/* the collapse control sits with the other page actions */
+.tbtn.icon{display:inline-flex;align-items:center;gap:7px}
+.tbtn.on{border-color:var(--hi);color:var(--hi-ink)}
+
+/* content settles in when the route changes, so a new section reads as
+   arriving rather than as the page having blinked */
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.viewport{animation:viewIn .22s cubic-bezier(.2,.6,.2,1) both}
+
+@media (prefers-reduced-motion:reduce){
+  .viewport{animation:none}
+}
+
+/* The collapse control sits on the sidebar's own edge, because that is what it
+   acts on. When collapsed, a slim tab at the same edge brings it back without
+   needing the keyboard. */
+.tuck{
+  position:absolute;top:14px;right:10px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;padding:0;
+  background:none;border:1px solid transparent;border-radius:6px;
+  color:var(--ink-3);cursor:pointer;
+}
+.tuck:hover{border-color:var(--rule);color:var(--hi-ink);background:var(--surface-2)}
+/* No `position:relative` here. The sidebar is `position:sticky` (10-shell), and
+   this file loads later — a relative override silently un-stuck it, so the rail
+   scrolled away with the page. Sticky is already a positioned element, so the
+   absolute .tuck above resolves against it either way. */
+
+.untuck{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:40;
+  display:flex;align-items:center;justify-content:center;
+  width:22px;height:64px;padding:0;
+  background:var(--surface);color:var(--ink-3);cursor:pointer;
+  border:1px solid var(--rule);border-left:0;
+  border-radius:0 8px 8px 0;
+}
+.untuck:hover{color:var(--hi-ink);border-color:var(--hi)}
+
+@media (max-width:64em){
+  .tuck,.untuck{display:none}
+}
+
+/* The drawer's own close control. The sidebar is permanent above the
+   breakpoint, so there is nothing to close and this is not rendered visible;
+   below it, a drawer covering three-quarters of the screen needs an exit that
+   is not the sliver of scrim beside it. */
+.side-close{
+  display:none;
+  position:absolute;top:12px;right:12px;z-index:1;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--surface);border:1px solid var(--rule);color:var(--ink-2);
+  border-radius:6px;padding:8px 12px;cursor:pointer;
+}
+.side-close:hover{border-color:var(--hi);color:var(--hi-ink)}
+
+/* The toolbar's secondary actions, parked here on a narrow screen. The rule
+   below them keeps the band from reading as the first row of the section rail
+   it sits above. */
+.side-actions{
+  display:none;gap:8px;flex-wrap:wrap;
+  padding:14px 20px 16px;border-bottom:1px solid var(--rule);
+}

@@ -1,0 +1,33 @@
+# The retention pool for the idea §1.2 turns on. Three distinct items, three
+# surfaces: what the prediction is for, what it triggers, and what understating
+# it destroys.
+concept: confidence
+items:
+  - format: short-answer
+    stem: Confidence is recorded on every question but never scored. What is it recorded for?
+    answer: So a miss you were confident about can be told apart from a miss you expected.
+    steps:
+      - "Correctness alone cannot separate a wrong belief from a known gap."
+      - "The prediction supplies the second axis; only their disagreement is diagnostic."
+      - "The site reports the disagreement as the overconfidence count."
+    why: |-
+      <p>The tempting answer is "to grade how well you know it" — but correctness already does that. What confidence adds is a claim you made about yourself, which is the only thing that can turn out to be wrong in an interesting way.</p>
+    verified: 2026-09-06
+
+  - format: multiple-choice
+    stem: |-
+      Which single outcome enrols a concept into spaced review on its own?
+      (a) any wrong answer · (b) a wrong answer marked high confidence · (c) a correct answer marked low confidence · (d) reading the subsection
+    answer: (b) — missing something you had just predicted you would get right.
+    steps:
+      - "Reading enrols nothing; a hesitant miss is already known to the reader."
+      - "A confident miss is a belief that is wrong, and it returns unless it is corrected."
+    verified: 2026-09-06
+
+  - format: cued-recall
+    stem: After a confident miss, how soon does the concept come back?
+    answer: The same session — it is drilled before you leave the page — and then again the next day.
+    steps:
+      - "Immediate re-test is the correction; the next-day interval is the retention."
+      - "Feedback alone lets a confident error come back, which is what the seam exists to prevent."
+    verified: 2026-09-06

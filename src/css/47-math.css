@@ -1,0 +1,20 @@
+/* 47-math — display equations and inline TeX.
+ *
+ * KaTeX brings its own metrics; everything here is about how an equation sits
+ * in the reading column, not about how it is typeset. */
+
+.mathblk{
+  margin:var(--sp-3) 0;
+  padding:0;
+  overflow-x:auto;            /* a wide equation scrolls rather than the page */
+  overflow-y:hidden;
+}
+.mathblk .katex-display{margin:0}
+.mathblk .blabel{margin-bottom:9px}
+.mathnote{
+  display:block;margin-top:9px;
+  font-size:.82rem;color:var(--ink-3);max-width:var(--measure);
+}
+/* Inline maths sits on the prose baseline and must not stretch the line. */
+.katex{font-size:1.04em;line-height:inherit}
+.mathblk .katex{font-size:1.12em}

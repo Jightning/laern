@@ -1,0 +1,120 @@
+/* 40-blocks — Content blocks: callouts, code, tables, chips. */
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--sp-2)}
+.chip{
+  font-family:var(--mono);font-size:.70rem;padding:4px 10px;border-radius:20px;
+  border:1px solid var(--rule);color:var(--ink-2);
+}
+.chip i{font-style:normal;font-weight:700}
+.chip.k1{border-color:color-mix(in srgb,var(--hi) 45%,transparent)}
+.chip.k1 i{color:var(--hi-ink)}
+.chip.k0{border-color:color-mix(in srgb,var(--lo) 45%,transparent)}
+.chip.k0 i{color:var(--lo-ink)}
+.chip.kx{border-color:color-mix(in srgb,var(--dc) 45%,transparent)}
+.chip.kx i{color:var(--dc-ink)}
+.chip.kz i{color:var(--hz-ink)}
+.blk{margin:0 0 var(--sp-2)}
+/* Nine block types used to be one card with a different 3px stripe, which
+   satisfied signaling only technically. They are different kinds of thing, so
+   they now differ in form: what is boxed, what is ruled, what is flush. */
+
+/* a definition is the anchor of a subsection, so it keeps the card — and the
+   widest gap above it, because it is where a new idea starts */
+.def{
+  border:1px solid var(--rule);border-left:3px solid var(--lo);
+  border-radius:8px;background:var(--surface);
+  padding:15px 18px;margin:var(--sp-3) 0 var(--sp-2);
+}
+
+/* a rule is a statement to hold on to: flush, tinted, heavy edge, no box */
+.key{
+  border:0;border-left:3px solid var(--hi);border-radius:0;
+  background:color-mix(in srgb,var(--hi) 7%,transparent);
+  padding:12px 16px;margin:var(--sp-2) 0 var(--sp-2);
+}
+
+/* a trap is a warning: flush and unboxed so it reads as an interjection, and
+   warm, because a warning in a cool hue asks the reader to learn the code */
+.trap{
+  border:0;border-left:3px solid var(--wn);border-radius:0;
+  background:none;padding:4px 0 4px 16px;margin:var(--sp-1) 0 var(--sp-2);
+}
+
+/* a worked example is a digression: indented and ruled, not boxed */
+.ex{
+  /* --rule is ~1.2:1 against the page ground, so a hairline in it was
+     invisible and the indent looked like an accident. --hz is the neutral
+     accent and reads as a deliberate edge in both themes. */
+  border:0;border-left:2px solid var(--hz);border-radius:0;
+  /* the rule sits on the column edge, like every other block's edge; the
+     indent is the 20px between the rule and the text, not a 4px nudge of the
+     whole block that lines up with nothing */
+  background:none;padding:2px 0 2px 20px;margin:var(--sp-3) 0;
+}
+
+/* a note is genuinely optional, so it is the quietest thing on the page */
+.note{
+  border:0;border-radius:0;background:none;
+  padding:0;margin:var(--sp-1) 0 var(--sp-2);
+  font-size:.94em;color:var(--ink-2);
+}
+.note .blabel{color:var(--ink-3)}
+/* The one authored field that ranges from a word to a short clause: the
+   defaults are "Definition" and "Key rule", but courses legitimately write
+   "The cut property — why greedy is safe here", and a renderer cannot tell the
+   two apart. A rule the content routinely exceeds is a wish, not a rule, so the
+   caps go and the signal stays in the mono face, the spacing and the per-block
+   accent — which is what T13 needs anyway. */
+.blabel{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-3);display:block;margin-bottom:7px;
+}
+.def .blabel{color:var(--lo-ink)}
+.key .blabel{color:var(--hi-ink)}
+.trap .blabel{color:var(--wn-ink)}
+.def dt{font-weight:670;margin-bottom:2px}
+.blk p:last-child,.def p:last-child,.key p:last-child,.trap p:last-child,
+.ex p:last-child,.note p:last-child{margin-bottom:0}
+.ex ol,.blk ol,.blk ul{margin:0 0 0 0;padding-left:20px}
+.ex ol li,.blk li{margin-bottom:6px}
+.ex ol li:last-child,.blk li:last-child{margin-bottom:0}
+code{font-family:var(--mono);font-size:.875em;background:var(--surface-2);
+  padding:1px 5px;border-radius:4px;border:1px solid var(--rule-2)}
+.def code,.key code,.ex code,.trap code{background:var(--surface)}
+pre{
+  font-family:var(--mono);font-size:.815rem;line-height:1.6;margin:0 0 var(--sp-3);
+  background:var(--surface);border:1px solid var(--rule);border-radius:8px;
+  padding:14px 16px;overflow-x:auto;
+}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+.codewrap{position:relative;margin:0 0 var(--sp-3)}
+.codewrap .lang{
+  position:absolute;top:0;right:0;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  padding:7px 12px;pointer-events:none;
+}
+.codewrap pre{margin:0}
+.tscroll{overflow-x:auto;margin:var(--sp-3) 0 var(--sp-4);border:1px solid var(--rule);border-radius:8px;
+  background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+/* Same as a figure caption: it describes the table in a sentence. */
+caption{
+  caption-side:top;text-align:left;font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.02em;color:var(--ink-3);
+  padding:11px 14px 9px;border-bottom:1px solid var(--rule-2);
+}
+th,td{padding:6px 13px;text-align:left;border-bottom:1px solid var(--rule-2)}
+thead th{
+  font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--ink-2);
+  letter-spacing:.03em;background:var(--surface-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+.legend,.kleg,.quiz-h{flex-wrap:wrap}
+.tscroll,pre{max-width:100%}
+
+/* Where a claim came from. Text, never colour alone: an unverified one says so
+   in words and takes a dashed edge, so the marker survives a greyscale print
+   and a colour-blind reader. */
+.bsrc{display:block;margin-top:.55rem;font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.04em;color:var(--ink-3)}
+.bsrc.is-un{border-left:2px dashed var(--wn);padding-left:.5rem;color:var(--wn-ink)}

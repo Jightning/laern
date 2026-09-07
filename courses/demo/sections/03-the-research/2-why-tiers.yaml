@@ -1,0 +1,102 @@
+title: Why tiers, and what the evidence says
+blocks:
+  - t: p
+    tier: spine
+    source: docs/code_truth.md §3c
+    h: |-
+      <a href="#s1-4">§1.4</a> said what the three lanes do for a reader. This subsection is the other half: how an author decides which tier a block belongs in, and how far the evidence for splitting a page actually reaches. The <c k="tier">tier</c> card in the margin carries the definition.
+
+  - t: def
+    tier: spine
+    source: docs/code_truth.md Trade-offs
+    term: The coherence principle
+    label: The finding tiers are built on
+    h: |-
+      <p>Removing interesting-but-nonessential material from a lesson improves what a learner takes from it — the effect that says a page should carry less. Tiers are an attempt to have it both ways: the nonessential material is removed from the default read and kept one click away, rather than deleted.</p>
+
+  - t: key
+    tier: spine
+    source: docs/material_truth.md M23–M25
+    label: Three tests that decide every block
+    h: |-
+      <p>Removing it breaks the argument → <b>spine</b>. It answers "why" or "what if" and nothing examinable rides on it → <b>depth</b>. It teaches nothing new, only builds fluency → <b>apply</b>. Ambiguous between spine and depth → choose depth.</p>
+
+  - t: table
+    tier: spine
+    mono: true
+    cap: How each tier answers the three tests
+    head: [tier, examinable, breaks argument if cut, collapsible]
+    split: 2
+    rows:
+      - [spine, yes, yes, no]
+      - [depth, no, no, yes]
+      - [apply, no, no, yes]
+
+  - t: ex
+    tier: spine
+    source: docs/create_course.md §7.3
+    title: Classifying one block
+    h: |-
+      <ol>
+        <li>A paragraph derives the integrating factor from <m>\rho' = P\rho</m>.</li>
+        <li>Is it examinable? The <em>result</em> is, but the derivation is not — a student can use the factor without reproducing the derivation.</li>
+        <li>So the derivation is <b>depth</b>; the factor itself is spine.</li>
+      </ol>
+
+  - t: note
+    tier: depth
+    source: docs/code_truth.md Trade-offs
+    label: The evidence, and its limit
+    h: |-
+      <p>The coherence principle — removing nonessential detail helps learning at <m>g = 0.37</m> to <m>0.41</m> — is measured on material the learner cannot avoid. Opt-in collapsed detail has not been tested against a single-density alternative, so tiering is a defensible default, not a proven one.</p>
+
+  - t: p
+    tier: depth
+    source: docs/material_truth.md M25
+    h: |-
+      The one hard constraint: nothing examinable may live in depth. A depth block is a promise that collapsing it costs the reader nothing on the exam. The mechanical check is that no concept with an exam-format drill has its only spine coverage inside a collapsed block.
+
+  - t: ex
+    tier: apply
+    source: docs/create_course.md §7.3
+    title: A second classification, for fluency
+    h: |-
+      <ol>
+        <li>A block lists three worked variations of a substitution already defined in the spine.</li>
+        <li>It states no new rule and removing it breaks no argument.</li>
+        <li>It is <b>apply</b> — and by budget, a concept gets only one or two of these across the whole course.</li>
+      </ol>
+
+quiz:
+  - type: Assign a tier
+    concept: tier
+    q: |-
+      A block proves that a method's answer is unique. The proof is not on any past exam, but "the solution is unique" is a stated result students must know. Spine or depth?
+    a: |-
+      The statement "the solution is unique" is spine; the proof is depth.
+    why: |-
+      <p>Split the block. The examinable claim cannot sit in a collapsible tier; the argument for it can. If they cannot be separated, the whole block is spine.</p>
+    why_prompt: Which half of the block is the part a student could be asked to reproduce?
+    verified: 2026-09-02
+
+  - type: Predict the lane behaviour
+    concept: tier
+    q: |-
+      A subsection has 4 spine blocks, 2 depth, 1 apply. In the "Spine" lane, what does the reader see where the depth and apply blocks were?
+    a: |-
+      One stub reading "2 in depth · 1 more application".
+    why: |-
+      <p>Collapsed runs become a single stub whose count is text, so the reader knows exactly what was skipped rather than meeting an invisible gap. Expanding it restores the blocks in place.</p>
+    why_prompt: Why is the count shown as words rather than just hidden?
+    verified: 2026-09-02
+
+  - type: Apply the depth constraint
+    concept: tier
+    q: |-
+      An author puts a boundary case that appeared on last year's final into a depth block to keep the spine short. Allowed?
+    a: |-
+      No. Anything examinable must be spine, regardless of length.
+    why: |-
+      <p>Depth is a promise that collapsing it is free on the exam. A tested boundary case breaks that promise, and a reader in the Spine lane would miss it entirely.</p>
+    why_prompt: What promise does putting a block in depth make to the reader?
+    verified: 2026-09-02

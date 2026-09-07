@@ -1,0 +1,56 @@
+concept: tier
+items:
+  - format: short-answer
+    exam_format: true
+    stem: |-
+      A block is examinable but runs to three paragraphs. Which tier?
+    answer: |-
+      spine.
+    steps:
+      - |-
+        The test for spine is examinability, not length.
+      - |-
+        If it can be asked, it is spine no matter how long.
+    why: |-
+      <p>Pushing long-but-examinable material into depth is the failure with the worst consequence — a Spine-lane reader misses it entirely.</p>
+    verified: 2026-09-02
+  - format: multiple-choice
+    exam_format: true
+    stem: |-
+      The mechanical check for "nothing examinable in depth" is which of these? (a) no depth block over 100 words; (b) no concept with an exam-format drill has its only spine coverage inside a collapsed block; (c) depth blocks carry no quiz; (d) depth is under 30% of blocks.
+    answer: |-
+      (b)
+    steps:
+      - |-
+        An exam-format drill marks a concept as testable.
+      - |-
+        Its load-bearing coverage must therefore sit in an always-visible block.
+    why: |-
+      <p>The other options are proxies for length or proportion, which is not what the constraint is about.</p>
+    verified: 2026-09-02
+  - format: cued-recall
+    stem: |-
+      A block is genuinely ambiguous between spine and depth. Which way does it go, and why?
+    answer: |-
+      To depth, because available-but-collapsed beats deleted and read speed is the lowest-ranked priority.
+    steps:
+      - |-
+        The reader can always expand a stub.
+      - |-
+        Nothing is lost by collapsing; something is lost by cutting.
+    why: |-
+      <p>This tiebreak follows from the priority ranking, not from taste.</p>
+    verified: 2026-09-02
+  - format: numeric
+    stem: |-
+      A subsection ends with 3 depth blocks followed by 2 apply blocks, nothing after. In the Spine lane, how many stubs appear where those five blocks were?
+    answer: |-
+      1
+    steps:
+      - |-
+        Consecutive blocks the lane hides are grouped into a single run.
+      - |-
+        One run renders as one stub, with a text count of what it holds.
+    why: |-
+      <p>The stub's count is the signal — "3 in depth · 2 more applications" — so the reader knows what was skipped.</p>
+    verified: 2026-09-02

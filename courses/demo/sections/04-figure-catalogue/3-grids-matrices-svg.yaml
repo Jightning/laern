@@ -1,0 +1,89 @@
+title: Grids, matrices, and the escape hatch
+blocks:
+  - t: p
+    tier: spine
+    source: docs/create_course.md §11.1
+    h: |-
+      <b>grid</b> is a labelled 2-D grid with optional highlighted groups — Karnaugh maps, state tables, confusion matrices. <b>matrix</b> is a bracketed array. <b>svg</b> is the last resort when none of the other eight fit.
+
+  - t: def
+    tier: spine
+    source: docs/create_course.md §11.1
+    term: The svg escape hatch
+    label: Definition
+    h: |-
+      <p>The <code>svg</code> kind takes a raw <code>body</code> and a <code>viewBox</code> and draws exactly that. It is the admission that the declarative kinds are finite; reach for it only after checking that <code>grid</code>, <code>graph</code> or a <code>table</code> genuinely cannot express the shape.</p>
+
+  - t: figure
+    tier: spine
+    kind: grid
+    cap: "grid — Gray-coded labels, a binary index per cell, two highlighted groups, cell values coloured by the course's valueStyles"
+    spec:
+      rowVars: [A, B]
+      colVars: [C, D]
+      rowLabels: ["00", "01", "11", "10"]
+      colLabels: ["00", "01", "11", "10"]
+      index: binary
+      cells:
+        - [yes, yes, "no", "no"]
+        - ["no", auto, auto, "no"]
+        - ["no", "no", "no", "no"]
+        - [yes, yes, "no", "no"]
+      groups:
+        - {label: "corners", cells: [[0, 0], [0, 1], [3, 0], [3, 1]]}
+        - {label: "centre", cells: [[1, 1], [1, 2]]}
+
+  - t: figure
+    tier: spine
+    kind: matrix
+    cap: "matrix — a 2×2 identity, with a label"
+    spec:
+      label: "I (2×2)"
+      rows:
+        - ["1", "0"]
+        - ["0", "1"]
+
+  - t: figure
+    tier: depth
+    kind: svg
+    cap: "svg — a hand-drawn seam between the two loops; the escape hatch draws exactly the body given, so it also carries its own arrowhead and font sizes"
+    spec:
+      viewBox: "0 0 320 130"
+      body: >-
+        <defs><marker id="demoArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker></defs>
+        <circle cx="70" cy="74" r="34" fill="none" stroke="var(--hi)" stroke-width="2"/>
+        <text x="70" y="78" text-anchor="middle" font-size="12" fill="var(--ink-2)">Loop A</text>
+        <circle cx="250" cy="74" r="34" fill="none" stroke="var(--lo)" stroke-width="2"/>
+        <text x="250" y="78" text-anchor="middle" font-size="12" fill="var(--ink-2)">Loop B</text>
+        <path d="M106 74 L210 74" stroke="var(--ink-3)" stroke-width="1.6" marker-end="url(#demoArrow)"/>
+        <text x="160" y="52" text-anchor="middle" font-size="11" fill="var(--ink-3)">confident miss</text>
+
+  - t: trap
+    tier: spine
+    source: docs/create_course.md §16
+    label: The escape hatch is not the first move
+    h: |-
+      <p>Reaching for <code>svg</code> or a custom <code>blocks.js</code> before checking the built-ins is how a study aid turns into a drawing project. Six of the seven real courses use no custom code at all.</p>
+
+quiz:
+  - type: Justify a figure choice
+    concept: tier
+    q: |-
+      You want a 4×4 map with two overlapping highlighted regions and an index in each cell. Which kind, and could a table do it?
+    a: |-
+      grid. A plain table has no concept of highlighted cell groups or a per-cell binary index, so it would need manual markup in every cell — which is what grid exists to avoid.
+    why: |-
+      <p>grid takes the groups and the index as data and renders the decoration itself. The table block is for tabular values without that structure.</p>
+    why_prompt: What does grid take as data that a table would force you to hand-write per cell?
+    verified: 2026-09-02
+
+  - type: Decide whether to use svg
+    concept: tier
+    q: |-
+      An author wants a bracketed 3×3 matrix of symbols. Reach for svg?
+    a: |-
+      No. That is exactly the matrix kind. svg is only for shapes none of the nine declarative kinds cover.
+    why: |-
+      <p>The escape hatch trades away theme-awareness, validation, and future maintainability. Using it for something a built-in already does is a strict loss.</p>
+    why_prompt: What three things do you give up by dropping to raw svg?
+    verified: 2026-09-02

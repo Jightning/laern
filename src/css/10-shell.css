@@ -1,0 +1,128 @@
+/* 10-shell — Page frame: sidebar, main column, toolbar, mobile drawer. */
+
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);gap:0;min-height:100vh}
+/* the library has no course, so it has no sidebar — without this the main
+   column lands in the reserved 308px track and the picker renders in a strip */
+.shell.solo{grid-template-columns:minmax(0,1fr)}
+.sidebar{
+  /* align-self matters: a grid item stretches to the row by default, and a
+     sticky box that is already as tall as its container never moves */
+  position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+  background:var(--surface);border-right:1px solid var(--rule);
+  padding:22px 0 40px;
+}
+main{padding:0 0 40px;min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:30;display:flex;flex-wrap:nowrap;align-items:center;gap:14px;
+  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-2);
+  /* The bar spans the full width for its ground and its rule, but its contents
+     line up with the reading column underneath: the breadcrumb starts where the
+     heading starts. They were 71px apart, which is most visible on the pages
+     where the crumb and the H1 are the same word. */
+  padding-block:10px;
+  padding-inline:max(var(--wrap-pad), calc((100% - var(--wrap-max)) / 2 + var(--wrap-pad)));
+}
+/* How far a scrolled-to heading has to start below the top of the viewport to
+   clear this bar. Named here, beside the bar, because the two have to move
+   together: the offset lived in another file as a bare 60px while the bar was
+   142px tall on a phone, so every subsection arrived hidden underneath it. */
+/* --wrap-pad is the reading gutter, and the toolbar takes it too, so the
+   breadcrumb starts exactly where the prose below it does. The two were set
+   separately before — 22px against 24px, in two different blocks of the
+   responsive sheet — so which won depended on file order rather than intent. */
+:root{--scroll-clear:60px;--wrap-pad:40px;
+       --wrap-max:calc(var(--measure) + var(--margin-rail) + 8rem)}
+/* The secondary actions are grouped so one breakpoint can move them together,
+   but the group must not become a single flex item here — that would collapse
+   the toolbar's gap between the three buttons it holds. `display:contents`
+   keeps them direct children of the toolbar; the mobile rule replaces it with
+   `display:none`, which hides the subtree either way. */
+.tb-sec{display:contents}
+/* The crumb yields first, everywhere, because it is the only thing here that
+   is not a control and the only thing that repeats what the page already says
+   in its heading. It used to be `flex:1 1 8rem`, which is a 128px floor it
+   would not go below — so instead of truncating it pushed a control onto a
+   second row, and the toolbar was two rows tall on every laptop narrower than
+   1425px. Shrinking to fit costs a few clipped characters; wrapping costs
+   19px of sticky chrome for the whole session. */
+/* Two things pull against each other here. The box has to clip, or a squeezed
+   crumb spills its root link over the controls beside it — at 390px with a long
+   trail it did. But a clipped box also clips the pseudo-element that makes that
+   small link tappable, down to the 19px of the text itself. Giving the line a
+   real 32px height satisfies both: the hit area fits inside the box, and the
+   overflow that gets cut is the deep end of the trail, which is what should
+   yield first. */
+.crumb{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);letter-spacing:.03em;
+  min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;
+  display:flex;align-items:center;gap:.5em;min-height:32px}
+.crumb b{color:var(--ink-2);font-weight:600}
+/* The trail's root. It yields last, not first: the crumb truncates from the
+   right, so the way home survives every width the deeper labels do not.
+   Breadcrumb type is small, so the target is a pseudo-element rather than
+   padding — the text stays on the bar's one row and the hit area does not. */
+.crumb-home{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4em;
+  position:relative;color:var(--ink-3);text-decoration:none}
+.crumb-home::after{content:"";position:absolute;left:0;right:0;top:50%;
+  height:32px;transform:translateY(-50%)}
+.crumb-home:hover{color:var(--hi-ink)}
+.crumb-sep{flex:0 0 auto}
+.crumb>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.spacer{flex:1}
+/* A flex line, not a text line. Two of these carry an icon or a bold count
+   beside a word, and as inline content the icon sat on the text baseline —
+   1.5px above the button's centre and flush against the first letter, with no
+   space between them. Centring and an explicit gap put both cases right, and
+   the gap has to be declared because a flex container drops the whitespace
+   text node that used to separate them. */
+.tbtn{
+  font-family:var(--mono);font-size:.70rem;letter-spacing:.06em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule);color:var(--ink-2);
+  padding:5px 11px;border-radius:5px;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;justify-content:center;gap:.45em;
+}
+.tbtn:hover{border-color:var(--hi);color:var(--hi-ink)}
+/* Home is a link, not a button — it goes somewhere, and a keyboard reader gets
+   the right role and the browser's own open-in-new-tab. Styled as a .tbtn so
+   the toolbar reads as one row of controls rather than a button bar with a
+   stray underlined word in it. */
+a.tbtn{text-decoration:none}
+/* 600px column + 32px gap + 262px rail, plus breathing room — all rem, so it
+   tracks the reader's text size. Content zoom scales this column alone: the
+   sidebar and toolbar are a fixed cost and magnifying them takes space from
+   the material. */
+.wrap{
+  max-width:var(--wrap-max);
+  margin:0 auto;padding:0 var(--wrap-pad);zoom:var(--zoom,1);
+}
+.mobnav{display:none}
+.view[hidden],.sec-body[hidden]{display:none}
+
+/* The toolbar must never push a control off-screen, and the breadcrumb yields
+   first because it is the only non-interactive item here.
+ *
+ * That was the stated intent and the layout did the opposite. A wrapping flex
+ * container wraps *before* it shrinks: with `flex-wrap:wrap` the browser moved
+ * a button onto a second row rather than narrowing the crumb, so the bar was
+ * two rows on every laptop below 1425px — 1280 and 1366 included. Nowrap is
+ * what makes the crumb actually yield, and nothing can be pushed off-screen
+ * because the crumb absorbs the whole deficit before any control moves. The
+ * `nowrap` that makes that true is on the .topbar rule above. */
+.topbar .tbtn{flex:0 0 auto}
+
+/* Skip link — off-screen until focused, first thing in the tab order (T6). */
+.skip{
+  position:fixed;top:.6rem;left:.6rem;z-index:120;
+  transform:translateY(-250%);
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--hi);border-radius:6px;
+  padding:.5rem .95rem;text-decoration:none;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;
+  box-shadow:0 6px 20px rgba(8,11,16,.16);
+  transition:transform .12s ease;
+}
+.skip:focus{transform:none}
+#content:focus{outline:none}
+
+
+.zoomchip{font-variant-numeric:tabular-nums;border-color:var(--hi);color:var(--hi-ink)}

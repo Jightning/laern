@@ -1,0 +1,54 @@
+/* 62-notes — the learner's own writing, living in the margin channel.
+ *
+ * Deliberately unlike course content: no card, a hand-annotation accent, so it
+ * never reads as something the material said. Collapsed to a marker by default
+ * once written — an expanded note competes with the lesson for attention, which
+ * coherence forbids, so it shows on demand. */
+
+.notes{margin:0}
+
+/* the empty affordance stays quiet until the row is hovered or focused,
+   so 90-odd "+ note" buttons do not become page furniture */
+.notes.empty{opacity:0;transition:opacity .12s ease}
+.brow:hover .notes.empty,
+.brow:focus-within .notes.empty{opacity:1}
+@media (hover:none){ .notes.empty{opacity:1} }
+
+.note-add{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;
+  background:none;border:1px dashed var(--rule);border-radius:6px;
+  color:var(--ink-3);padding:4px 9px;cursor:pointer;
+}
+.note-add:hover{border-color:var(--dc);color:var(--dc-ink);border-style:solid}
+
+/* written but collapsed */
+.note-marker{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.03em;
+  background:none;border:0;padding:2px 0;cursor:pointer;color:var(--dc-ink);
+}
+.note-marker:hover{text-decoration:underline}
+.note-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--dc);flex:none;
+}
+
+/* expanded */
+.notes.open{border-left:2px solid var(--dc);padding:2px 0 2px 11px}
+.note-head{display:flex;align-items:baseline;gap:9px;margin-bottom:5px;flex-wrap:wrap}
+.note-eyebrow{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dc-ink);
+}
+.note-edit{
+  font-family:var(--mono);font-size:.62rem;background:none;border:0;
+  color:var(--ink-3);cursor:pointer;padding:0;text-decoration:underline;
+}
+.note-edit:hover{color:var(--dc-ink)}
+
+.note-body{margin:0;font-size:.84rem;color:var(--ink-2);white-space:pre-wrap;line-height:1.55}
+.note-area{
+  width:100%;font:inherit;font-size:.84rem;line-height:1.55;color:var(--ink);
+  background:var(--surface);border:1px solid var(--rule);border-radius:7px;
+  padding:8px 10px;resize:vertical;
+}
+.note-area:focus{outline:2px solid var(--dc);outline-offset:1px}

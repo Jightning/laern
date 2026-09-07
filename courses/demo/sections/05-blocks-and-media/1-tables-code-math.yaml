@@ -1,0 +1,86 @@
+title: Tables and code
+blocks:
+  - t: p
+    tier: spine
+    source: docs/architecture.md §3
+    h: |-
+      A table is a table, not a special block type. Three switches change how it renders: <code>mono</code> for fixed-width centred cells that pick up the course's <code>valueStyles</code>, <code>map</code> for a per-block value-to-class map, and <code>split</code> for a ruled separator column.
+
+  - t: def
+    tier: spine
+    source: docs/architecture.md §3
+    term: Configuration, not code
+    label: Definition
+    h: |-
+      <p>Subject-specific rendering is data. Cell colouring is <code>valueStyles</code>, code highlighting is <code>syntax</code> (a comment marker, keywords, and regex <code>patterns</code>), extra styling is <code>styles</code>. The build prints "no code" when a subject needs none of the <code>blocks.js</code> escape hatch.</p>
+      <p>This is <c k="non-redundancy">non-redundancy</c> applied to the engine: one generic renderer per block type, configured per course, rather than one renderer written per subject. The tier split in <a href="#s3-2">§2.1</a> is the same idea for reading paths.</p>
+
+  - t: table
+    tier: spine
+    cap: "plain table — no mono, no colouring"
+    head: [block type, boxed, feeds the primer]
+    rows:
+      - ["def", "yes", "yes — via its term"]
+      - ["key", "yes", "no"]
+      - ["note", "ruled, not boxed", "no"]
+
+  - t: table
+    tier: spine
+    mono: true
+    split: 2
+    cap: "mono table — centred cells, course valueStyles applied, a rule after column 2"
+    head: [feature, in spine, in depth, in apply]
+    rows:
+      - [definition, yes, "no", "no"]
+      - [derivation, "no", yes, "no"]
+      - [second instance, "no", "no", yes]
+      - [exam-testable, yes, "no", auto]
+
+  - t: table
+    tier: depth
+    map: {req: v-y, opt: v-a, gen: v-n}
+    cap: "map table — a value-to-class map declared on the block itself"
+    head: [material file, status]
+    rows:
+      - ["expectations.md", req]
+      - ["syllabus.md", opt]
+      - ["problems.md", gen]
+
+  - t: code
+    tier: spine
+    lang: yaml
+    src: |-
+      # a subsection is data, highlighted by course.yaml syntax config
+      tier: spine            # one of spine, depth, apply
+      concept: "tier"        # resolves to concepts/tier.yaml
+      review: true
+      see_also: §3.2         # matched by a custom regex pattern
+
+  - t: p
+    tier: depth
+    source: src/blocks/index.js
+    h: |-
+      The highlighter is regex over an escaped string: the comment marker, then <code>\b(keyword|…)\b</code>, then each course pattern, then string literals unless <code>strings: false</code>. A malformed pattern is caught and skipped rather than breaking the page.
+
+quiz:
+  - type: Choose the table mode
+    concept: tier
+    q: |-
+      You want a truth table whose 0s and 1s are coloured the same way everywhere in the course. Which table switch?
+    a: |-
+      mono. It applies the course-level valueStyles, so every truth table in the course colours values identically.
+    why: |-
+      <p><code>map</code> would work but is per-block, so the mapping would have to be repeated on every table and could drift. <code>mono</code> centralises it.</p>
+    why_prompt: What goes wrong if you use a per-block map on twenty tables instead?
+    verified: 2026-09-02
+
+  - type: Add a language
+    concept: non-redundancy
+    q: |-
+      A course needs Verilog code blocks highlighted. What is the smallest change, and where?
+    a: |-
+      Add a <code>syntax</code> block to that course's <code>course.yaml</code>: a comment marker, a keyword list, and any regex patterns. No renderer, no code.
+    why: |-
+      <p>Highlighting is configuration consumed by one generic highlighter. Writing a Verilog renderer would be new code for a job the data already does.</p>
+    why_prompt: Which file changes, and does any .js file change?
+    verified: 2026-09-02

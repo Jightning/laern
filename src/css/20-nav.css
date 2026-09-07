@@ -1,0 +1,74 @@
+/* 20-nav — Sidebar navigation: brand, top-level links, section rail. */
+
+.brand{padding:0 20px 18px;border-bottom:1px solid var(--rule-2);margin-bottom:6px}
+.brand .code{
+  font-family:var(--mono);font-size:1.30rem;font-weight:700;
+  letter-spacing:-.02em;display:block;
+}
+.brand .name{font-size:.80rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.4}
+/* Institution and textbook: proper nouns, and caps threw away the casing
+   that identifies them — "Edwards, Penney & Calvis 6e" is information, and
+   "EDWARDS, PENNEY & CALVIS 6E" is the same string with that stripped out. */
+.brand .meta{
+  font-family:var(--mono);font-size:.68rem;color:var(--ink-3);
+  margin-top:9px;letter-spacing:.02em;
+}
+.rail{position:relative;padding:10px 16px 0 0}
+.rail::before{
+  content:"";position:absolute;left:var(--rail);top:0;bottom:0;width:1px;
+  background:var(--rule-2);
+}
+.sec{margin:0 0 2px}
+/* Baseline, not top: the number is mono at .66rem and the title serif at
+   .855rem, so aligning their boxes leaves them visibly off each other. */
+.sec-btn{text-decoration:none;
+  display:grid;grid-template-columns:var(--rail) 1fr;align-items:baseline;
+  width:100%;background:none;border:0;padding:7px 0;cursor:pointer;
+  text-align:left;color:var(--ink-2);font:inherit;
+}
+.sec-btn:hover{color:var(--ink)}
+/* The number sits in the rail gutter and the title beside it, both on the same
+   first baseline. An earlier edit left this rule attached to a dangling
+   `.sec-btn:hover`, so the number only took its layout while hovered and every
+   row below it jumped — motion that carried no information. */
+.sec-num{
+  font-family:var(--mono);font-size:.66rem;color:var(--ink-3);
+  letter-spacing:.05em;line-height:1.35;
+}
+.sec.active .sec-num{color:var(--hi-ink)}
+.sec-title{font-size:.855rem;line-height:1.35;padding:0 6px 0 .8rem;font-weight:500}
+.sec.active .sec-title{color:var(--ink);font-weight:640}
+.subs{display:none;margin:2px 0 8px;padding:0 0 0 var(--rail);list-style:none}
+.sec.open .subs{display:block}
+.subs a{
+  display:block;padding:4px 8px 4px 12px;font-size:.79rem;line-height:1.4;
+  color:var(--ink-3);text-decoration:none;border-left:1px solid var(--rule-2);
+}
+.subs a:hover{color:var(--ink);background:var(--surface-2)}
+.subs a.cur{color:var(--hi-ink);border-left-color:var(--hi);font-weight:600}
+.navtop{padding:0 16px 12px;margin-bottom:4px;border-bottom:1px solid var(--rule-2)}
+.navtop a{
+  display:block;padding:6px 8px;border-radius:6px;text-decoration:none;
+  font-size:.82rem;color:var(--ink-2);
+}
+.navtop a:hover{background:var(--surface-2);color:var(--ink)}
+.navtop a.cur{color:var(--hi-ink);font-weight:640}
+.navtop a .k{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);margin-right:7px}
+.backlib{
+  display:block;font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);text-decoration:none;margin-bottom:9px;
+}
+.backlib::before{content:"← ";}
+.backlib:hover{color:var(--hi-ink)}
+.backlib[hidden]{display:none}
+
+/* section state, carried by the number rather than by a glyph */
+/* the number sits against the rule with an even gap on both sides of it */
+.cyc{position:relative;display:flex;align-items:baseline;justify-content:flex-end;
+  min-height:1.4rem;padding-right:.8rem}
+.sec.active .sec-btn{position:relative;background:color-mix(in srgb,var(--hi) 8%,transparent)}
+.sec.active .sec-btn::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--hi);border-radius:1px;
+}
+.cyc.is-seen .sec-num{color:var(--ink-2)}

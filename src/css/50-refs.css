@@ -1,0 +1,116 @@
+/* 50-refs — Reading rows and margin reference cards. */
+
+c,.cref{
+  color:var(--ink);border-bottom:1px dashed var(--hi);cursor:pointer;
+  font-style:normal;text-decoration:none;
+}
+c:hover,.cref:hover{color:var(--hi-ink)}
+.card{
+  position:absolute;z-index:80;max-width:396px;background:var(--surface);
+  border:1px solid var(--rule);border-radius:9px;padding:14px 16px;
+  box-shadow:0 10px 34px rgba(10,14,22,.17);font-size:.86rem;line-height:1.58;
+  display:none;
+}
+.card.on{display:block}
+.card h4{font-family:var(--mono);font-size:.80rem;margin:0 0 6px;letter-spacing:-.01em}
+.card p{margin:0 0 8px}
+.card p:last-child{margin:0}
+.card .src{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);
+  margin-top:9px;display:block;border-top:1px solid var(--rule-2);padding-top:8px}
+.refby{margin:18px 0 0;padding:11px 14px;border:1px dashed var(--rule);
+  border-radius:8px;background:var(--surface-2);font-size:.82rem}
+.refby .rl{font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px}
+.refby a{margin-right:12px;white-space:nowrap}
+.pill{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:90;
+  display:none;align-items:center;gap:10px;background:var(--surface);
+  border:1px solid var(--hi);border-radius:22px;padding:8px 16px;
+  box-shadow:0 8px 28px rgba(10,14,22,.20);cursor:pointer;font:inherit;
+  font-size:.84rem;color:var(--ink);max-width:calc(100vw - 40px);
+}
+.pill.on{display:flex}
+.pill .ar{color:var(--hi-ink);font-family:var(--mono)}
+.pill .pd{font-family:var(--mono);font-size:.66rem;color:var(--ink-3)}
+.pill span.lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .more{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:.70rem;color:var(--hi-ink)}
+/* A wrapping flex row rather than a grid: when the viewport or the reader's
+   text size leaves too little room, the margin channel wraps below instead of
+   squeezing the reading column. No breakpoint can know the text size, so this
+   is the only layout that keeps the measure correct at every setting. */
+.brow{display:flex;flex-wrap:wrap;column-gap:2rem;row-gap:1rem;align-items:flex-start;
+  --row-gap:var(--sp-2);margin-top:var(--row-gap)}
+.bmain{flex:1 1 34rem;max-width:var(--measure);min-width:0}
+.bside{flex:1 1 13rem;max-width:var(--margin-rail);min-width:0;
+  display:flex;flex-direction:column;gap:9px}
+.bmain>*:last-child{margin-bottom:0}
+
+/* The leading gap belongs to the ROW, not to the block inside it.
+   A note renders in the margin channel beside its block, and the two only line
+   up if they start at the same y — a block carrying its own top margin pushes
+   its content down while the note stays put, so the note reads as floating
+   above the thing it annotates. The row therefore owns all vertical spacing
+   and the blocks inside it own none, which keeps the spacing rhythm (P2.10)
+   while making the alignment exact. */
+/* .bhtml is the wrapper around a block's injected HTML. Naming it matters:
+   `.bmain > div > *` also matched the quiz list and flattened the gaps
+   between questions. */
+.brow>.bmain>*,
+.brow>.bmain>.bhtml>*{margin-block:0}
+.brow:first-child{margin-top:0}
+.brow:has(.def),.brow:has(.ex),
+.brow:has(.tscroll),.brow:has(.figure),.brow:has(.imgblock),
+.brow:has(pre),.brow:has(.codewrap){--row-gap:var(--sp-3)}
+.brow:has(h3){--row-gap:var(--sp-4)}
+/* A trap or a note hugs what it qualifies only when that is a sentence. After a
+   card it would read as a rendering fault rather than as an interjection, so it
+   takes the ordinary beat there. */
+.brow:has(>.bmain>div>p)+.brow:has(.trap),
+.brow:has(>.bmain>div>p)+.brow:has(.note){--row-gap:var(--sp-1)}
+/* Anything following a card needs the wider beat: a card has a visible edge,
+   so the same gap reads tighter after one than after a paragraph. */
+.brow:has(.def)+.brow,.brow:has(.figure)+.brow,.brow:has(.tscroll)+.brow{--row-gap:var(--sp-3)}
+.mnote{
+  border:1px solid var(--rule);border-left:2px solid var(--lo);border-radius:8px;
+  background:var(--surface);padding:11px 13px;font-size:.79rem;line-height:1.5;
+  transition:border-color .13s ease,box-shadow .13s ease;
+}
+.mnote.is-c{border-left-color:var(--hi)}
+.mnote.hot{border-color:var(--lo);box-shadow:0 3px 14px rgba(20,30,50,.10)}
+.mnote.is-c.hot{border-color:var(--hi)}
+.mn-k{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--lo-ink);display:block;margin-bottom:4px;
+}
+.mnote.is-c .mn-k{color:var(--hi-ink)}
+.mnote h5{font-size:.83rem;font-weight:660;margin:0 0 5px;line-height:1.35;letter-spacing:-.005em}
+.mnote p{margin:0 0 7px;color:var(--ink-2);font-size:.765rem;line-height:1.5}
+.mn-go{font-family:var(--mono);font-size:.68rem;color:var(--lo-ink);text-decoration:none;
+  border-bottom:1px solid transparent}
+.mnote.is-c .mn-go{color:var(--hi-ink)}
+.mn-go:hover{border-bottom-color:currentColor}
+.mn-more{font-family:var(--mono);font-size:.66rem;color:var(--ink-3)}
+.mnote.is-x{border-left-color:var(--hz)}
+.mn-chips{display:flex;flex-wrap:wrap;gap:5px}
+.mn-chip{
+  font-family:var(--mono);font-size:.66rem;color:var(--lo-ink);text-decoration:none;
+  border:1px solid var(--rule);border-radius:4px;padding:1px 6px;
+}
+.mn-chip:hover{border-color:var(--lo)}
+c.hot,.cref.hot{background:color-mix(in srgb,var(--hi) 13%,transparent);color:var(--hi-ink)}
+.builds{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:7px;margin:14px 0 0;
+  font-size:.79rem;
+}
+.builds .bl{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);margin-right:2px;
+}
+.builds a{
+  font-family:var(--mono);font-size:.72rem;text-decoration:none;color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:20px;padding:2px 9px;white-space:nowrap;
+}
+.builds a:hover{border-color:var(--lo);color:var(--lo-ink)}
+.mnote.is-f{border-left-color:var(--hz)}
+.mnote.is-f .mn-k{color:var(--ink-3)}
+.mnote.is-f .mn-go{color:var(--ink-2);font-size:.72rem}

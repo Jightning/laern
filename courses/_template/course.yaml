@@ -1,0 +1,45 @@
+# Every field here is data. Adding a subject requires no code.
+code: XX 00000
+title: Course Title
+tagline: One sentence describing what this course covers and in what order.
+meta: Institution · Textbook
+
+# Accent rotation in degrees (0-359). Rotates the whole palette at once;
+# lightness stays fixed, so contrast holds. `npm run new` fills this in with
+# the angle furthest from every course you already have, so two subjects are
+# never the same colour; change it only if you want a particular one.
+theme:
+  hue: 0
+
+# Learner state: spaced review, mastery, confidence tracking (localStorage).
+# Set enabled:false for a purely stateless reference site — which also gives up
+# the review loop, so only do it for a stateless reference.
+state:
+  enabled: true
+
+# What fraction of each audit population this course tolerates, checked by
+# `npm run audit`. Absent means 1, meaning report only. Lower each one as its
+# pass lands and the course can never regress past what it has reached.
+audit:
+  unsourced: 1      # claims (def/key/trap) whose source: is absent or ungrounded
+  unverified: 1     # answers with no verified: re-derivation date
+  unprompted: 1     # questions with no why_prompt
+  unrouted: 1       # questions that resolve to no concept in the drill bank
+
+# Optional chips shown on the start page.
+legend: []
+
+# Optional: how table/grid cell values are coloured. Keys are cell contents,
+# values are CSS class names you define in `styles` below.
+valueStyles: {}
+
+# Optional: extra CSS for this subject. Plain data, injected at load.
+styles: ""
+
+# Optional: syntax highlighting for `code` blocks. No renderer needed.
+# syntax:
+#   comment: "#"
+#   keywords: [def, return, if, else, for, while, import]
+#   patterns:
+#     - {re: "\\b\\d+\\b", cls: tok-n}
+#   strings: true

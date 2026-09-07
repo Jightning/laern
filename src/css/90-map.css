@@ -1,0 +1,27 @@
+/* 90-map — Dependency map. */
+
+.mapwrap{margin:var(--sp-3) 0 var(--sp-3);padding:22px 10px}
+.fx-node{cursor:pointer}
+.fx-node:hover .fx-n{stroke-width:2.6}
+.maplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.maplist a{text-decoration:none;color:var(--ink-2);font-size:.81rem;padding:6px 9px;
+  border-radius:6px;border:1px solid transparent;overflow-wrap:anywhere}
+.maplist a:hover{border-color:var(--rule);color:var(--ink)}
+.maplist b{font-family:var(--mono);color:var(--hi-ink);margin-right:7px}
+
+/* the map needs room the reading column cannot give it */
+.chub.mapview{max-width:none}
+
+/* The section you arrived from, ringed so "where this sits" answers itself. */
+.fx-here{fill:none;stroke:var(--hi);stroke-width:2}
+.fx-node.is-here .fx-nl{font-weight:700}
+.maphere{font-family:var(--mono);font-size:.72rem;color:var(--hi-ink);
+  margin:0 0 var(--sp-2)}
+.maplist a.is-here{border-color:var(--hi);color:var(--ink)}
+
+/* Mastery is a stroke pattern first and a colour second, so the map still
+   reads without colour vision (WCAG 1.4.1). The state is in each node's
+   tooltip as well. */
+.fx-node.is-not-started .fx-n{stroke-dasharray:3 3}
+.fx-node.is-started .fx-n{stroke-dasharray:none}
+.fx-node.is-mastered .fx-n{stroke-dasharray:none;stroke-width:2.6}

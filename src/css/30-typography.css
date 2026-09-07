@@ -1,0 +1,45 @@
+/* 30-typography — Section and subsection headings and rhythm. */
+
+.eyebrow{
+  font-family:var(--mono);font-size:.70rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--hi-ink);display:block;margin-bottom:9px;
+}
+.sub{padding:var(--sp-4) 0 0;scroll-margin-top:var(--scroll-clear)}
+/* Subsections run 2000px+, so the heading sticks while you read one. It keeps
+   "where am I" answered without scrolling back (orientation / signaling). */
+.sub h3{
+  position:sticky;top:0;z-index:4;
+  font-size:1.20rem;font-weight:680;letter-spacing:-.01em;
+  display:flex;align-items:baseline;gap:10px;
+  background:var(--ground);
+  padding:10px 0 9px;margin:0 0 10px;
+  box-shadow:0 1px 0 var(--rule-2);
+}
+.sub h3 .sid{font-family:var(--mono);font-size:.76rem;color:var(--ink-3);font-weight:500}
+.sub p{margin:0 0 var(--sp-2)}
+.sub>*:last-child{margin-bottom:0}
+.sub p,.def p,.key p,.trap p,.ex p,.note p{max-width:var(--measure)}
+section.sec-body{padding:3.5rem 0 0;scroll-margin-top:var(--scroll-clear)}
+
+/* section headers — moved here from 20-nav.css, they are content not navigation */
+.sec-head{margin-bottom:8px}
+.sec-body h2{
+  font-family:var(--mono);font-size:1.72rem;font-weight:700;letter-spacing:-.03em;
+  line-height:1.15;margin:0 0 12px;
+}
+.sec-blurb{color:var(--ink-2);margin:0 0 4px;max-width:var(--measure)}
+.sec-rule{height:1px;background:var(--rule);margin:var(--sp-3) 0 0}
+
+/* a quiet way out to the dependency map, asked from where the question arises */
+.sec-where{
+  display:inline-block;margin-top:var(--sp-2);
+  font-family:var(--mono);font-size:.70rem;letter-spacing:.04em;
+  color:var(--ink-3);text-decoration:none;
+  border-bottom:1px solid var(--rule);
+}
+.sec-where:hover{color:var(--hi-ink);border-bottom-color:var(--hi)}
+
+/* Section furniture is allowed to run a little wider than the reading measure —
+   a heading is scanned, not read line by line — but it is still rem, so it
+   tracks the reader's text size like everything else. */
+.sec-head,.sec-rule,.pager,.sub>h3,.start,.chub,.cdet{max-width:44rem}

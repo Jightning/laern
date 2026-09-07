@@ -1,0 +1,14 @@
+# Static hosting only. There is deliberately no Function here.
+#
+# Pages serves static assets with unlimited requests and unlimited bandwidth, on
+# a quota separate from Workers. A Pages Function would instead draw on the
+# account-wide 100,000 Workers requests/day — shared with every other project —
+# and every unauthenticated request would count against it before being
+# rejected. Anyone can find this hostname in Certificate Transparency logs, so
+# that endpoint was a way for a stranger to spend another project's quota.
+#
+# Sync therefore runs on the reader's own machine (tools/sync-server.mjs),
+# reachable only inside their private network.
+name = "learn"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"

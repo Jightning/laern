@@ -1,0 +1,30 @@
+# The retention pool for one reviewed concept. The quiz covers the question
+# surface once per type; this repeats the same procedure until it is fast.
+#
+# Three items minimum, because three is the criterion count and three
+# *different* items is what stops the reader memorising one question. At least
+# two formats, at least one matching the exam format in expectations.md.
+concept: example-concept
+items:
+  - format: short-answer         # multiple-choice | short-answer | cued-recall
+                                 # | derivation | numeric
+    stem: A problem that exercises the concept, phrased as the exam would.
+    answer: The bare answer.
+    steps:
+      - "Every step the reader has to be able to reconstruct."
+      - "A step they cannot reconstruct is an assertion with numbers in it."
+    why: |-
+      <p>Why this holds, and what the tempting wrong answer gets wrong.</p>
+    verified: 2026-01-01         # the date you last re-derived it, not read it
+
+  - format: multiple-choice
+    stem: A second problem, with a surface unlike the worked example above.
+    answer: A different answer — no two items in a file may share one.
+    steps: ["Vary how the question looks; hold what kind of answer it wants."]
+    verified: 2026-01-01
+
+  - format: cued-recall
+    stem: Every specific value a key block states gets one of these.
+    answer: The constant, threshold, ordering or sign convention itself.
+    steps: ["Could the reader lose a mark forgetting this exact thing?"]
+    verified: 2026-01-01

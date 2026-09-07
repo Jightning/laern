@@ -1,0 +1,16 @@
+title: Using this site
+blurb: |-
+  Everything a reader needs, in one section. What a course is, what happens when you answer a question, how review decides what to show you, how much of a page you have to read, and where the navigation lives. The sections after this one explain why it is built this way; you can study a whole course without them.
+primer:
+  - ask: |-
+      A quiz asks you to say how confident you are <em>before</em> it will show the answer. What is that step for — grading you, or something else?
+    answer: |-
+      Something else: it measures where you are wrong about your own knowledge
+    why: |-
+      <p>The confidence is never scored. What it buys is the one number studying cannot give you by feel: which answers you were sure about and still got wrong. Those are the items to revisit first, and nothing else on the page can identify them.</p>
+  - ask: |-
+      You have read a section and answered its quiz. Nothing is due in review yet. Has something gone wrong?
+    answer: |-
+      No — review fills up from misses and from concepts you choose to drill
+    why: |-
+      <p>A concept enters the spaced schedule when you drill it from its own entry, or when you miss a question you were confident about. Reading alone does not enrol anything, so an untouched course legitimately owes nothing.</p>

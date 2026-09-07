@@ -1,0 +1,130 @@
+title: Diagrams — graph, flow, timing
+blocks:
+  - t: p
+    tier: spine
+    source: docs/create_course.md §11.1
+    h: |-
+      Three kinds carry structure rather than magnitude: <b>graph</b> for nodes and edges, <b>flow</b> for an ordered procedure, <b>timing</b> for square-wave traces. The state machine below is figure <f k="loop-machine"/>.
+
+  - t: def
+    tier: spine
+    source: docs/material_truth.md M18
+    term: Declarative figure
+    label: Definition
+    h: |-
+      <p>A figure written as a <code>spec</code> — nodes, steps, signals — and rendered by the engine. It follows the theme, stays sharp at any size, and is edited by changing data. Preferred over a supplied image wherever the content can be described as data.</p>
+
+  - t: figure
+    tier: spine
+    id: loop-machine
+    kind: graph
+    cap: "graph, circle layout — a concept's retention state, with one node ringed as \"here\""
+    spec:
+      layout: circle
+      nodes:
+        - {id: new, label: new, title: not yet seen, state: new, accent: 3}
+        - {id: learning, label: learning, title: below the criterion count, state: learning, accent: 2}
+        - {id: criterion, label: criterion, here: true, state: criterion, accent: 1}
+        - {id: durable, label: durable, note: 3 spaced relearnings, state: durable, accent: 0}
+      edges:
+        - {from: new, to: learning, label: start}
+        - {from: learning, to: criterion, label: 3 items}
+        - {from: criterion, to: durable, label: "×3"}
+        - {from: durable, to: learning, label: miss, curve: -0.22}
+        - {from: criterion, to: criterion, self: true, label: review}
+
+  - t: figure
+    tier: depth
+    kind: graph
+    cap: "graph, layered layout — ten nodes, so it keeps an intrinsic width and the figure frame scrolls rather than shrinking; long labels wrap and the node grows to fit them"
+    spec:
+      layout: layered
+      nodes:
+        - {id: yaml, label: "course YAML"}
+        - {id: load, label: load}
+        - {id: concepts, label: concepts}
+        - {id: math, label: "render math"}
+        - {id: figures, label: "compile figure functions"}
+        - {id: validate, label: validate}
+        - {id: materials, label: "generate materials"}
+        - {id: build, label: build}
+        - {id: contrast, label: "audit contrast"}
+        - {id: page, label: "index.html", accent: 0}
+      edges:
+        - {from: yaml, to: load}
+        - {from: load, to: concepts}
+        - {from: load, to: math}
+        - {from: concepts, to: validate}
+        - {from: math, to: figures}
+        - {from: figures, to: validate}
+        - {from: validate, to: materials}
+        - {from: validate, to: build}
+        - {from: materials, to: build}
+        - {from: build, to: contrast}
+        - {from: build, to: page}
+        - {from: contrast, to: page}
+
+  - t: figure
+    tier: spine
+    kind: flow
+    cap: "flow, row direction — the authoring procedure, each step with a note"
+    spec:
+      dir: row
+      steps:
+        - {label: Calibrate, note: write expectations.md first}
+        - {label: Sequence, note: sections and blurbs, no content}
+        - {label: Spine, note: only tier-spine blocks}
+        - {label: Loops, note: quizzes, then drills}
+        - {label: Verify, note: re-derive every answer}
+
+  - t: figure
+    tier: depth
+    kind: flow
+    cap: "flow, column direction — the same phases stacked"
+    spec:
+      dir: col
+      steps:
+        - {label: Phase 1–3, note: calibrate, sequence, concepts}
+        - {label: Phase 4–6, note: spine, quizzes, drills}
+        - {label: Phase 7–8, note: depth and apply, then verify}
+
+  - t: figure
+    tier: spine
+    kind: timing
+    cap: "timing — a clock, an enable, and the gated output"
+    spec:
+      unit: 24
+      signals:
+        - {name: clk, wave: "01010101"}
+        - {name: en, wave: "00111100"}
+        - {name: out, wave: "00010100"}
+
+  - t: note
+    tier: depth
+    source: src/figures/graph.js
+    label: The other graph layouts
+    h: |-
+      <p>Besides <code>circle</code> and <code>layered</code>, a graph accepts <code>row</code> (evenly spaced on one line) and <code>manual</code> (each node carries its own <code>x</code>, <code>y</code>). Layered is the default past five nodes; it barycentre-sorts each column to cut edge crossings.</p>
+
+quiz:
+  - type: Pick the figure kind
+    concept: tier
+    q: |-
+      You need to show the order of five processing steps, each with a one-line caveat. Which figure kind, and why not graph?
+    a: |-
+      flow. A procedure is an ordered list; flow numbers the steps without a glyph and puts the caveat in a sub-line. graph would imply the steps are peers connected by meaningful edges.
+    why: |-
+      <p>graph is for structure where the edges carry information. A linear procedure's "edges" are just "next", which flow expresses as sequence.</p>
+    why_prompt: What would the edges in a graph version actually mean here?
+    verified: 2026-09-02
+
+  - type: Read a rendered figure
+    concept: two-loops
+    q: |-
+      In figure <f k="loop-machine"/>, which transition leaves the "durable" state, and what causes it?
+    a: |-
+      durable → learning, caused by a miss.
+    why: |-
+      <p>Durability is revoked by a single failed retrieval — the curved edge back to "learning". Everything else flows forward toward durable; only a miss moves backward.</p>
+    why_prompt: Which direction do all the other edges point, and what does that tell you?
+    verified: 2026-09-02

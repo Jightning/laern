@@ -1,0 +1,6 @@
+term: Retrieval practice
+body: |-
+  <p>Answering from memory rather than re-reading. It beats restudy at <m>g = 0.51</m> and no activity at <m>g = 0.93</m>, and spaced retrieval beats massed at <m>g = 0.74</m>.</p>
+  <p>This concept is not in the review set — it carries no drill file and no scheduling obligation, which is a deliberate choice recorded in <code>expectations.md</code>, not an omission.</p>
+src: Discussed in §3.1
+review: false

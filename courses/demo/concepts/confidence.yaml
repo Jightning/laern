@@ -1,0 +1,7 @@
+term: Confidence
+body: |-
+  <p>The prediction you make before an answer is reachable: will I get this right? It is never graded. It is stored beside the outcome so the two can be compared, and the comparison is the diagnostic — a miss you were sure about is a wrong belief, not a gap.</p>
+  <p>A confident miss is the one event that enrols a concept into spaced review on its own, which makes this the hinge between the two loops.</p>
+src: Defined in §1.2
+review: true
+confusable_with: [two-loops]

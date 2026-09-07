@@ -1,0 +1,37 @@
+{
+  "name": "study-sites",
+  "private": true,
+  "type": "module",
+  "description": "Cloneable study-site system: swap the material, keep the engine.",
+  "scripts": {
+    "dev": "vite",
+    "build": "node tools/build.mjs",
+    "validate": "node tools/validate.mjs",
+    "test": "node tools/test-ui.mjs",
+    "materials": "node tools/gen-materials.mjs",
+    "audit": "node tools/audit-content.mjs",
+    "shots": "node tools/test-ui.mjs --shots",
+    "new": "node tools/new-course.mjs",
+    "check": "node tools/build.mjs && node tools/pack.mjs --private && node tools/test-replay.mjs && node tools/test-sync.mjs && node tools/test-sync-courses.mjs && node tools/test-author.mjs && node tools/lint-css.mjs && node tools/validate.mjs && node tools/test-schedule.mjs && node tools/test-figures.mjs && node tools/gen-materials.mjs --check && node tools/audit-content.mjs && node tools/test-ui.mjs && node tools/audit-color.mjs && node tools/check-template.mjs",
+    "contrast": "node tools/audit-color.mjs",
+    "author": "node tools/author.mjs",
+    "deploy": "node tools/deploy.mjs",
+    "pack": "node tools/pack.mjs",
+    "unpack": "node tools/unpack.mjs",
+    "sync": "node tools/sync-server.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-serif": "^5.3.0",
+    "@preact/preset-vite": "^2.10.6",
+    "js-yaml": "^5.3.0",
+    "katex": "^0.18.4",
+    "playwright": "^1.62.1",
+    "preact": "^10.29.8",
+    "vite": "^8.2.1"
+  },
+  "dependencies": {
+    "fflate": "^0.8.3",
+    "ts-fsrs": "^5.4.2"
+  }
+}

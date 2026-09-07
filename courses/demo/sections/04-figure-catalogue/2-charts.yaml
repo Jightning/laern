@@ -1,0 +1,87 @@
+title: Charts — plot, bar, scatter
+blocks:
+  - t: p
+    tier: spine
+    source: docs/create_course.md §11.1
+    h: |-
+      Three kinds carry magnitude. <b>plot</b> draws functions or measured series against continuous axes, <b>bar</b> compares values across labelled categories, <b>scatter</b> shows how two measured quantities relate. The decay curves are figure <f k="decay"/>.
+
+  - t: def
+    tier: spine
+    source: docs/material_truth.md M17
+    term: Figure coherence
+    label: Definition
+    h: |-
+      <p>A figure must carry information the prose does not. Removing decorative or restated detail improves learning at <m>g = 0.37</m> to <m>0.41</m>; a chart that only repeats a sentence costs attention and returns nothing.</p>
+
+  - t: figure
+    tier: spine
+    id: decay
+    kind: plot
+    cap: "plot — one function series and one measured series (dashed), with explicit ranges and a legend"
+    spec:
+      xlabel: "reviews"
+      ylabel: "recall R"
+      xrange: [0, 10]
+      yrange: [0, 1]
+      ticks: 5
+      series:
+        - {label: "model e^{-t/S}", fn: "Math.exp(-x/4)"}
+        - {label: "observed", dash: true, points: [[0, 0.98], [2, 0.72], [4, 0.55], [6, 0.44], [8, 0.30], [10, 0.22]]}
+
+  - t: figure
+    tier: spine
+    kind: bar
+    cap: "bar — effect sizes, one bar accented, baseline at 0"
+    spec:
+      ylabel: "Hedges g"
+      baseline: 0
+      max: 1
+      ticks: 5
+      bars:
+        - {label: "restudy", value: 0.51}
+        - {label: "no activity", value: 0.93, accent: 0}
+        - {label: "massed", value: 0.74}
+        - {label: "self-explain", value: 0.55}
+
+  - t: figure
+    tier: depth
+    kind: scatter
+    cap: "scatter — two series with least-squares trend lines"
+    spec:
+      xlabel: "items practised"
+      ylabel: "retained at 6 weeks"
+      trend: true
+      series:
+        - {label: "spaced", points: [[3, 2], [6, 5], [9, 7], [12, 10], [15, 12]]}
+        - {label: "massed", points: [[3, 1], [6, 2], [9, 3], [12, 4], [15, 4]]}
+
+  - t: note
+    tier: depth
+    source: tools/validate.mjs
+    label: Plot functions are compiled at build time
+    h: |-
+      <p>A <code>fn</code> series is JavaScript the reader's browser evaluates. The validator parses it, runs it at sample points, and fails the build if it throws or never returns a finite value — so a broken chart is caught in the file, not on the page.</p>
+
+quiz:
+  - type: Choose plot vs bar
+    concept: tier
+    q: |-
+      You have recall measured at six review counts, plus a model curve to overlay. plot or bar?
+    a: |-
+      plot. The x-axis (review count) is continuous and you want to overlay a function on the measurements; bar is for comparing values across unrelated labelled categories.
+    why: |-
+      <p>bar cannot draw a function, and it implies the categories have no order. plot's continuous axis is exactly what a review-count sweep needs.</p>
+    why_prompt: What can plot do with the model curve that bar cannot?
+    verified: 2026-09-02
+
+  - type: Read a trend
+    concept: retrieval-practice
+    q: |-
+      In the scatter figure, the "spaced" series' trend line is steeper than "massed". What does that slope difference mean?
+    a: |-
+      Each additional practised item is retained at a higher rate under spacing than under massing — spacing converts practice into retention more efficiently.
+    why: |-
+      <p>The x-axis is items practised and the y-axis is items retained, so slope is retained-per-practised. A steeper line is a better conversion rate, which is the spacing effect.</p>
+    why_prompt: What are the units of the trend line's slope here?
+    verified: 2026-09-02

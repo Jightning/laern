@@ -1,0 +1,73 @@
+/* 70-library — Course picker. */
+
+/* Capped, and therefore centred: left-aligned it sat 82px off-centre inside a
+   wrap that has no margin rail to fill the difference. */
+.lib{padding:56px 0 0;max-width:860px;margin-inline:auto}
+/* Heading and its one action on a line together: the plus acts on the shelf,
+   so it sits with the shelf's title rather than after the last card, where two
+   rows of courses would put it below the fold. */
+.lhead{display:flex;align-items:center;gap:16px;margin:0 0 14px}
+.lib h1{font-family:var(--mono);font-size:clamp(1.9rem,4.4vw,2.7rem);font-weight:700;
+  letter-spacing:-.035em;line-height:1.07;margin:0;flex:1 1 auto;min-width:0}
+.lplus{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:.5em;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule);color:var(--ink-2);
+  border-radius:7px;padding:8px 13px;cursor:pointer;
+}
+.lplus:hover{border-color:var(--hi);color:var(--hi-ink)}
+.lplus-x{font-size:1.15rem;line-height:1}
+/* A button that looks like the prose it sits in, for the empty shelf, where
+   the only useful thing to do is the sentence itself. */
+.linkish{font:inherit;background:none;border:0;padding:0;cursor:pointer;
+  color:var(--hi-ink);border-bottom:1px solid var(--hi);}
+.lib .lede{font-size:1.02rem;color:var(--ink-2);margin:0 0 30px;max-width:60ch}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+/* Each card carries its course's --hue (set inline in Library.jsx), so the
+   accent edge is the course's own — six recognisably different cards from one
+   rule. */
+.lcard{
+  position:relative;
+  border:1px solid var(--rule);border-top:3px solid var(--hi);
+  border-radius:11px;background:var(--surface);
+  padding:16px 19px 18px;color:inherit;transition:border-color .13s ease;
+}
+.lcard:hover{border-color:var(--hi);border-top-color:var(--hi)}
+/* The whole card opens the course, but Export and Remove have to stay
+   clickable — and a <button> inside an <a> is invalid markup, not merely
+   awkward. So the link is a layer beneath the card's content and the ops sit
+   above it, which also keeps one tab stop per card rather than three. */
+.lhit{position:absolute;inset:0;z-index:0;border-radius:inherit;text-decoration:none}
+.lhit:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+/* Ops are always visible, never hover-revealed: a touch device has no hover,
+   and a control that only exists under a mouse does not exist on a phone. */
+.lops{position:relative;z-index:1;display:flex;gap:8px;margin-top:13px}
+.lop{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--surface-2);border:1px solid var(--rule);color:var(--ink-2);
+  border-radius:5px;padding:5px 10px;cursor:pointer;
+}
+.lop:hover{border-color:var(--hi);color:var(--hi-ink)}
+.lop.warn:hover{border-color:var(--wn);color:var(--wn-ink)}
+.lcard .lc{font-family:var(--mono);font-size:.72rem;color:var(--hi-ink);letter-spacing:.05em}
+.lcard h3{font-size:1.02rem;font-weight:660;margin:6px 0 7px;line-height:1.3;letter-spacing:-.01em}
+.lcard p{font-size:.82rem;color:var(--ink-3);margin:0 0 12px;line-height:1.5}
+.lcard .lstat{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:10px}
+.lbar{height:3px;background:var(--rule-2);border-radius:2px;margin-top:11px;overflow:hidden}
+.lbar i{display:block;height:100%;background:var(--hi)}
+.lempty{color:var(--ink-3);font-size:.9rem}
+
+/* Installing your own courses — the body of the Add dialog. */
+.cio-foot{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;margin-top:var(--sp-2)}
+.cio-foot label{cursor:pointer}
+.cio-msg{font:400 14px/1.5 var(--sans);margin:var(--sp-2) 0 0;color:var(--ink-3)}
+.cio-msg.bad{color:var(--wn-ink)}
+/* Bringing a dismissed bundled course back, under the install controls it is
+   the counterpart to. */
+.cio-back{margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px solid var(--rule);
+  display:flex;flex-direction:column;align-items:flex-start;gap:.5rem}
+.cio-back .cal-cap{margin:0}
+/* A standing caution about this device, not the result of an action —
+   distinct from .cio-msg so a test cannot mistake one for the other. */
+.cio-warn{font:400 14px/1.5 var(--sans);margin:var(--sp-2) 0 0;color:var(--wn-ink)}

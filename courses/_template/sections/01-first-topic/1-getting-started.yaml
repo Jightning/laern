@@ -1,0 +1,127 @@
+title: Getting started
+blocks:
+  # One block may precede the def, and only one: a concrete anchor in terms the
+  # reader already holds, or an `attempt` they cannot yet solve. The def must
+  # then retire it — generalise the anchor and name it a special case, or refer
+  # back to what the attempt tried. An anchor the def never retires leaves the
+  # reader holding an instance where they need a schema, which is the sequence
+  # that performed worst in the research this shape comes from.
+  - t: p
+    h: |-
+      Plain prose. Write HTML directly — no escaping is needed inside a literal
+      block, so quotes and apostrophes appear exactly as typed.
+
+  # `spine` is the default and the whole course: depth and apply may lean on it,
+  # never the other way round. Write `tier:` only where it is not spine — an
+  # absent tier *is* the declaration, and repeating the default on every block
+  # is noise in a file you will re-read many times.
+  # Each callout labels itself — "Definition", "Key rule", "Common mistake",
+  # "Worked example", "Note". Write `label:` only to override one, never to
+  # repeat it.
+  - t: def
+    term: A definition
+    source: Textbook ch.1.2
+    h: |-
+      <p>Definitions, key rules, traps, worked examples and notes are all the
+      same shape with a different accent. Reference a
+      <c k="example-concept">core concept</c> inline and a card appears in the
+      margin beside this very block.</p>
+
+  # `source:` is where the claim came from: a real, checkable origin, or
+  # `unverified` (a human should look it up), or `generated` (a model wrote it
+  # and a human should check whether it is even true). The last two both count
+  # against the unsourced fraction `npm run audit` reports.
+  - t: key
+    source: unverified
+    h: <p>The one thing to remember.</p>
+
+  # One or two per subsection. Five traps is zero traps — signaling is a
+  # contrast effect and it degrades with density. For a procedural subsection
+  # at least one names the specific slip: which sign, which index, which order.
+  # "Be careful" is not a trap, it is a mood.
+  - t: trap
+    source: generated
+    h: <p>The error people actually make, and why it is tempting.</p>
+
+  - t: ex
+    title: Worked example
+    h: <ol><li>First step</li><li>Second step</li><li>Result</li></ol>
+
+  - t: table
+    cap: A table
+    head: [Column, Meaning]
+    rows:
+      - [value, what it means]
+
+  - t: figure
+    kind: graph
+    cap: A diagram, described as data rather than drawn
+    spec:
+      layout: circle
+      nodes:
+        - {id: A, label: A, note: start}
+        - {id: B, label: B}
+        - {id: C, label: C, accent: 0}
+      edges:
+        - {from: A, to: B, label: step}
+        - {from: B, to: C, label: step}
+        - {from: C, to: A, label: back}
+
+  # `depth` answers "why" and "what if". Nothing examinable belongs here: a
+  # depth block is a promise that collapsing it costs the reader nothing on the
+  # exam. Length is not the test; examinability is.
+  - t: note
+    tier: depth
+    h: <p>An aside that is genuinely optional.</p>
+
+  # `apply` instantiates a concept the spine already states. It never
+  # re-explains — if it restates the definition, the fix is a link. One or two
+  # per concept across the whole course.
+  - t: figure
+    tier: apply
+    kind: bar
+    cap: A chart, also described as data
+    spec:
+      ylabel: operations
+      bars:
+        - {label: linear, value: 40}
+        - {label: binary, value: 6, accent: 0}
+
+  # A photograph or scan you already have. Put the file in courses/<id>/assets/
+  # and it is embedded at build time. alt text is not optional in practice.
+  # - t: image
+  #   src: assets/example.png
+  #   alt: What the picture shows, described for someone who cannot see it
+  #   cap: Where it came from
+
+quiz:
+  # One question per distinct question type; the validator rejects duplicates.
+  # The target is coverage of the question surface, not volume — repetition for
+  # fluency belongs in drills/. Test two labels for distinctness by asking
+  # whether a reader could answer one and fail the other.
+  - type: Recall
+    concept: example-concept          # the identity a confident miss recruits
+    q: What does this course examine first?
+    a: The first topic
+    why: <p>Explain the reasoning, and why the tempting wrong answer is tempting.</p>
+    why_prompt: What told you it was that one and not the other?
+    verified: 2026-01-01              # the date you last re-derived this answer
+
+  - type: Apply
+    concept: example-concept
+    q: Given a situation, what do you do?
+    a: The procedure
+    why: <p>Show the steps so the answer is reusable.</p>
+    why_prompt: Which step is the one that decides the result?
+    verified: 2026-01-01
+
+  # A procedural subsection also carries an error-spotting item: correct
+  # procedure first in an `ex` block, then a worked solution with one error the
+  # reader has to find, explain and correct.
+  # - type: Spot the error
+  #   concept: example-concept
+  #   q: <p>A student does this. Which step is wrong, and what is correct?</p>
+  #   a: Step 2, because …
+  #   why: <p>Why that read is tempting.</p>
+  #   why_prompt: Which quantity actually changed between those steps?
+  #   verified: 2026-01-01

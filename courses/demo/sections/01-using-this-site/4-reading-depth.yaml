@@ -1,0 +1,80 @@
+title: How much of a page you have to read
+blocks:
+  - t: p
+    tier: spine
+    source: docs/code_truth.md §3d
+    h: |-
+      At the top of every section is a control marked <b>Read</b>, with three settings. It decides how much of the page renders, and it is the single most useful thing to know about this site: the same page serves a first pass before an exam and a slow pass in week two, without you reading around material you did not want.
+
+  - t: def
+    tier: spine
+    source: src/lib/tiers.js
+    term: Tier
+    label: The three kinds of block
+    h: |-
+      <p>Every block on every page declares one of three. <b>spine</b> — definition, rule, mechanism, one canonical instance; removing it breaks the argument. <b>depth</b> — why it is true, what happens at the edges; never examinable. <b>apply</b> — another instance of something the spine already said, there to build fluency.</p>
+
+  - t: key
+    tier: spine
+    source: docs/material_truth.md M25
+    label: The spine alone is a complete course
+    h: |-
+      <p>This is a promise, not a style: nothing examinable is allowed to live in a collapsible tier. A reader who stays in the <b>Spine</b> lane for an entire course has read a complete one — depth and apply may lean on the spine, never the other way round.</p>
+
+  - t: table
+    tier: spine
+    mono: true
+    cap: The three lanes, and what each renders
+    head: [lane, key, renders, use it when]
+    split: 2
+    rows:
+      - [Spine, "1", spine only, revising something you have read before]
+      - [Spine + Apply, "2", spine and worked instances, a first read]
+      - [All, "3", everything, you want the reasons]
+
+  - t: p
+    tier: spine
+    source: docs/architecture.md §3d
+    h: |-
+      A collapsed run does not vanish silently. It leaves one line saying what it holds — "2 in depth · 1 more application" — and clicking that line brings the blocks back in place, so a skipped passage is always visible as a skipped passage rather than as a hole you never knew about. This subsection is collapsible itself: switch to <b>Spine</b> and watch the note below disappear into a stub.
+
+  - t: note
+    tier: depth
+    source: docs/material_truth.md M23
+    label: Where the vocabulary shows up
+    h: |-
+      <p>These three words appear on the tier badge of a collapsed stub, in the lane control, and throughout the authoring guide. A fourth word, <b>drill</b>, belongs to the other loop entirely: it is scheduled retrieval on a concept rather than a slice of a page, and it is the subject of <a href="#s1-3">§1.3</a>.</p>
+
+  - t: ex
+    tier: apply
+    source: docs/create_course.md §7.3
+    title: One block, classified
+    h: |-
+      <ol>
+        <li>A paragraph derives a result you are expected to be able to <em>use</em> but never to reproduce.</li>
+        <li>The result is examinable, so the statement of it is spine.</li>
+        <li>The derivation is not, so it is depth — and a reader in the Spine lane loses nothing they could be tested on.</li>
+      </ol>
+
+quiz:
+  - type: Predict the lane behaviour
+    concept: tier
+    q: |-
+      A subsection has 4 spine blocks, 2 depth and 1 apply. You switch to the Spine lane. What is on the page where the other three were?
+    a: |-
+      One line reading "2 in depth · 1 more application", which expands them again in place.
+    why: |-
+      <p>The count is written out as text on purpose. A silent collapse would leave the reader unable to tell a short subsection from a filtered one.</p>
+    why_prompt: What would go wrong if the collapsed blocks left nothing behind?
+    verified: 2026-09-06
+
+  - type: Apply the spine promise
+    concept: tier
+    q: |-
+      You are revising in the Spine lane the night before an exam. Can something you will be tested on be hidden from you?
+    a: |-
+      No. Anything examinable is spine by rule, so the Spine lane is a complete course rather than a summary of one.
+    why: |-
+      <p>That is the whole basis on which collapsing is safe. If examinable material could sit in depth, the lane control would be a way to fail an exam quietly, and no reader could trust it.</p>
+    why_prompt: What would the lane control become if depth blocks could be examinable?
+    verified: 2026-09-06

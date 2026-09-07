@@ -1,0 +1,49 @@
+/* 71-modal — The library's dialogs: install a course, confirm removing one.
+ *
+ * A `<dialog>` opened with showModal(), so the browser puts it in the top layer
+ * and no ancestor's containing block can reach it. That matters here: the
+ * reading column carries `zoom`, which is a containing block for fixed
+ * descendants, and an overlay written inside it lands off-screen once the
+ * reader has zoomed. See Modal.jsx. */
+
+.modal{
+  padding:0;border:1px solid var(--rule);border-top:3px solid var(--hi);
+  border-radius:12px;background:var(--surface);color:var(--ink);
+  box-shadow:0 18px 50px rgba(0,0,0,.3);
+  width:min(34rem, calc(100vw - 48px));max-height:86vh;overflow-y:auto;
+}
+.modal.danger{border-top-color:var(--wn)}
+.modal:focus,.modal:focus-visible{outline:none}
+/* Literal rather than a token: ::backdrop is rendered in the top layer and does
+   not inherit the page's custom properties in every engine that supports it. */
+.modal::backdrop{background:rgba(8,11,16,.5)}
+.modal-in{padding:20px 22px 22px}
+.modal-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
+.modal-head h2{margin:0;font-size:1.12rem;line-height:1.3;flex:1 1 auto}
+.modal-x{
+  flex:0 0 auto;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule);color:var(--ink-2);
+  border-radius:6px;padding:6px 11px;cursor:pointer;
+}
+.modal-x:hover{border-color:var(--hi);color:var(--hi-ink)}
+.modal-body{font-size:.9rem;color:var(--ink-2);line-height:1.55}
+.modal-body p{margin:0 0 var(--sp-2)}
+/* The row a decision is made on. Reversed so the confirming button sits at the
+   right on a wide screen and at the top of the stack on a narrow one, where the
+   thumb is. */
+.modal-ops{display:flex;flex-wrap:wrap-reverse;gap:10px;justify-content:flex-end;margin-top:var(--sp-3)}
+.dbtn.warn{border-color:var(--wn);color:var(--wn-ink)}
+.dbtn.warn:hover{background:color-mix(in srgb,var(--wn) 12%,transparent)}
+
+/* On a phone a centred card with a gutter wastes the width two file controls
+   need, so the dialog docks to the bottom as a sheet — the shape the platform
+   already uses for this, and the one that puts the controls under the thumb
+   rather than under the eyes. */
+@media (max-width:40em){
+  .modal{
+    width:100vw;max-width:100vw;max-height:90vh;
+    margin:auto auto 0;border-radius:12px 12px 0 0;border-left:0;border-right:0;
+  }
+  .modal-in{padding-bottom:28px}
+}

@@ -1,0 +1,16 @@
+/* 02-scrollbars — themed, unobtrusive gutters.
+   The default bright scrollbar cut a white stripe down the sidebar. */
+
+*{scrollbar-width:thin;scrollbar-color:var(--rule) transparent}
+
+*::-webkit-scrollbar{width:9px;height:9px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{
+  background:var(--rule);border-radius:6px;
+  border:2px solid transparent;background-clip:content-box;
+}
+*::-webkit-scrollbar-thumb:hover{background:var(--ink-3);background-clip:content-box}
+*::-webkit-scrollbar-corner{background:transparent}
+
+/* the sidebar keeps its gutter reserved so content does not shift on hover */
+.sidebar{scrollbar-gutter:stable}

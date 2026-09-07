@@ -1,0 +1,19 @@
+/* 85-practice — Mixed practice. */
+
+.pcfg{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:22px 0 8px;
+  border:1px solid var(--rule);border-radius:10px;padding:14px 16px;background:var(--surface)}
+.pcfg label{font-size:.79rem;color:var(--ink-3);display:inline-flex;align-items:center;gap:7px}
+.pcfg select{font:inherit;font-size:.80rem;padding:5px 8px;border:1px solid var(--rule);
+  border-radius:6px;background:var(--surface-2);color:var(--ink);max-width:230px}
+.pchk{gap:6px}
+.pinfo{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);margin-left:auto}
+.pbar{height:3px;background:var(--rule-2);border-radius:2px;overflow:hidden;margin:26px 0 12px}
+.pbar i{display:block;height:100%;background:var(--hi);transition:width .2s ease}
+.pmeta{display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:.7rem;
+  color:var(--ink-3);margin-bottom:12px}
+.pfrom{color:var(--ink-2)}
+.pnav{margin-top:16px}
+.pdone{border:1px solid var(--rule);border-radius:10px;padding:22px;background:var(--surface);margin-top:22px}
+.pdone h3{margin:0 0 4px;font-size:1.1rem}
+.pwarn{font-size:.86rem;color:var(--ink-2);max-width:60ch;margin:6px 0 16px}
+.pempty,.shint{color:var(--ink-3);font-size:.86rem;padding:18px 2px}

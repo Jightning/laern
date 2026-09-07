@@ -1,0 +1,88 @@
+title: Answering a question
+blocks:
+  - t: attempt
+    tier: spine
+    label: Before you read this
+    h: |-
+      <p>The quiz below this text will ask how confident you are before it shows you anything, and then ask you to type why. Both cost you time. Write down what you think each one buys — then check yourself against the rest of this subsection.</p>
+
+  - t: def
+    tier: spine
+    source: docs/code_truth.md T18
+    term: Confidence
+    label: The step before the answer
+    h: |-
+      <p>Every question asks you to predict, in one tap, whether you will get it right, before the answer is reachable. The prediction is never graded. It is stored beside the outcome so the two can be compared, and the comparison is the point: <b>a wrong answer you were sure about</b> is a different problem from one you knew you were guessing at.</p>
+
+  - t: key
+    tier: spine
+    source: docs/code_truth.md T32
+    label: Then you say why
+    h: |-
+      <p>The reveal is gated behind a reason in your own words. Typing it is retrieval — you are producing the idea rather than recognising it — and recognition is what makes re-reading feel like learning when it is not. The text stays on this device; nothing reads it but you.</p>
+
+  - t: trap
+    tier: spine
+    source: docs/code_truth.md T15
+    label: Peeking costs the whole exercise
+    h: |-
+      <p>The answer is hidden not to be strict but because seeing it first replaces the one event that builds memory. If you genuinely cannot produce anything, say so with a low-confidence answer and let the miss route the concept into review — that is a better outcome than a revealed answer you nodded along to.</p>
+
+  - t: ex
+    tier: spine
+    source: docs/architecture.md §3e
+    title: What one answer sets in motion
+    h: |-
+      <ol>
+        <li>You mark <b>high confidence</b> and answer.</li>
+        <li>You get it wrong. The subsection records the question type as attempted and failed.</li>
+        <li>Because you were confident, the concept behind it is pulled into spaced review and drilled before you leave the page.</li>
+        <li>The calibration page adds one to your overconfident count — the number worth studying by.</li>
+      </ol>
+
+  - t: p
+    tier: apply
+    source: docs/architecture.md §2
+    h: |-
+      The same shape appears in mixed practice and in review: predict, answer, say why, see the result. Learning one interaction is enough for every surface in the site.
+
+  - t: note
+    tier: depth
+    source: docs/code_truth.md T18
+    label: Why the prediction is worth a tap
+    h: |-
+      <p>Confidence and correctness are different quantities, and only their <em>disagreement</em> is diagnostic. A reader who is right and knew it needs nothing; a reader who is wrong and knew it needs practice; a reader who is wrong and sure needs to be interrupted. Without the prediction, the third case is invisible and looks exactly like the second.</p>
+
+quiz:
+  - type: Interpret a confidence outcome
+    concept: confidence
+    q: |-
+      Two readers both miss the same question. One marked high confidence, the other low. Should the site treat them the same?
+    a: |-
+      No. The confident miss is recruited into spaced review and drilled straight away; the hesitant miss is left to ordinary practice.
+    why: |-
+      <p>A hesitant miss is a known gap — the reader already knows to go back. A confident miss is a belief that is wrong, and beliefs do not correct themselves by being contradicted once, which is why that case gets the extra retrieval immediately.</p>
+    why_prompt: Which of the two readers already knows they have a problem?
+    verified: 2026-09-06
+
+  - type: Explain a design rule
+    concept: confidence
+    q: |-
+      Why is the worked answer hidden until you have typed a reason?
+    a: |-
+      Because producing the idea from memory is what builds it; reading a correct answer produces recognition, which feels like knowing and is not.
+    why: |-
+      <p>The gate is cheap and the effect is large: the reason prompt is the site's single strongest lever on transferring what you learn to a question you have not seen.</p>
+    why_prompt: What is the difference between recognising an answer and producing one?
+    verified: 2026-09-06
+
+  - type: Spot the error
+    concept: confidence
+    q: |-
+      A reader decides to always mark low confidence, "to be safe". What does that cost them?
+    a: |-
+      The overconfidence count goes to zero and the recruitment seam stops firing, so the site can no longer tell them which beliefs are wrong.
+    why: |-
+        <p>The tempting reading is that confidence is a score to protect. It is an input, not a grade: understating it destroys the only signal that separates a gap you know about from one you do not.</p>
+    why_prompt: What is the confidence tap actually measuring, if not how well you are doing?
+    verified: 2026-09-06

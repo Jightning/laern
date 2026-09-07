@@ -1,0 +1,88 @@
+title: How they coexist
+blocks:
+  - t: attempt
+    tier: spine
+    label: Try it first
+    h: |-
+      <p>The two rules contradict each other on their face: completeness says write every step, non-redundancy says write each thing once. Before reading on, write how both can hold in the same course at the same time.</p>
+
+  - t: def
+    tier: spine
+    source: docs/architecture.md §1
+    term: The reference system
+    label: Definition
+    h: |-
+      <p>The set of links that let a reader reach any definition from anywhere: <code>&lt;a href="#s5-2"&gt;</code> to a subsection, <code>&lt;c k="key"&gt;</code> to a concept, <code>&lt;f k="id"/&gt;</code> to a figure. Because the definition is always one hop away, a subsection can be complete without carrying its own copy of every idea it uses.</p>
+
+  - t: ex
+    tier: spine
+    source: docs/architecture.md
+    title: One definition, two readers served
+    h: |-
+      <ol>
+        <li><a href="#s1-4">§1.4</a> defines <c k="tier">tier</c> in full.</li>
+        <li><a href="#s2-1">§2.1</a> needs the word and writes <code>&lt;c k="tier"&gt;concept&lt;/c&gt;</code>; a margin card appears beside that line.</li>
+        <li>Neither subsection restates the other. Completeness holds for both readers; non-redundancy holds for the course.</li>
+      </ol>
+
+  - t: list
+    tier: spine
+    source: docs/create_course.md §2.1
+    h: |-
+      One <code>&lt;c k="…"&gt;</code> mention produces, with no extra authoring:
+    items:
+      - a margin card beside the mention
+      - an entry in the concept hub
+      - a line in that concept's "appears in" list
+      - an edge on the dependency map
+
+  - t: list
+    tier: spine
+    ordered: true
+    source: docs/material_truth.md M14
+    h: |-
+      When a forward reference appears, the options in order are:
+    items:
+      - move the idea earlier, or
+      - promote it to a concept, or
+      - if neither fits, it was not really a forward reference
+
+  - t: p
+    tier: depth
+    source: docs/create_course.md §11.5
+    h: |-
+      Links cross course boundaries too. The theory behind a circuits result can point at <a href="#/ma26600/">the differential-equations course</a>; it renders as a plain link, because the other course's index is not built until the reader opens it.
+
+quiz:
+  - type: Resolve the apparent contradiction
+    concept: non-redundancy
+    q: |-
+      In one sentence, how does a course stay complete while explaining each idea only once?
+    a: |-
+      Every definition is reachable by a link from anywhere it is used, so a subsection can rely on an idea without carrying its own copy.
+    why: |-
+      <p>The contradiction is only apparent because "complete" does not require "self-contained". The reference system trades a second copy for a one-hop path to the first.</p>
+    why_prompt: What does "complete" require, and what does it not require?
+    verified: 2026-09-02
+
+  - type: Choose the fix for a forward reference
+    concept: non-redundancy
+    q: |-
+      §2 uses an idea first defined in §6, with no link. Give two acceptable fixes.
+    a: |-
+      Move the idea earlier so it precedes §2, or promote it to a concept and link it from both places.
+    why: |-
+      <p>An unresolvable forward reference strands the reader — the one thing the reference system exists to prevent. Restating the idea inline in §2 is not a fix; it is a non-redundancy violation.</p>
+    why_prompt: Why is "just restate it in §2" not on the list?
+    verified: 2026-09-02
+
+  - type: Count the outputs of one link
+    concept: two-loops
+    q: |-
+      Besides the margin card, name two other things the engine builds automatically from a single <code>&lt;c k="…"&gt;</code> mention.
+    a: |-
+      A concept-hub entry, an "appears in" line for that concept, and a dependency-map edge (any two).
+    why: |-
+      <p>The point of routing everything through one mention is leverage: the author writes a link, the engine writes the navigation. This is also why the two loops can share a concept identity without extra bookkeeping.</p>
+    why_prompt: Why does the author only have to write the link and not the navigation?
+    verified: 2026-09-02

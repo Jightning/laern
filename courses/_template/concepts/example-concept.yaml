@@ -1,0 +1,17 @@
+# Filename (minus extension) is the key you reference as
+#   <c k="example-concept">some phrase</c>
+term: Example concept
+body: |-
+  <p>An idea the course keeps reusing. Define it once here; every mention
+  elsewhere links back automatically and the hub lists where it appears.</p>
+src: Defined in §1.1
+
+# In the review set: this concept is meant to survive the semester, so it owes
+# drills/example-concept.yaml. Promotion to a concept and scheduling for
+# retention are separate decisions — drop this line and the concept keeps its
+# card, its hub entry and its margin cards, and simply never comes up in review.
+review: true
+
+# Only where readers genuinely mix the two up. Mixed practice pays on
+# confusable pairs and costs on unrelated ones, and both sides must declare it.
+# confusable_with: [some-other-concept]

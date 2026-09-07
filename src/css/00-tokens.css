@@ -1,0 +1,133 @@
+/* 00-tokens — Design tokens, reset and theming. Change colours here. */
+
+/* ---------------------------------------------------------------- geometry */
+:root{
+  --hue:0;                                    /* per-course accent rotation */
+  --h-hi:63; --h-lo:254; --h-dc:301; --h-hz:261; --h-wn:15;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --rail:2.375rem;   /* the number gutter in the section rail */
+
+  /* Reading geometry, in rem so it tracks the reader's font-size setting.
+     Column and type scale together, which keeps characters-per-line constant
+     at any text size (T7/T8). 37.5rem = var(--measure) at a 16px root. */
+  --measure:37.5rem;
+  --margin-rail:16.375rem;
+
+  /* Vertical rhythm, in rem so it tracks the reader's text size along with the
+     measure. Four beats, not one: the gap before a block is what says how big
+     a break it is. Uniform margins made a definition, an aside and a table all
+     read as the same beat, which is the one thing spacing is for. */
+  --sp-1:.5rem;      /* an interjection, kept against what it qualifies */
+  --sp-2:1rem;       /* the default beat between blocks                 */
+  --sp-3:1.75rem;    /* a new idea, or a digression set apart           */
+  --sp-4:2.75rem;    /* an object — table, figure, subsection opening   */
+
+  /* Ground, ink and rules are global: a course's accent rotation must not move
+     the page out from under the reader. */
+  --ground:#DFE3E9;
+  --surface:#FFFFFF;
+  --surface-2:#F4F6FA;
+  --ink:#141821;
+  --ink-2:#454C5A;
+  --ink-3:#5A616E;   /* was #6B7280: 3.75:1, failed on small text */
+  --rule:#CBD3DE;
+  --rule-2:#E7EBF2;
+}
+
+/* ----------------------------------------------------------------- palette
+   Accents are stated in OKLCH so a course can rotate the whole set by one
+   angle (--hue) and keep every contrast ratio: lightness and chroma are fixed
+   per token, only hue moves. The four base hues reproduce the original
+   hand-picked palette at --hue:0.
+        hi = logic 1 · lo = logic 0 · dc = don't care X · hz = high-Z
+        wn = warning, the one accent with a job outside the legend
+
+   `wn` is warm because a warning that is not warm does no semantic work — the
+   reader has to learn the mapping instead of arriving with it. It stops short
+   of a saturated red deliberately: red in an achievement context measurably
+   depresses performance, so this is a restrained terracotta, not an alarm.
+
+   It is also the one accent that does NOT rotate with --hue. The rotation
+   exists to tell courses apart, and a warning is not an identity: rotating it
+   makes "common mistake" olive in one course and teal in another, which is
+   exactly the learned-mapping cost the token was added to avoid.
+
+   A custom property resolves its var() references where it is *declared*, so
+   setting --hue deeper in the tree cannot re-tint tokens declared on :root.
+   Any element carrying [data-hue] therefore re-declares the palette against
+   its own angle — that is how six course cards sit on one page in six
+   accents. Ground, ink and rules stay global, so a rotation moves the accent
+   and nothing else. */
+:root,[data-hue]{
+  --hi:oklch(62% .132 calc(var(--h-hi) + var(--hue)));
+  --lo:oklch(55% .130 calc(var(--h-lo) + var(--hue)));
+  --dc:oklch(55% .114 calc(var(--h-dc) + var(--hue)));
+  --hz:oklch(64% .015 calc(var(--h-hz) + var(--hue)));
+  --wn:oklch(58% .140 var(--h-wn));
+
+  /* Small-text variants. WCAG measures luminance, which still drifts with hue
+     at a fixed OKLCH lightness, so these sit at 46% — dark enough that the
+     worst hue in the rotation clears AA rather than only the best one. */
+  --hi-ink:oklch(46% .112 calc(var(--h-hi) + var(--hue)));
+  --lo-ink:oklch(46% .116 calc(var(--h-lo) + var(--hue)));
+  --dc-ink:oklch(46% .111 calc(var(--h-dc) + var(--hue)));
+  --hz-ink:oklch(47% .018 calc(var(--h-hz) + var(--hue)));
+  --wn-ink:oklch(46% .130 var(--h-wn));
+  --focus:var(--lo);
+}
+
+/* Dark palette: the accents clear AA on a dark ground on their own, so the
+   small-text variants alias them instead of darkening. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]),
+  :root:not([data-theme="light"]) [data-hue]{
+    --hi:oklch(77% .131 calc(var(--h-hi) + var(--hue)));
+    --lo:oklch(72% .112 calc(var(--h-lo) + var(--hue)));
+    --dc:oklch(70% .112 calc(var(--h-dc) + var(--hue)));
+    --hz:oklch(62% .019 calc(var(--h-hz) + var(--hue)));
+    --wn:oklch(74% .135 var(--h-wn));
+    --hi-ink:var(--hi); --lo-ink:var(--lo); --dc-ink:var(--dc); --wn-ink:var(--wn);
+    --hz-ink:oklch(71% .018 calc(var(--h-hz) + var(--hue)));
+  }
+}
+:root[data-theme="dark"],
+:root[data-theme="dark"] [data-hue]{
+  --hi:oklch(77% .131 calc(var(--h-hi) + var(--hue)));
+  --lo:oklch(72% .112 calc(var(--h-lo) + var(--hue)));
+  --dc:oklch(70% .112 calc(var(--h-dc) + var(--hue)));
+  --hz:oklch(62% .019 calc(var(--h-hz) + var(--hue)));
+  --wn:oklch(74% .135 var(--h-wn));
+  --hi-ink:var(--hi); --lo-ink:var(--lo); --dc-ink:var(--dc); --wn-ink:var(--wn);
+  --hz-ink:oklch(71% .018 calc(var(--h-hz) + var(--hue)));
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#101319; --surface:#171B23; --surface-2:#1D222C;
+    --ink:#E6E9EF; --ink-2:#AEB6C4; --ink-3:#828B9A;
+    --rule:#2A303B; --rule-2:#222831;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101319; --surface:#171B23; --surface-2:#1D222C;
+  --ink:#E6E9EF; --ink-2:#AEB6C4; --ink-3:#828B9A;
+  --rule:#2A303B; --rule-2:#222831;
+}
+
+/* ------------------------------------------------------------------- reset */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1rem}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:1.0625rem;line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--lo-ink)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+a.xr{
+  color:var(--lo-ink);text-decoration:none;
+  border-bottom:1px solid color-mix(in srgb,var(--lo) 38%,transparent);
+  padding-bottom:.5px;
+}
+a.xr:hover,a.xr.hot{border-bottom-color:var(--lo);background:color-mix(in srgb,var(--lo) 9%,transparent)}

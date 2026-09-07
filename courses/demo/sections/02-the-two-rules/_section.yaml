@@ -1,0 +1,16 @@
+title: The two rules
+blurb: |-
+  The whole system serves two rules that pull against each other: state everything the reader needs, and state each thing exactly once. This section is where they are defined and reconciled; everything later is machinery built to keep both true at scale.
+primer:
+  - ask: |-
+      Completeness says state every step; non-redundancy says state each thing once. If §4 needs an idea from §7, which rule is satisfied by <em>linking</em> to §7 instead of restating it?
+    answer: |-
+      Both
+    why: |-
+      <p>A link keeps §4 complete — the reader can reach the idea from where they are — while adding no second copy of the explanation. The reference system is exactly how the two rules coexist.</p>
+  - ask: |-
+      Promoting an idea to a <c k="tier">concept</c> and marking it for spaced review — are these the same decision?
+    answer: |-
+      No, they are separate decisions
+    why: |-
+      <p>Promotion is forced by non-redundancy once an idea is used in three or more places, and costs one file and a link. Review is a scope choice that costs three drill items per concept. A course can promote widely and review narrowly.</p>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Three stacked bars labelled spine, depth, apply">
+  <rect x="12" y="20" width="180" height="18" rx="3" fill="#8a7fd6"/>
+  <rect x="12" y="50" width="110" height="18" rx="3" fill="#6f6aa8"/>
+  <rect x="12" y="80" width="60" height="18" rx="3" fill="#9c93b8"/>
+  <text x="200" y="34" font-family="monospace" font-size="11" fill="currentColor">spine</text>
+  <text x="200" y="64" font-family="monospace" font-size="11" fill="currentColor">depth</text>
+  <text x="200" y="94" font-family="monospace" font-size="11" fill="currentColor">apply</text>
+</svg>

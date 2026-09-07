@@ -1,0 +1,134 @@
+/* 45-figures — figure frame and every figure kind. */
+
+/* A wide figure scrolls inside its frame. It used to do that with no sign that
+   it did: a ten-node graph was cut off at the border mid-arrow, and the only
+   hint was the caption saying so. The two `local` layers are painted in the
+   content's coordinate space and slide away as it scrolls, uncovering the two
+   fixed shading layers underneath — so the shadow appears on exactly the edge
+   that is hiding something and on neither edge when nothing is. The base
+   colour is unchanged, which is what keeps the contrast sweep reading the same
+   ground it always did. */
+.figure{container-type:inline-size;margin:var(--sp-3) 0 var(--sp-4);border:1px solid var(--rule);border-radius:9px;
+  background-color:var(--surface);padding:15px 16px;overflow-x:auto;
+  background-image:
+    linear-gradient(to right, var(--surface) 60%, transparent),
+    linear-gradient(to left,  var(--surface) 60%, transparent),
+    linear-gradient(to right, color-mix(in srgb,var(--ink) 13%,transparent), transparent),
+    linear-gradient(to left,  color-mix(in srgb,var(--ink) 13%,transparent), transparent);
+  background-position:left center, right center, left center, right center;
+  background-repeat:no-repeat;
+  background-size:26px 100%, 26px 100%, 13px 100%, 13px 100%;
+  background-attachment:local, local, scroll, scroll;
+}
+/* A caption is a sentence — it describes the figure — so it is read, not
+   scanned, and it is not a label however much it looks like one. */
+.figure .fcap{font-family:var(--mono);font-size:.68rem;letter-spacing:.02em;
+  color:var(--ink-3);margin-bottom:11px;display:block}
+svg.fx{display:block;max-width:100%;height:auto;margin:0 auto}
+.fx-t{font-family:var(--mono);fill:var(--ink-2)}
+.fx-nl{font-size:11px;fill:var(--ink);font-weight:600}
+.fx-el{font-size:10px;fill:var(--ink-3)}
+/* chip behind an edge label, so it reads where it crosses a line */
+.fx-eh{fill:var(--surface)}
+.fx-ax{font-size:10px;fill:var(--ink-3)}
+.fx-al{font-size:11px;fill:var(--ink-2)}
+.fx-n{fill:var(--surface-2);stroke-width:1.6}
+.fx-e{fill:none;stroke:var(--ink-3);stroke-width:1.4}
+.fx-g{stroke:var(--rule-2);stroke-width:1}
+.fx-ax-l{stroke:var(--rule);stroke-width:1.2}
+.fx-s{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.fx-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;justify-content:center}
+.fx-leg span{font-family:var(--mono);font-size:.7rem;color:var(--ink-2);
+  display:inline-flex;align-items:center;gap:6px}
+.fx-leg i{width:14px;height:3px;border-radius:2px;display:inline-block}
+/* A procedure reads as a numbered spine: a disc per step, a hairline joining
+   them, and the text beside it. This is the default at every width, because a
+   vertical list cannot run out of room. Boxes and arrows were the previous
+   design and they never aligned — the arrow was centred in the figure while
+   the boxes were sized by their own text. */
+.fx-flow{list-style:none;margin:0;padding:0}
+.fx-step{position:relative;padding:0 0 var(--sp-3) 2.6rem;min-height:1.7rem}
+.fx-step:last-child{padding-bottom:0}
+.fx-si{
+  position:absolute;left:0;top:0;
+  width:1.7rem;height:1.7rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.68rem;line-height:1;color:var(--hi-ink);
+  background:var(--surface);
+  border:1px solid color-mix(in srgb,var(--hi) 45%,var(--rule));
+}
+.fx-step:not(:last-child)::before{
+  content:"";position:absolute;left:.85rem;top:1.7rem;bottom:0;
+  width:1px;background:var(--rule);
+}
+/* Row steps are equal-width by construction (`flex:1 1 0`), so a step is as
+   wide as its share and not as wide as its longest word. A token with no break
+   opportunity in it — "expectations.md" — was therefore drawn straight through
+   the step's border. Breaking inside a word is the lesser defect, and it is
+   what the question type badge already does for the same reason. */
+.fx-sl{font-size:.88rem;font-weight:600;display:block;padding-top:.15rem;overflow-wrap:anywhere}
+.fx-sn{font-size:.78rem;color:var(--ink-3);display:block;margin-top:2px;overflow-wrap:anywhere}
+
+/* A pipeline is horizontal where there is room for it: equal-width stages, an
+   arrow in the gap between them, and no wrapping — a wrapped arrow row points
+   at nothing. Below that it falls back to the spine above.
+   The test is a container query, not a viewport one: how much room the figure
+   has depends on the sidebar and the reader's content zoom, neither of which a
+   viewport breakpoint can see. */
+@container (min-width:28rem){
+  .fx-flow.is-row{
+    display:flex;align-items:stretch;gap:1.5rem;
+    overflow-x:auto;padding-bottom:4px;
+  }
+  .fx-flow.is-row .fx-step{
+    flex:1 1 0;min-width:5.4rem;padding:.6rem .7rem;
+    border:1px solid var(--rule);border-radius:8px;background:var(--surface);
+  }
+  .fx-flow.is-row .fx-step::before{display:none}
+  .fx-flow.is-row .fx-step+.fx-step::after{
+    content:"→";position:absolute;left:-1.05rem;top:50%;transform:translateY(-50%);
+    font-family:var(--mono);color:var(--ink-3);
+  }
+  .fx-flow.is-row .fx-si{
+    position:static;width:auto;height:auto;border:0;background:none;
+    display:block;margin-bottom:2px;
+  }
+  .fx-flow.is-row .fx-sl{padding-top:0}
+}
+.fx-mx{display:inline-flex;align-items:stretch;gap:3px;font-family:var(--mono);font-size:.86rem}
+.fx-mx table{border-collapse:collapse;width:auto}
+.fx-mx td{padding:3px 10px;border:0;text-align:right}
+.fx-br{font-size:1.9rem;color:var(--ink-3);line-height:1;align-self:center;font-weight:200}
+.fx-mxl{align-self:center;margin-left:9px;color:var(--ink-3);font-size:.78rem}
+.fx-grid{overflow-x:auto;padding-bottom:4px}
+.fx-gw{display:inline-grid;font-family:var(--mono);font-size:.84rem;min-width:min-content}
+.fx-gcell,.fx-gh,.fx-gc{border:1px solid var(--rule);min-width:46px;height:44px;
+  display:flex;align-items:center;justify-content:center;position:relative}
+.fx-gh{border:0;color:var(--ink-3);font-size:.75rem;height:26px}
+.fx-gc{border:0;font-size:.70rem;color:var(--ink-2);justify-content:flex-start;padding-left:2px}
+.fx-gcell{background:var(--surface);font-weight:600}
+.fx-gcell.g0{background:color-mix(in srgb,var(--hi) 15%,var(--surface));border-color:var(--hi)}
+.fx-gcell.g1{background:color-mix(in srgb,var(--lo) 15%,var(--surface));border-color:var(--lo)}
+.fx-gcell.g2{background:color-mix(in srgb,var(--dc) 15%,var(--surface));border-color:var(--dc)}
+.fx-gi{position:absolute;top:2px;left:4px;font-size:.6rem;color:var(--ink-2);font-weight:400}
+.fx-gl{margin-top:9px;display:flex;flex-wrap:wrap;gap:7px}
+.fx-gl span{font-family:var(--mono);font-size:.70rem;padding:3px 9px;border-radius:4px;
+  border:1px solid var(--rule);color:var(--ink-2)}
+.fx-gl .l0{border-color:var(--hi);color:var(--hi-ink)}
+.fx-gl .l1{border-color:var(--lo);color:var(--lo-ink)}
+.fx-gl .l2{border-color:var(--dc);color:var(--dc-ink)}
+.fx-tm{overflow-x:auto}
+.fx-tr{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.fx-tn{font-family:var(--mono);font-size:.76rem;color:var(--ink-2);
+  width:64px;text-align:right;flex:none}
+.fx-tr svg{flex:none}
+.fx-bar{opacity:.85}
+.fx-bar:hover{opacity:1}
+.fx-pt{opacity:.85}
+.fx-trend{fill:none;stroke-width:1.6;stroke-dasharray:5 4;opacity:.75}
+
+/* The number is the citable half of a caption, so it stays legible when the
+   caption text does not. */
+.fnum,figcaption .fnum{font-family:var(--mono);font-size:.95em;
+  font-weight:600;color:var(--hi-ink);letter-spacing:.02em}
+.xr-miss{color:var(--dc-ink);border-bottom:1px dotted var(--dc)}

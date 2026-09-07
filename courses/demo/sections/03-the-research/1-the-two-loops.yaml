@@ -1,0 +1,92 @@
+title: The two loops
+blocks:
+  - t: p
+    tier: spine
+    source: docs/code_truth.md §3c
+    h: |-
+      The site runs two learning loops over the same material. They share the concept keys and nothing else. One asks whether you can produce an answer today; the other asks whether you still can in six weeks.
+
+  - t: def
+    tier: spine
+    source: docs/code_truth.md §3c
+    term: The two loops
+    label: Definition
+    h: |-
+      <p><b>Loop A</b> — the subsection quiz, keyed by question <em>type</em>. One item per type: can you derive this on the spot? <b>Loop B</b> — the drill bank, keyed by <em>concept</em>. Many items, spaced: do you still hold it?</p>
+
+  - t: key
+    tier: spine
+    source: docs/create_course.md §8
+    label: The seam runs one way
+    h: |-
+      <p>A confident miss in Loop A pulls that concept into Loop B. A Loop B success never marks a Loop A type as covered. <c k="retrieval-practice">Retrieval practice</c> is the shared mechanism of <c k="two-loops">the two loops</c>; the one-way direction is what keeps coverage and retention from being confused for each other.</p>
+
+  - t: math
+    tier: spine
+    label: What Loop B schedules against
+    tex: R(t) = e^{-t/S}
+    note: Recall probability R decays with time t since the last review; S is memory stability, which each successful spaced retrieval increases. The scheduler places the next review where R would fall to a fixed target.
+
+  - t: ex
+    tier: spine
+    source: docs/create_course.md §8
+    title: A confident miss, routed
+    h: |-
+      <ol>
+        <li>A reader answers a "separate the variables" quiz item, marks high confidence, and gets the sign wrong.</li>
+        <li>Loop A records the type as attempted-and-failed. Because confidence was high, the seam fires.</li>
+        <li>The concept <code>separable-equation</code> is recruited into Loop B, and its drill items enter the schedule within a day.</li>
+      </ol>
+
+  - t: trap
+    tier: spine
+    source: docs/material_truth.md M5
+    label: Volume belongs in one loop only
+    h: |-
+      <p>Adding a fifth "solve a linear IVP" question to a subsection quiz is a repeated type, and the validator rejects it. The place for a fifth instance is the concept's drill file, which carries no type-uniqueness rule and is scheduled rather than read.</p>
+
+  - t: metric
+    tier: depth
+    value: <m>g = 0.51</m>
+    label: practice testing vs. restudy (Adesope et al. 2017, 272 effects)
+    source: docs/code_truth.md §17
+
+  - t: metric
+    tier: depth
+    value: <m>g = 0.74</m>
+    label: spaced retrieval vs. massed (Latimier et al. 2021)
+    source: docs/code_truth.md §17
+
+quiz:
+  - type: Route a quiz result
+    concept: two-loops
+    q: |-
+      A reader answers a quiz item correctly but marks low confidence. Does anything enter Loop B?
+    a: |-
+      No. The seam fires on a confident <em>miss</em>, not on a hesitant hit.
+    why: |-
+      <p>Low-confidence correct answers are the calibration report's business, not the scheduler's. Recruiting on every uncertain answer would flood Loop B with concepts the reader actually knows.</p>
+    why_prompt: What exact combination of outcome and confidence triggers recruitment?
+    verified: 2026-09-02
+
+  - type: Choose the loop for more volume
+    concept: two-loops
+    q: |-
+      An author wants ten practice problems on one procedure. Which loop takes them, and why not the other?
+    a: |-
+      Loop B, the drill bank. Loop A allows only one item per question type, so nine of the ten would be rejected as duplicates.
+    why: |-
+      <p>Loop A exists for coverage of the question surface; Loop B exists for fluency through spaced repetition. The constraint on each is what keeps them from collapsing into one undifferentiated pile.</p>
+    why_prompt: What rule in Loop A blocks the other nine problems?
+    verified: 2026-09-02
+
+  - type: Spot the error
+    concept: two-loops
+    q: |-
+      A course design doc says: "When a reader completes all three drill items for a concept, mark every quiz question that touches that concept as passed." What is wrong with this?
+    a: |-
+      It reverses the seam. Loop B → Loop A feedback does not exist; a drill success says nothing about whether the reader can handle each distinct question type.
+    why: |-
+      <p>The tempting idea is that mastering the concept should discharge the questions about it. But the quiz tracks <em>types</em> — forwards, backwards, boundary, error-spotting — and holding the concept in memory is not the same as being fluent in every form the examiner can use.</p>
+    why_prompt: Which identity does Loop A track that Loop B does not?
+    verified: 2026-09-02

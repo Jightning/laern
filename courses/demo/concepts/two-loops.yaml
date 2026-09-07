@@ -1,0 +1,7 @@
+term: The two loops
+body: |-
+  <p><b>Loop A</b> is the subsection quiz, keyed by question <em>type</em>: can you derive this on the spot? <b>Loop B</b> is the drill bank, keyed by <em>concept</em>: do you still hold it in six weeks?</p>
+  <p>They meet at one seam, running one way: a confident miss in Loop A pulls that concept into Loop B. A Loop B success never marks a type as covered.</p>
+src: Defined in §3.1
+review: false
+confusable_with: [confidence]

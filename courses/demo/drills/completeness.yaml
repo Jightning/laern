@@ -1,0 +1,56 @@
+concept: completeness
+items:
+  - format: short-answer
+    exam_format: true
+    stem: |-
+      A subsection uses a term the calibration does not list, and never defines it. Which rule is broken?
+    answer: |-
+      Completeness.
+    steps:
+      - |-
+        Completeness is measured against the written calibration, not the author's sense of what is obvious.
+      - |-
+        The reader on record does not have the term, so leaving it undefined is a missing step.
+    why: |-
+      <p>Non-redundancy is about not repeating; completeness is about not omitting. This is an omission.</p>
+    verified: 2026-09-02
+  - format: multiple-choice
+    exam_format: true
+    stem: |-
+      Completeness is measured against which of these? (a) the author's judgement; (b) the median student in the class; (c) the written calibration; (d) the official syllabus.
+    answer: |-
+      (c)
+    steps:
+      - |-
+        The calibration in <code>expectations.md</code> is the record of what the reader already knows.
+      - |-
+        Every "is this obvious?" decision is checked against that record.
+    why: |-
+      <p>Teaching to the median student instead of the reader on record is the most common way completeness fails.</p>
+    verified: 2026-09-02
+  - format: cued-recall
+    stem: |-
+      Where a course uses tiers, completeness is measured against which subset of its blocks?
+    answer: |-
+      The spine alone.
+    steps:
+      - |-
+        Depth and apply may lean on the spine; the spine never leans on them.
+      - |-
+        So a reader who never expands a stub has still read a complete course.
+    why: |-
+      <p>This is what lets tiering remove repetition rather than remove material.</p>
+    verified: 2026-09-02
+  - format: numeric
+    stem: |-
+      A reader stays in the Spine lane and expands no stubs at all. How many complete courses have they read?
+    answer: |-
+      1
+    steps:
+      - |-
+        The spine alone satisfies completeness.
+      - |-
+        Expanding stubs adds depth and applications, not missing steps.
+    why: |-
+      <p>If the spine were not self-sufficient, the Spine lane would be a broken reading, and it is not.</p>
+    verified: 2026-09-02

@@ -1,0 +1,12 @@
+/* 44-image — photographs, scans and supplied diagrams. */
+
+.imgblock{margin:var(--sp-3) 0 var(--sp-4);padding:0}
+.imgblock img{
+  display:block;width:100%;height:auto;border-radius:8px;
+  border:1px solid var(--rule);background:var(--surface);
+}
+.imgblock figcaption{
+  font-family:var(--mono);font-size:.68rem;line-height:1.5;
+  color:var(--ink-3);margin-top:8px;
+}
+.imgblock .credit{display:block;margin-top:2px;opacity:.8}

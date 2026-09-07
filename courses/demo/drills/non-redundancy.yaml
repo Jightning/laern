@@ -1,0 +1,58 @@
+concept: non-redundancy
+items:
+  - format: short-answer
+    exam_format: true
+    stem: |-
+      Two subsections need the same idea. What does non-redundancy require you to do?
+    answer: |-
+      One subsection defines the idea; the other links to that definition.
+    steps:
+      - |-
+        The definition lives in exactly one place.
+      - |-
+        The second subsection reaches it with <code>&lt;a href&gt;</code> or <code>&lt;c k&gt;</code>.
+    why: |-
+      <p>A second full copy will drift out of agreement with the first, and the reader cannot tell which is current.</p>
+    verified: 2026-09-02
+  - format: multiple-choice
+    exam_format: true
+    stem: |-
+      Non-redundancy governs which of these? (a) all repetition; (b) explanation only; (c) practice only; (d) figures only.
+    answer: |-
+      (b)
+    steps:
+      - |-
+        Explanation appears once.
+      - |-
+        Practice — the drill bank — is required to repeat applications for fluency.
+    why: |-
+      <p>Deleting repeated practice "to avoid redundancy" removes the retention loop, which is the opposite of what the rule wants.</p>
+    verified: 2026-09-02
+  - format: derivation
+    stem: |-
+      An idea now has its own full explanation in four different subsections. Walk through bringing the course back into compliance.
+    answer: |-
+      Promote the idea to a concept file, keep one subsection as its definition site, and replace the other three explanations with <code>&lt;c k&gt;</code> links.
+    steps:
+      - |-
+        Used in three or more places, so it must become a concept (not just a local def).
+      - |-
+        Write <code>concepts/&lt;key&gt;.yaml</code> once.
+      - |-
+        Leave one definition site; swap the remaining full explanations for links.
+    why: |-
+      <p>Promotion costs one file and a link; four drifting copies cost the reader their trust in the page.</p>
+    verified: 2026-09-02
+  - format: cued-recall
+    stem: |-
+      An idea must be promoted from a local definition to a concept once it is used in how many places?
+    answer: |-
+      Three or more.
+    steps:
+      - |-
+        One or two places: a local <code>def</code> is correct.
+      - |-
+        Three or more: repeated defs are non-redundancy violations waiting to happen.
+    why: |-
+      <p>The threshold follows from the rule — below it there is nothing to drift, at it there is.</p>
+    verified: 2026-09-02
