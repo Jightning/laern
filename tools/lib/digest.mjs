@@ -13,7 +13,7 @@
  * Reads raw files rather than going through load.mjs: a course mid-build is
  * half-written by definition, and this must not care.
  * ==========================================================================*/
-import { readdirSync, existsSync, readFileSync } from "node:fs";
+import { readdirSync, existsSync, readFileSync, statSync } from "node:fs";
 import { join, basename, extname } from "node:path";
 import { parseFile } from "./load.mjs";
 
@@ -57,7 +57,12 @@ export function digest(dir) {
   const secRoot = join(dir, "sections");
   for (const d of existsSync(secRoot) ? readdirSync(secRoot).sort() : []) {
     const path = join(secRoot, d);
-    if (!existsSync(path) || !readdirSync(path).length) continue;
+    /* isDirectory, as lib/load.mjs already does on the same walk. Without it a
+       stray file beside the section folders — a .DS_Store is how this was
+       found — reaches readdirSync and throws ENOTDIR, so `author plan` dies on
+       a course that builds and validates perfectly well. */
+    if (!existsSync(path) || !statSync(path).isDirectory()) continue;
+    if (!readdirSync(path).length) continue;
     const meta = dataFiles(path).find(f => stem(f) === "_section");
     const s = meta ? read(join(path, meta)) : {};
     const id = `s${num(d)}`;

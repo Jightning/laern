@@ -18,7 +18,7 @@
  * Pruning still exists, but only behind a checkpoint that already covers the
  * rows being dropped. That is `prune`, and replay.js is the only caller.
  */
-import { logRows, appendRow, clearLog, mergeRows } from "./store.js";
+import { logRows, appendRow, clearLog, mergeRows, dropRows } from "./store.js";
 import { deviceId } from "./device.js";
 
 let seq = 0;
@@ -53,6 +53,14 @@ export function fromJSON(text) {
   return { merged: mergeRows(good), skipped: rows.length - good.length };
 }
 export const clear = () => clearLog();
+
+/**
+ * Drop one course's rows. This is the only deletion that is not a checkpoint
+ * prune, and it exists because removing a course now means removing what the
+ * reader answered in it — the derived state is a fold over these rows, so
+ * clearing that and leaving these would simply refold them back.
+ */
+export const dropCourse = cid => dropRows(r => r.course === cid);
 
 /** Rows at or after `ts`, for an incremental sync push. */
 export const since = ts => logRows().filter(r => r.ts >= ts);

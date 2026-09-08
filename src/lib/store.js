@@ -190,6 +190,11 @@ export function flush() {
  */
 export const getItem = k => (mem.has(k) ? mem.get(k) : null);
 
+/* Every key currently held. Two of the per-course stores — notes and reasons —
+   are families of keys rather than one, so erasing a course (lib/purge.js)
+   has to look for a prefix instead of asking for a name it already knows. */
+export const keys = () => [...mem.keys()];
+
 export function setItem(k, v) {
   mem.set(k, String(v));
   dirty.add(k);
@@ -259,4 +264,27 @@ export function markSent(ids) {
 export function clearLog() {
   rows = []; pending = [];
   if (db) db.transaction(LOG, "readwrite").objectStore(LOG).clear();
+}
+
+/**
+ * Drop every row matching `pred`. The one caller is lib/purge.js: removing a
+ * course erases what the reader answered in it, and these rows are where the
+ * answers actually live — the rest is a fold over them.
+ *
+ * The flush comes first and the ordering is the whole point. Writes are
+ * debounced, so a row appended moments ago may still be sitting in `pending`;
+ * draining it here puts those rows in a transaction created *before* the
+ * delete, and IndexedDB runs overlapping read-write transactions in creation
+ * order. Deleting first would let a late flush write them straight back.
+ */
+export async function dropRows(pred) {
+  await flush();
+  const gone = rows.filter(pred);
+  if (!gone.length) return 0;
+  rows = rows.filter(r => !pred(r));
+  if (db) {
+    const s = db.transaction(LOG, "readwrite").objectStore(LOG);
+    for (const r of gone) s.delete(r.id);
+  }
+  return gone.length;
 }

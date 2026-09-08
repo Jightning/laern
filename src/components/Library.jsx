@@ -5,6 +5,7 @@ import { counts } from "../lib/retention.js";
 import { importedIndex, filesOf, removeCourse } from "../lib/courses.js";
 import { refresh, dismissed, setDismissed } from "../lib/library.js";
 import { queueDelete } from "../lib/cloud.js";
+import { purge } from "../lib/purge.js";
 import { evictionRisk } from "../lib/store.js";
 import CourseIO from "./CourseIO.jsx";
 import Modal from "./Modal.jsx";
@@ -33,24 +34,30 @@ export default function Library({ courses, order, loading, error, onChange }) {
     URL.revokeObjectURL(url);
   };
 
-  /* Two different acts behind one button. An imported course is the only copy
-     on the device, so removing it deletes it; a bundled one ships with the site
-     and would come back on the next load, so it is dismissed from the shelf and
-     can be brought back from the Add dialog. */
+  /* Two different acts behind one button, and the difference is the whole
+     reason both exist. An imported course is the only copy on the device, so
+     removing it destroys the course *and* what the reader answered in it — see
+     lib/purge.js. A bundled one ships with the site and would come back on the
+     next load, so it is dismissed from the shelf instead and its answers are
+     left alone: hiding is reversible, and a reversible act must not discard
+     progress. */
   const drop = cid => {
-    const name = (courses[cid] || {}).title || cid;
-    if (mine[cid]) {
+    const c = courses[cid] || {};
+    const name = c.title || cid;
+    const own = !!mine[cid];
+    if (own) {
       /* Tell the account, if this device is connected to one: a course removed
          here is meant to be gone everywhere, and the queue is carried on the
          next sync rather than costing a request of its own. */
       queueDelete(cid);
+      purge(cid, c.code);
       removeCourse(cid); refresh();
     }
     else setDismissed(cid, true);
     onChange && onChange();
     setDoomed(null);
-    setMsg(mine[cid]
-      ? `Removed ${name}. Your answer history for it is kept.`
+    setMsg(own
+      ? `Removed ${name} and everything you answered in it.`
       : `${name} is hidden. Bring it back from Add a course.`);
   };
 
@@ -177,23 +184,19 @@ export default function Library({ courses, order, loading, error, onChange }) {
         <Modal danger onClose={() => setDoomed(null)}
                title={`${mine[doomed] ? "Remove" : "Hide"} ${(courses[doomed] || {}).title || doomed}?`}>
           {mine[doomed] ? (
-            <p>
-              This deletes the course from this device. It is the only copy here —
-              nothing is stored anywhere else — so you will need the folder or the
-              <code>.course.json</code> again to bring it back.
-            </p>
+            <>
+              <p>This action cannot be undone.</p>
+              <p>
+                <b>Your answers go with it.</b> Quiz history, review schedule,
+                notes and reasons for this course are all deleted.
+              </p>
+            </>
           ) : (
-            <p>
-              This one is bundled with the site as an introductory guide, so it
-              is hidden rather than deleted — <b>Add a course</b> brings it back
-              whenever you want it. Hiding is per device.
-            </p>
+            <>
+              <p>You can add this back through "Add a course".</p>
+              <p><b>Your answers are kept</b>, and come back with it.</p>
+            </>
           )}
-          <p>
-            <b>Your answer history is kept.</b> Learner state is keyed on the
-            course code, so bringing it back restores your progress and review
-            schedule.
-          </p>
           <div class="modal-ops">
             <button class="dbtn ghost" onClick={() => setDoomed(null)}>Cancel</button>
             <button class="dbtn warn" id="lib-drop" onClick={() => drop(doomed)}>

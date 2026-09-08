@@ -19,7 +19,7 @@
 .sub p{margin:0 0 var(--sp-2)}
 .sub>*:last-child{margin-bottom:0}
 .sub p,.def p,.key p,.trap p,.ex p,.note p{max-width:var(--measure)}
-section.sec-body{padding:3.5rem 0 0;scroll-margin-top:var(--scroll-clear)}
+section.sec-body{padding:var(--view-top) 0 0;scroll-margin-top:var(--scroll-clear)}
 
 /* section headers — moved here from 20-nav.css, they are content not navigation */
 .sec-head{margin-bottom:8px}

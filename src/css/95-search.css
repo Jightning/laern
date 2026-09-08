@@ -1,8 +1,12 @@
 /* 95-search — Search overlay. */
 
 .backlink{font-family:var(--mono);font-size:.72rem}
+/* `inset:0` is the whole screen, notch and home indicator included, so the box
+   inside it is padded off them. The 9vh top already clears the status bar on
+   every phone this runs on, which is why only three sides take an inset. */
 .search{position:fixed;inset:0;z-index:100;background:rgba(10,14,22,.42);display:none;
-  padding:9vh 20px 20px;backdrop-filter:blur(3px)}
+  padding:9vh calc(20px + var(--safe-r)) calc(20px + var(--safe-b)) calc(20px + var(--safe-l));
+  backdrop-filter:blur(3px)}
 .search.on{display:block}
 .sbox{max-width:640px;margin:0 auto;background:var(--surface);border:1px solid var(--rule);
   border-radius:12px;box-shadow:0 24px 60px rgba(8,12,20,.30);overflow:hidden;

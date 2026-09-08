@@ -6,7 +6,7 @@
   letter-spacing:-.035em;line-height:1.06;margin:0 0 16px;
 }
 .hero p{font-size:1.03rem;color:var(--ink-2);margin:0 0 22px;max-width:64ch}
-.start{padding:56px 0 0}
+.start{padding:var(--view-top) 0 0}
 .start h1{font-family:var(--mono);font-size:clamp(1.9rem,4.4vw,2.9rem);font-weight:700;
   letter-spacing:-.035em;line-height:1.06;margin:0 0 14px}
 .start .lede{font-size:1.03rem;color:var(--ink-2);margin:0 0 26px;max-width:64ch}
@@ -20,7 +20,7 @@
 .toc .tt2{font-weight:600;font-size:.97rem}
 .toc .tc{font-family:var(--mono);font-size:.70rem;color:var(--ink-3);white-space:nowrap}
 .toc .tsub{grid-column:2/4;color:var(--ink-3);font-size:.80rem;margin-top:3px;line-height:1.5}
-.pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:56px 0 0;
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:var(--view-top) 0 0;
   border-top:1px solid var(--rule);padding-top:20px}
 .pager a{
   display:block;padding:13px 15px;border:1px solid var(--rule);border-radius:9px;
@@ -44,3 +44,12 @@
 .dbtn:hover{border-color:var(--hi);color:var(--hi-ink)}
 .tbar{grid-column:2/4;height:3px;background:var(--rule-2);border-radius:2px;margin-top:7px;overflow:hidden}
 .tbar i{display:block;height:100%;background:var(--hi)}
+
+/* A view ends where its last block ends. Whatever bottom margin that block
+   carries was there to hold a sibling off, and the last one has no sibling —
+   so it lands on top of the page's own bottom gutter and reads as a stretch of
+   nothing to scroll past, worst on a phone. Stated per sheet rather than once
+   in 30-typography.css because the margins it cancels are declared here: the
+   file numbers mean later corrects earlier, so one shared rule up at 30 would
+   lose to every single one of them. */
+.start>*:last-child{margin-bottom:0}

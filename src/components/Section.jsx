@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "preact/hooks";
-import { renderBlock } from "../blocks/index.js";
+import { renderBlock, isApart } from "../blocks/index.js";
 import { INTERACTIVE } from "../blocks/interactive.js";
 import { decorate, refsOf, buildsOn } from "../lib/refs.js";
 import { runsOf } from "../lib/tiers.js";
 import { MarginRefs, UsedLater } from "./MarginNote.jsx";
 import Quiz from "./Quiz.jsx";
 import KeyTerms from "./KeyTerms.jsx";
-import Notes from "./Notes.jsx";
+import { useNote, NoteGrip, NoteCard } from "./Notes.jsx";
 import LaneSelect from "./LaneSelect.jsx";
 import TierStub from "./TierStub.jsx";
 import Attempt from "./Attempt.jsx";
@@ -14,9 +14,12 @@ import Attempt from "./Attempt.jsx";
 /* One reading row: content on the left, its references immediately to the
  * right. Hovering either side highlights both — handled locally per row
  * rather than by a global delegated listener. */
-function ReadingRow({ html, notes, ctx, children }) {
+function ReadingRow({ html, notes, noteAt, noteLabel, apart, ctx, children }) {
   const row = useRef(null);
   const [hot, setHot] = useState(null);
+  /* The row owns the note because the note is in two of its zones: the grip at
+     the foot of the block, and the card in the margin beside it. */
+  const note = useNote(ctx.cid, noteAt || null);
 
   /* The inline mention lives inside injected HTML, so it cannot take a prop.
      One scoped effect marks both sides of the pair within this row only. */
@@ -33,14 +36,22 @@ function ReadingRow({ html, notes, ctx, children }) {
   };
 
   return (
-    <div class="brow" ref={row} onMouseOver={track(true)} onMouseOut={track(false)}>
+    <div class="brow" ref={row} data-apart={apart || undefined}
+         onMouseOver={track(true)} onMouseOut={track(false)}>
       <div class="bmain">
         {html != null
           ? <div class="bhtml" dangerouslySetInnerHTML={{ __html: decorate(html, ctx.cid, ctx.idx.FIG.byKey) }} />
           : children}
+        {/* Where a note is started: a grip on the block's own bottom edge,
+            shown only while there is nothing to show in the margin. */}
+        <NoteGrip n={note} />
       </div>
       <aside class="bside">
         {notes}
+        {/* Last in the stack. A reference card has to sit level with the
+            mention it annotates [T12] and a note does not, so when the two
+            want the same row the note is what yields. */}
+        <NoteCard n={note} label={noteLabel} />
       </aside>
     </div>
   );
@@ -66,17 +77,17 @@ function Blocks({ sub, ctx, lane, expandAll }) {
       <>
         {i === leadIndex && <UsedLater id={sub.id} ctx={ctx} compact={refs.length > 0} />}
         <MarginRefs refs={refs} ctx={ctx} />
-        <Notes cid={cid} anchor={`${sub.id}#${i}`} />
       </>
     );
+    const at = `${sub.id}#${i}`;
     if (INTERACTIVE.includes(b.t))
       return (
-        <ReadingRow key={i} ctx={ctx} notes={notes}>
+        <ReadingRow key={i} ctx={ctx} notes={notes} noteAt={at}>
           <Attempt b={b} cid={cid} anchor={`${sub.id}#${i}@attempt`} />
         </ReadingRow>
       );
     return (
-      <ReadingRow key={i} ctx={ctx} notes={notes}
+      <ReadingRow key={i} ctx={ctx} notes={notes} noteAt={at} apart={isApart(b.t)}
                   html={renderBlock(b, { fignum: idx.FIG.numOf(b) })} />
     );
   };
@@ -125,10 +136,11 @@ export default function Section({ section, ctx, expandAll, lane, onLane }) {
         const num = `${section.num}.${k + 1}`;
         return (
           <div class="sub" id={sub.id} key={sub.id}>
-            <ReadingRow ctx={ctx} notes={<>
-              {(sub.blocks || []).length === 0 && <UsedLater id={sub.id} ctx={ctx} />}
-              <Notes cid={cid} anchor={sub.id} label="Note on this part" />
-            </>}>
+            <ReadingRow ctx={ctx}
+              notes={(sub.blocks || []).length === 0
+                ? <UsedLater id={sub.id} ctx={ctx} />
+                : null}
+              noteAt={sub.id} noteLabel="Note on this part">
               <h3><span class="sid">{num}</span>{sub.title}</h3>
             </ReadingRow>
 

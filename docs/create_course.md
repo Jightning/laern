@@ -42,8 +42,10 @@ script; checking it yourself costs one pass instead of a round trip. The second
 cannot be gated by anything, and you are the only check on it.
 
 **0.6 Your default voice is wrong for this.** Left alone you write balanced,
-hedged, encyclopedic prose that covers a topic. That is a document. Read §13
-before your first `p` block.
+hedged, encyclopedic prose that covers a topic. That is a document. §14 lists
+the shapes that produces; §13 is the sentence itself, which is where a reader
+decides whether a person wrote this. Read both before your first `p` block, and
+read the page of a human writer §13.7 sends you to.
 
 **The two rules everything serves** [M1, M2]: every piece of *explanation*
 appears exactly once, and nothing is assumed beyond the written calibration.
@@ -795,7 +797,7 @@ No script decides any of these. Skip this list and nothing else catches it.
       execution trap and an error-spotting item (§6.4, §6.5). No script detects
       "procedural".
 - [ ] **The quiz types are actually distinct.** Could a reader answer one and
-      fail another? If not, they are one type in two labels (§13.3).
+      fail another? If not, they are one type in two labels (§14.3).
 - [ ] **Recurring ideas are concepts** (M13). No script sees an un-promoted idea.
 - [ ] **Sections run 2–5 subsections.** A band, not a rule.
 - [ ] **One drill item has a surface unlike the worked example, asking the same
@@ -808,6 +810,12 @@ No script decides any of these. Skip this list and nothing else catches it.
 - [ ] **Nothing marked `source:` with an origin was written from memory.** The
       field is a claim, and `generated` exists so you never have to lie in it.
 - [ ] **Every `verified:` date is a re-derivation**, not a re-reading (M22).
+- [ ] **The prose does not read as generated** (§13). Four counts, over the
+      whole course: em dashes ≤ 3 per 1000 words, hung tails ≤ 5% of sentences
+      (§13.3), "you" ≥ 6 per 1000 words (§13.1 — the finding is transfer at
+      d = 0.54, not friendliness), and no `key` or `def` block of four sentences
+      without one under ten words. Read one block aloud. If three sentences in a
+      row land at the same length, that is the defect.
 
 ```sh
 npm run check      # must be clean
@@ -826,50 +834,241 @@ skipped.
 
 ---
 
-## 13. Failure modes
+## 13. The sentence
+
+§14 catalogues defects in *what* a subsection contains. This section is about
+the sentence that carries it. That is where a reader decides whether a person
+wrote this for them or a machine produced it at them, and they decide it inside
+the first paragraph, before any of the structure above has had a chance to work.
+
+The cost is not aesthetic. Prose that reads as generated is prose the reader
+discounts, and a reader who is discounting is not encoding.
+
+### 13.1 Three findings, and what each one licenses
+
+**Address the reader.** Rewrite instructional text from formal to conversational
+style, mainly by moving to second person and speaking to the learner directly,
+and retention improves at d = 0.30 and **transfer at d = 0.54**, against the
+same content in formal style (Ginns, Martin & Marsh 2013, *Educational
+Psychology Review*, meta-analysis). Transfer is the larger of the two. Where
+transfer is among the reader's failure modes it is already what D4 and D5 spend
+budget on (§1.1). Second person is a lever on the same outcome, and it is free.
+
+**Cut the clause that adds nothing.** Sentence-level coherence measures
+g = 0.63, the largest of the layout effects, and it is subtractive [T11]. A
+clause carrying nothing the reader will be asked for is not neutral. It is a
+cost.
+
+**The machine tell is a habit, not a vocabulary.** Of the 379 excess style words
+that appeared in biomedical abstracts in 2024, 66% were verbs and 14% were
+adjectives. Excess vocabulary from a genuine change of subject matter runs 79.2%
+nouns (Kobak et al. 2025, *Science Advances*, 15M abstracts). What marks
+generated prose is therefore a preference for certain verbs and modifiers, which
+is to say a preference for one sentence shape. You cannot fix that by avoiding
+"delve". You fix it by changing the shape.
+
+### 13.2 What this repo's own courses measure
+
+Counted over the prose fields of every course here, code and maths excluded:
+
+| | measured | target |
+|---|---|---|
+| em dashes per 1000 words | 6–15 | **≤ 3** |
+| sentences ending in a hung tail | 15–24% | **≤ 5%** |
+| "you" per 1000 words | 1.8–20.6 | **≥ 6** |
+| sentences under 10 words | 19% | keep it there |
+
+The two longest courses are the two most impersonal, at 1.8 and 2.6 "you" per
+1000 words. They are also where a reader spends the most hours.
+
+These targets are for course prose, not for code comments. A comment is read
+once, by someone who chose to open the file. A `key` block is read by someone
+under load who is about to be tested on it. The engine's own source is written
+to a different brief and is not the model here.
+
+**This section meets its own numbers.** Count them if you like. That is the only
+reason to believe they are reachable.
+
+### 13.3 The hung tail
+
+One defect dominates, and it is why the prose reads as generated. A sentence
+states its point, then hangs a second clause off the end that glosses,
+editorialises or draws a moral. Three real examples, from courses in this repo:
+
+> …never to physical wire order **— a bus can be routed in any order.**
+>
+> …removes most of the null checks **— which is why published implementations
+> use one and student implementations that segfault usually do not.**
+>
+> A weaker invariant than a BST **— only parent against child — which is exactly
+> why a heap can be built in linear time.**
+
+Any one of those is a good sentence. One in five being that sentence is a
+cadence, and a cadence is what a reader hears as a machine. Every sentence lands
+the same way, so none of them lands.
+
+The end of a sentence is the **stress position**. "In the stress position the
+reader needs and expects closure and fulfilment" (Gopen & Swan 1990, *American
+Scientist* 78:550–558). It is where the reader puts what they will remember.
+Spend it on a gloss and you have spent the only slot that sentence had.
+
+**The test.** Delete everything after the dash or the comma.
+
+- The sentence still teaches. The tail was commentary. It is gone, and you do
+  not reattach it.
+- The sentence lost something the reader will be asked for. The tail was a claim
+  wearing an appositive's clothes. Give it its own sentence, with its own
+  subject and its own verb.
+
+**The budget.** One hung tail per subsection. Not one per block.
+
+`which is why`, `that is why`, `which is exactly why`, and the participial tails
+`, ensuring …`, `, allowing …`, `, making it …`, `, enabling …` are all the same
+construction. They share the one budget.
+
+### 13.4 Rhythm
+
+Generated prose is metrically flat. Every sentence arrives at about the same
+length, so nothing is emphasised. Human explanatory prose varies, and the
+variation is itself the emphasis. A four-word sentence after two long ones is
+how a writer points.
+
+Gopen & Swan again: "Readers expect each unit of discourse (sentence, paragraph,
+section) to serve a single function." A sentence doing two jobs is usually a
+long one. Split it and you have the short sentence you were missing.
+
+**The test.** Read the block aloud. If three sentences in a row land within three
+words of each other, then one of them is two sentences or two of them are one.
+Every `key` or `def` block of four sentences or more carries at least one
+sentence under ten words.
+
+### 13.5 Verbs, and who is doing what
+
+A nominalisation buries the verb inside a noun, then needs a weak verb to prop
+it up. The shape `the <X>ion/ment/ance of` occurs 41 times in this repo's
+courses. Not all are defects, since `the impedance of` is the name of a
+quantity, but it is the reliable place to look.
+
+| instead of | write |
+|---|---|
+| the definition of a full tree is | a full tree is |
+| performs a comparison of | compares |
+| is responsible for handling | handles |
+| there is a requirement that | must |
+| serves as / acts as / functions as | is |
+
+"Readers interpret any information between the grammatical subject of a sentence
+and its verb as an unimportant interruption" (Gopen & Swan). Put the thing the
+sentence is about first. Put its verb next. Put the new information last.
+
+### 13.6 Words to distrust
+
+This is not a blacklist, and §13.1 says why a blacklist is the wrong instrument.
+These are the markers that showed up in this corpus, or that top the
+excess-vocabulary list. Each one is a prompt to check the shape of the sentence
+rather than to reach for a synonym.
+
+`crucial` · `essential` · `vital` · `pivotal` · `paramount` · `robust` ·
+`seamless` · `leverage` · `utilise` · `delve` · `realm` · `landscape` ·
+`tapestry` · `testament` · `showcase` · `underscore` · `intricate` ·
+`meticulous` · `it is important to note` · `it is worth noting` ·
+`serves as` · `the fact that` · `in order to`
+
+`crucial`, `essential` and `vital` are the common case, and they are one error
+committed three ways. The sentence is asserting importance instead of
+demonstrating it. If a thing matters, the reason it matters is the sentence you
+should have written. If you cannot state that reason, it does not matter here.
+
+A hedge is a defect in the *claim* rather than in the sentence. Hedges are
+caught at §14.6.
+
+### 13.7 Read a human first
+
+Before your first `p` block of a course, read one page of one of these. Not for
+the subject. For the cadence.
+
+**Richard Feynman**, *The Feynman Lectures on Physics* I.1, "Atoms in Motion",
+at [feynmanlectures.caltech.edu/I_01.html](https://www.feynmanlectures.caltech.edu/I_01.html).
+His answer to what one sentence he would pass on carries the whole atomic
+hypothesis: "all things are made of atoms—little particles that move around in
+perpetual motion, attracting each other when they are a little distance apart,
+but repelling upon being squeezed into one another." The next sentence is short,
+and it tells you what to do with the long one: "In that one sentence, you will
+see, there is an enormous amount of information about the world, if just a
+little imagination and thinking are applied." **Steal:** one long sentence that
+is all content, then a short one that is all instruction. The long sentence
+earns its length. Nothing in it is a gloss.
+
+**Paul Halmos**, "How to Write Mathematics", *L'Enseignement Mathématique* 16
+(1970). Eighteen principles, and the headings alone are most of the lesson.
+Eleven of them: *Say something. Speak to someone. Organize first. Write in
+spirals. Write good English. Honesty is the best policy. Down with the
+irrelevant and trivial. Do and do not repeat. Use words correctly. Resist
+symbols. Stop.* **Steal:** "Speak to someone" is §1 of this file, and it is
+13.1's d = 0.54. "Stop." is 13.3.
+
+**Julia Evans**, "Patterns in confusing explanations", at
+[jvns.ca/blog/confusing-explanations](https://jvns.ca/blog/confusing-explanations/).
+Thirteen named patterns, several of them truths in this repo arrived at
+independently. *Starting out abstract* is M10 and D3. *Unsupported statements*
+is M20 and M28. *"What" without "why"* is M6 and M7. **Steal:** the register. Short declaratives, second person, and a
+willingness to say that a thing is confusing. Her note on audience is the whole
+of §1 in one line: "writing that's easy to understand for 1 person (other than
+you!) has a good chance of being easy to understand for many other people as
+well."
+
+**Mechanism, if you want it.** Gopen & Swan, "The Science of Scientific
+Writing", *American Scientist* 78 (1990): 550–558, at
+[crowl.org/lawrence/writing/GopenSwan90.html](http://www.crowl.org/lawrence/writing/GopenSwan90.html).
+Six sections and no numbered rules. It explains why the tests in 13.3 and 13.5
+work, instead of asserting them.
+
+---
+
+## 14. Failure modes
 
 The shapes a capable model produces by default. Each is a real defect.
 
-**13.1 Encyclopedic drift.** You will write balanced survey prose covering a
+**14.1 Encyclopedic drift.** You will write balanced survey prose covering a
 topic from all sides. A course teaches one reader one thing in an order. If a
 paragraph would sit unchanged in a Wikipedia article, it is wrong here.
 
-**13.2 The example that re-explains.** You will open a worked example by
+**14.2 The example that re-explains.** You will open a worked example by
 restating the definition. Most common non-redundancy violation there is. The
 example starts at the first step of the work.
 
-**13.3 Fake variety in the quiz.** Asked for distinct types you will write the
+**14.3 Fake variety in the quiz.** Asked for distinct types you will write the
 same question three times with different numbers and different `type` labels.
 
-**13.4 Trap inflation.** You will mark every caution as a `trap` because traps
+**14.4 Trap inflation.** You will mark every caution as a `trap` because traps
 look valuable. One or two.
 
-**13.5 Depth as a dumping ground.** You will push anything long into `depth`.
+**14.5 Depth as a dumping ground.** You will push anything long into `depth`.
 The rule is examinability, not length.
 
-**13.6 Hedged claims.** "Generally", "typically", "in most cases". In a study
+**14.6 Hedged claims.** "Generally", "typically", "in most cases". In a study
 course a hedge is a claim the reader cannot use. Name the condition, or write
 `unverified`.
 
-**13.7 Confident fabrication of institutional fact.** A plausible grading split,
+**14.7 Confident fabrication of institutional fact.** A plausible grading split,
 a plausible exam date, a plausible textbook edition. Do not (0.3).
 
-**13.8 Manufactured confusability.** Any two concepts in a course are relatable.
+**14.8 Manufactured confusability.** Any two concepts in a course are relatable.
 Only pairs readers actually mix up (D2).
 
-**13.9 The four-example subsection.** You will add worked examples when a topic
+**14.9 The four-example subsection.** You will add worked examples when a topic
 feels hard. Where schema acquisition is not the failure mode that is the wrong
 lever (D1). Write one example and three drill items.
 
-**13.10 Skipping Phase 6.** Drills are the least interesting thing here and the
+**14.10 Skipping Phase 6.** Drills are the least interesting thing here and the
 most important one for the stated priorities. A course that stops after Phase 5
 is a well-made document with no retention loop.
 
-**13.11 Marking everything for review.** The inverse failure. `review: true` on
+**14.11 Marking everything for review.** The inverse failure. `review: true` on
 every concept turns twenty concepts into sixty drill items, most about things
 the exam never asks. The cap is judgement, which is exactly why you overshoot it.
 
-**13.12 Density drift.** The sections you write first set a prose density; by the
+**14.12 Density drift.** The sections you write first set a prose density; by the
 fortieth you are writing `key` blocks half again as long, the same point carried
 by a second example, a restated setup and a "which is exactly why" tail. It
 reads as a looser course bolted onto a tight one. Checks: a `key` block is two
@@ -880,7 +1079,7 @@ fact, number, mechanism, failure mode or trap leaves with it.
 
 ---
 
-## 14. When data is not enough — `blocks.js`
+## 15. When data is not enough — `blocks.js`
 
 Almost never. First check that a `figure` kind, a `table` with `map:`, or a
 `def`/`key`/`ex` block genuinely cannot express what you want. The built-ins

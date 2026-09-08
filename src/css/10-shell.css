@@ -1,37 +1,59 @@
 /* 10-shell — Page frame: sidebar, main column, toolbar, mobile drawer. */
 
-.shell{display:grid;grid-template-columns:308px minmax(0,1fr);gap:0;min-height:100vh}
+/* dvh, not vh: mobile browsers count their own collapsing toolbar as part of
+   100vh, so a vh-tall frame runs that far under the chrome and the last of it
+   cannot be reached. The vh line stays as the fallback for anything without
+   dvh. */
+.shell{display:grid;grid-template-columns:308px minmax(0,1fr);gap:0;
+  min-height:100vh;min-height:100dvh}
 /* the library has no course, so it has no sidebar — without this the main
    column lands in the reserved 308px track and the picker renders in a strip */
 .shell.solo{grid-template-columns:minmax(0,1fr)}
 .sidebar{
   /* align-self matters: a grid item stretches to the row by default, and a
      sticky box that is already as tall as its container never moves */
-  position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+  position:sticky;top:0;align-self:start;height:100vh;height:100dvh;overflow-y:auto;
   background:var(--surface);border-right:1px solid var(--rule);
-  padding:22px 0 40px;
+  /* Top inset because the rail is flush with the top of the screen in an
+     installed app, bottom because it ends at the home indicator, left because
+     below the breakpoint this is a drawer pinned to a screen edge the notch
+     can occupy in landscape. */
+  padding:calc(22px + var(--safe-t)) 0 calc(40px + var(--safe-b));
+  padding-left:var(--safe-l);
 }
-main{padding:0 0 40px;min-width:0}
+main{padding:0 0 calc(40px + var(--safe-b));min-width:0}
 .topbar{
   position:sticky;top:0;z-index:30;display:flex;flex-wrap:nowrap;align-items:center;gap:14px;
   background:color-mix(in srgb,var(--ground) 88%,transparent);
   backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-2);
+  /* The top inset is the Dynamic Island. The bar is the topmost thing on the
+     screen in an installed app, so it is the one element that has to carry the
+     status bar's height as padding — everything else is below it. */
+  padding-top:calc(10px + var(--safe-t));
+  padding-bottom:10px;
   /* The bar spans the full width for its ground and its rule, but its contents
      line up with the reading column underneath: the breadcrumb starts where the
      heading starts. They were 71px apart, which is most visible on the pages
-     where the crumb and the H1 are the same word. */
-  padding-block:10px;
-  padding-inline:max(var(--wrap-pad), calc((100% - var(--wrap-max)) / 2 + var(--wrap-pad)));
+     where the crumb and the H1 are the same word. Stated per side rather than
+     as one padding-inline because only the notched side carries an inset. */
+  padding-left:max(calc(var(--wrap-pad) + var(--safe-l)),
+                   calc((100% - var(--wrap-max)) / 2 + var(--wrap-pad)));
+  padding-right:max(calc(var(--wrap-pad) + var(--safe-r)),
+                    calc((100% - var(--wrap-max)) / 2 + var(--wrap-pad)));
 }
 /* How far a scrolled-to heading has to start below the top of the viewport to
    clear this bar. Named here, beside the bar, because the two have to move
    together: the offset lived in another file as a bare 60px while the bar was
-   142px tall on a phone, so every subsection arrived hidden underneath it. */
-/* --wrap-pad is the reading gutter, and the toolbar takes it too, so the
+   142px tall on a phone, so every subsection arrived hidden underneath it. It
+   carries the status bar's inset for the same reason — the bar above grew by
+   it, so a subsection scrolled to on a notched phone would otherwise arrive
+   under the Dynamic Island.
+
+   --wrap-pad is the reading gutter, and the toolbar takes it too, so the
    breadcrumb starts exactly where the prose below it does. The two were set
    separately before — 22px against 24px, in two different blocks of the
    responsive sheet — so which won depended on file order rather than intent. */
-:root{--scroll-clear:60px;--wrap-pad:40px;
+:root{--scroll-clear:calc(60px + var(--safe-t));--wrap-pad:40px;
        --wrap-max:calc(var(--measure) + var(--margin-rail) + 8rem)}
 /* The secondary actions are grouped so one breakpoint can move them together,
    but the group must not become a single flex item here — that would collapse
@@ -93,7 +115,11 @@ a.tbtn{text-decoration:none}
    the material. */
 .wrap{
   max-width:var(--wrap-max);
-  margin:0 auto;padding:0 var(--wrap-pad);zoom:var(--zoom,1);
+  margin:0 auto;zoom:var(--zoom,1);
+  /* Matches the toolbar's gutter above it, insets included, so the breadcrumb
+     still starts exactly where the prose does when the screen is rotated. */
+  padding-left:calc(var(--wrap-pad) + var(--safe-l));
+  padding-right:calc(var(--wrap-pad) + var(--safe-r));
 }
 .mobnav{display:none}
 .view[hidden],.sec-body[hidden]{display:none}
@@ -112,8 +138,15 @@ a.tbtn{text-decoration:none}
 
 /* Skip link — off-screen until focused, first thing in the tab order (T6). */
 .skip{
-  position:fixed;top:.6rem;left:.6rem;z-index:120;
-  transform:translateY(-250%);
+  position:fixed;top:calc(.6rem + var(--safe-t));left:calc(.6rem + var(--safe-l));z-index:120;
+  /* Off the top of the screen by its own height plus everything holding it
+     down, so it clears the edge whatever the offset works out to. It used to
+     be a bare -250%, which is a multiple of the link's height and knew nothing
+     about `top` — the moment `top` grew by a 59px status bar inset the hidden
+     link reappeared, a white box over the toolbar on every notched phone. The
+     3rem is slack for the 20px shadow blur below, which is otherwise the one
+     part of the link that still reaches the screen. */
+  transform:translateY(calc(-100% - var(--safe-t) - 3rem));
   background:var(--surface);color:var(--ink);
   border:1px solid var(--hi);border-radius:6px;
   padding:.5rem .95rem;text-decoration:none;

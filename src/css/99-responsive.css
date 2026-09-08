@@ -22,8 +22,12 @@
      is charged against the reading area for the whole session: it was 142px of
      a 664px viewport, 21%, carrying two wrapped rows of six equal-weight chips
      with `Reset` a thumb-width from `Menu`. */
-  :root{--scroll-clear:76px}
-  .topbar{gap:10px;padding-top:8px;padding-bottom:8px}
+  .topbar{gap:10px;padding-top:calc(8px + var(--safe-t));padding-bottom:8px}
+  /* --view-top is halved for the same reason: the bar is chrome the reader
+     pays for on every screen, and 56px of blank under it before the first word
+     spends another fifteenth of an iPhone's viewport restating that the bar
+     has ended. See 00-tokens.css for what it sets. */
+  :root{--scroll-clear:calc(76px + var(--safe-t));--view-top:1.75rem}
   .tb-sec{display:none}
   .side-close,.side-actions{display:flex}
   .brand{padding-right:84px}          /* clear of the close button */

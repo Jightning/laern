@@ -27,6 +27,35 @@
   --sp-3:1.75rem;    /* a new idea, or a digression set apart           */
   --sp-4:2.75rem;    /* an object — table, figure, subsection opening   */
 
+  /* The blank a view opens with, and the matching break before the pager that
+     closes a section. Named once because seven rules set it and they have to
+     move together — they were seven separate 56px, and a phone needs a
+     different number from a desktop. 56px reads as air beside a 40px page
+     gutter; under a 61px sticky toolbar on a 390px screen it is a seventh of
+     the viewport spent on nothing, so the responsive sheet halves it. */
+  --view-top:3.5rem;
+
+  /* What the device's own hardware takes out of the page.
+   *
+   * `viewport-fit=cover` (src/index.html) hands the app the whole screen,
+   * corners and notch included, and `apple-mobile-web-app-status-bar-style:
+   * black-translucent` means an installed iOS app draws *under* the status
+   * bar rather than below it. Both are deliberate — a Home Screen app that
+   * letterboxes itself looks like a web page — but they are only correct if
+   * the frame then puts its own chrome back inside the safe area. Without
+   * that the toolbar rides under the Dynamic Island: the breadcrumb, Menu and
+   * Review are drawn beneath an opaque black pill and are untappable.
+   *
+   * Named as four tokens rather than written at each site because the sites
+   * are in five stylesheets and a `env()` missing from one of them is
+   * invisible on every machine a developer owns. Every one falls back to 0px,
+   * which is what a desktop, an Android phone with no cutout, and a browser
+   * that never heard of `env()` all get. */
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);
+  --safe-r:env(safe-area-inset-right,0px);
+
   /* Ground, ink and rules are global: a course's accent rotation must not move
      the page out from under the reader. */
   --ground:#DFE3E9;
@@ -121,7 +150,12 @@
 
 /* ------------------------------------------------------------------- reset */
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:1rem}
+/* text-size-adjust: WebKit inflates text when a column gets wide relative to
+   the viewport, which on rotation resizes the reading measure the whole layout
+   is built around. The reader's own text-size setting still applies — this
+   turns off the browser's guess, not the preference. */
+html{scroll-behavior:smooth;scroll-padding-top:1rem;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
   margin:0;background:var(--ground);color:var(--ink);
   font-family:var(--sans);font-size:1.0625rem;line-height:1.68;

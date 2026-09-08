@@ -8,7 +8,7 @@ import { dueCount } from "./lib/queue.js";
 import { laneFor, setLane, LANES } from "./lib/tiers.js";
 import { reset as resetRetention } from "./lib/retention.js";
 import { rebuild } from "./lib/replay.js";
-import { useHashRoute, useNav } from "./lib/nav.js";
+import { useHashRoute, useNav, useReading } from "./lib/nav.js";
 import { setBlockConfig } from "./blocks/index.js";
 import { applyHue } from "./lib/theme.js";
 import { readZoom, applyZoom, zoomFromKey } from "./lib/zoom.js";
@@ -34,6 +34,46 @@ import CloudPanel from "./components/CloudPanel.jsx";
 /* The width above which the sidebar is a column rather than a drawer. Mirrors
    the 64em breakpoint in 99-responsive.css. */
 const WIDE = "(min-width: 64.01em)";
+
+/**
+ * Put `el` back under the reader at the same offset they left it, and keep it
+ * there while the page finishes arriving.
+ *
+ * One scrollTo is not enough. The section is re-rendered from scratch on the
+ * way back and its maths, figures and images finish laying out over the next
+ * few frames; everything above the anchor grows, and the position computed on
+ * frame one is 250-290px short by the time it stops. So the anchor's own
+ * position in the document is watched, and the scroll is re-applied only when
+ * that number actually moves — a settled anchor means the layout is done and
+ * the reader is left alone.
+ *
+ * It also stops the moment the reader scrolls for themselves. Correcting a
+ * page somebody has taken hold of is worse than landing a little short.
+ */
+function land(el, into) {
+  let anchor = null, frames = 0, live = true;
+  const stop = () => { live = false; };
+  /* Asking whether scrollY moved on its own cannot tell a reader apart from
+     the browser's own scroll anchoring, which fires under exactly these
+     conditions. Their input can. */
+  const watch = ["wheel", "touchstart", "keydown"];
+  const done = () => watch.forEach(k => removeEventListener(k, stop));
+  watch.forEach(k => addEventListener(k, stop, { passive: true }));
+
+  const step = () => {
+    if (!live) return done();
+    const top = Math.round(el.getBoundingClientRect().top + scrollY);
+    if (top !== anchor) {
+      /* "instant", not "auto": `auto` defers to CSS, and html carries
+         scroll-behavior:smooth, so what should have been a correction became a
+         1.5 second animation that the next frame then measured mid-flight. */
+      scrollTo({ top: top + into, behavior: "instant" });
+      anchor = top;
+    }
+    if (++frames < 40) requestAnimationFrame(step); else done();
+  };
+  step();
+}
 
 export default function App() {
   const { hash, cid, rest } = useHashRoute();
@@ -157,18 +197,44 @@ export default function App() {
   const secId = subId ? idx.SUBS[subId].sec.id : rest;
   const section = course ? course.sections.find(s => s.id === secId) : null;
 
+  /* What the rail marks. The route says which subsection was asked for; this
+     says which one is on screen now, and they part company the moment the
+     reader scrolls. Only one section is ever on the page, so the section half
+     of the rail still comes from the route. */
+  const subIds = useMemo(() => (section ? section.subs.map(s => s.id) : []), [section]);
+  const reading = useReading(subIds, subId);
+
   useEffect(() => {
     setMenuOpen(false);
     setSearchOpen(false);
     const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const behavior = calm ? "auto" : "smooth";
-    if (subId) {
-      const el = document.getElementById(subId);
-      if (el) el.scrollIntoView({ block: "start", behavior });
-    } else if (scrollY > 0) {
+    /* A return goes back to the sentence, not to the heading above it. Every
+       other arrival still lands on the subsection's own top, which is what a
+       link to a subsection means. */
+    const home = nav.takeReturn();
+    const el = subId ? document.getElementById(subId) : null;
+    if (home && home.into != null && el) {
+      /* Capped at the subsection's height so a layout that shrank while the
+         reader was away — a tier stub they expanded, collapsed again on
+         remount — cannot land them past its end and inside the next one. Not
+         floored at zero: a negative offset is a real reading position, the one
+         where the link sat in the margin of a subsection that began below the
+         top of the screen. */
+      land(el, Math.min(home.into, el.offsetHeight));
+    } else if (el) {
+      el.scrollIntoView({ block: "start", behavior });
+    } else if (!subId && scrollY > 0) {
       scrollTo({ top: 0, behavior });
     }
-  }, [hash]);
+    /* `section` is in the deps because of the split build: peek() returns
+       nothing on a cold load, so the first pass of this effect runs before the
+       course has arrived, finds no element, and silently does nothing. Opening
+       a link to a subsection then left the reader at the top of the section
+       with no indication anything had been skipped. The section object is
+       referentially stable for a given course, so this re-runs when the course
+       finally lands and not on every repaint. */
+  }, [hash, section]);
 
   /* keyboard: / search, esc close, [ ] page between sections */
   useEffect(() => {
@@ -201,8 +267,11 @@ export default function App() {
     const href = a.getAttribute("href");
     const inProse = !!a.closest(".bmain") || !!a.closest(".mnote");
     e.preventDefault();
-    const origin = a.closest(".sub")?.id || null;
-    nav.go(href, inProse, origin);
+    /* Not just which subsection held the link, but how far down it the reader
+       had got. See useNav.go — this is what the return pill lands on. */
+    const sub = a.closest(".sub");
+    nav.go(href, inProse,
+           sub ? { id: sub.id, into: -sub.getBoundingClientRect().top } : null);
   };
 
   /* Destructive, and reachable from two places (the toolbar on a wide screen,
@@ -225,7 +294,12 @@ export default function App() {
     : rest.startsWith("c/")
       ? `<b>Core concepts</b>  ›  ${((course.concepts || {})[rest.slice(2)] || {}).term || ""}`
       : section
-        ? `<b>${section.num} ${section.title}</b>` + (subId ? `  ›  ${idx.SUBS[subId].sub.title}` : "")
+        /* `reading`, not `subId`: the crumb answers "where am I", and the
+           route answers "what did I click". They agree for one screen. The
+           rail is read off the same value, so the two halves of the frame
+           cannot say different things. */
+        ? `<b>${section.num} ${section.title}</b>` +
+          (reading ? `  ›  ${idx.SUBS[reading].sub.title}` : "")
         : "";
 
   let view = null;
@@ -283,7 +357,8 @@ export default function App() {
       <a class="skip" href="#content" onClick={skip}>Skip to the material</a>
       <div class={"shell" + (tucked ? " tucked" : "") + (course ? "" : " solo")}>
         {course && !tucked && (
-          <Sidebar course={course} cid={cid} rest={rest} open={menuOpen} onNavigate={() => setMenuOpen(false)}
+          <Sidebar course={course} cid={cid} rest={rest} here={reading}
+                   open={menuOpen} onNavigate={() => setMenuOpen(false)}
                    onClose={() => setMenuOpen(false)} onTuck={toggleTuck}
                    actions={{ stateOn: state.on, expanded: expandAll,
                               onExpand: () => setExpandAll(v => !v), onReset }} />

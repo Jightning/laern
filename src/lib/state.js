@@ -1,7 +1,12 @@
 /* Learner state: confidence calibration and spaced review, per course. */
-import { getItem, setItem } from "./store.js";
+import { getItem, setItem, removeItem } from "./store.js";
 const DAY = 864e5;
 const cache = {};
+
+/* Loop A is keyed on the course *code*, not its folder id, so a course
+   reinstalled under a different id keeps its history. lib/replay.js writes the
+   same row from the log, so the shape belongs here rather than in both. */
+export const keyFor = (id, code) => "study:" + String(code || id).replace(/\s+/g, "");
 
 /* One Loop A rating, as a pure function of the previous row. `rate` applies it
    to live state; lib/replay.js applies the same function to logged rows, which
@@ -26,10 +31,13 @@ export function rateStep(prev, conf, got, now = Date.now()) {
     after lib/replay.js rewrites a course's Loop A rows from the log. */
 export const forget = id => { if (id) delete cache[id]; else for (const k in cache) delete cache[k]; };
 
+/** Erase one course's Loop A rows. lib/purge.js is the caller. */
+export function drop(id, code) { removeItem(keyFor(id, code)); forget(id); }
+
 export function stateFor(id, course) {
   if (cache[id]) return cache[id];
   const on = !!(course.state && course.state.enabled !== false);
-  const KEY = "study:" + String(course.code || id).replace(/\s+/g, "");
+  const KEY = keyFor(id, course.code);
   let d = { q: {} };
   const raw = on && getItem(KEY);
   if (raw) { try { d = JSON.parse(raw) || d; } catch {} }

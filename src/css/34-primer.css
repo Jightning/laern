@@ -1,6 +1,6 @@
 /* 34-primer — the pre-training module: name the parts before using them. */
 
-.primer{padding:56px 0 0;max-width:var(--measure)}
+.primer{padding:var(--view-top) 0 0;max-width:var(--measure)}
 .primer h1{
   font-family:var(--mono);font-size:1.9rem;font-weight:600;
   letter-spacing:-.03em;line-height:1.1;margin:0 0 14px;
@@ -28,3 +28,12 @@
 }
 .primer-done h3{margin:0 0 6px;font-size:1.1rem}
 .primer-done p{margin:0 0 18px;color:var(--ink-2)}
+
+/* A view ends where its last block ends. Whatever bottom margin that block
+   carries was there to hold a sibling off, and the last one has no sibling —
+   so it lands on top of the page's own bottom gutter and reads as a stretch of
+   nothing to scroll past, worst on a phone. Stated per sheet rather than once
+   in 30-typography.css because the margins it cancels are declared here: the
+   file numbers mean later corrects earlier, so one shared rule up at 30 would
+   lose to every single one of them. */
+.primer>*:last-child{margin-bottom:0}

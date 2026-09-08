@@ -23,7 +23,8 @@ c:hover,.cref:hover{color:var(--hi-ink)}
   text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px}
 .refby a{margin-right:12px;white-space:nowrap}
 .pill{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:90;
+  position:fixed;left:50%;transform:translateX(-50%);z-index:90;
+  bottom:calc(22px + var(--safe-b));
   display:none;align-items:center;gap:10px;background:var(--surface);
   border:1px solid var(--hi);border-radius:22px;padding:8px 16px;
   box-shadow:0 8px 28px rgba(10,14,22,.20);cursor:pointer;font:inherit;
@@ -58,18 +59,22 @@ c:hover,.cref:hover{color:var(--hi-ink)}
 .brow>.bmain>*,
 .brow>.bmain>.bhtml>*{margin-block:0}
 .brow:first-child{margin-top:0}
-.brow:has(.def),.brow:has(.ex),
-.brow:has(.tscroll),.brow:has(.figure),.brow:has(.imgblock),
-.brow:has(pre),.brow:has(.codewrap){--row-gap:var(--sp-3)}
+/* A block set apart from the prose takes the wider beat, and takes it on both
+   sides — a card has a visible edge, so the same gap reads tighter after one
+   than after a paragraph. One selector for both, because this was two
+   hand-written :has() lists that drifted: `.ex`, `.codewrap`, `.imgblock` and
+   `.mathblk` were in the "before" list and missing from the "after" one, so a
+   worked example opened on 28px, closed on 16px, and read as glued to whatever
+   followed it. `data-apart` comes off the block registry's own flag — see
+   isApart in src/blocks/index.js — so the two sides cannot disagree again and
+   a course's own blocks.js can join the set. */
+.brow[data-apart],.brow[data-apart]+.brow{--row-gap:var(--sp-3)}
 .brow:has(h3){--row-gap:var(--sp-4)}
 /* A trap or a note hugs what it qualifies only when that is a sentence. After a
    card it would read as a rendering fault rather than as an interjection, so it
-   takes the ordinary beat there. */
+   takes the ordinary beat there — which the rule above already gives it. */
 .brow:has(>.bmain>div>p)+.brow:has(.trap),
 .brow:has(>.bmain>div>p)+.brow:has(.note){--row-gap:var(--sp-1)}
-/* Anything following a card needs the wider beat: a card has a visible edge,
-   so the same gap reads tighter after one than after a paragraph. */
-.brow:has(.def)+.brow,.brow:has(.figure)+.brow,.brow:has(.tscroll)+.brow{--row-gap:var(--sp-3)}
 .mnote{
   border:1px solid var(--rule);border-left:2px solid var(--lo);border-radius:8px;
   background:var(--surface);padding:11px 13px;font-size:.79rem;line-height:1.5;

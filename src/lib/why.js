@@ -6,7 +6,7 @@
  * same row in state. This is where the reader's half is kept — learner content,
  * stored and styled apart from the material, like a note.
  */
-import { getItem, setItem } from "./store.js";
+import { getItem, setItem, removeItem, keys } from "./store.js";
 const key = (cid, itemId) => `why:${cid}:${itemId}`;
 const KEEP = 5;
 
@@ -31,4 +31,11 @@ export function whyFor(cid, itemIds) {
   for (const id of itemIds)
     for (const e of read(key(cid, id))) out.push({ ...e, itemId: id });
   return out.filter(e => e.text).sort((a, b) => b.ts - a.ts);
+}
+
+/** Erase every reason the reader gave on one course — one key per item, so a
+ *  prefix sweep. lib/purge.js is the caller. */
+export function dropWhy(cid) {
+  const pre = key(cid, "");
+  for (const k of keys()) if (k.startsWith(pre)) removeItem(k);
 }

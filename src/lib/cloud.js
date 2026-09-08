@@ -32,6 +32,7 @@ import { deviceId } from "./device.js";
 import { importCourse, importedIndex, filesOf, versionOf, markSynced,
          removeCourse } from "./courses.js";
 import { invalidate } from "./replay.js";
+import { purge } from "./purge.js";
 import { deriveKey, seal as sealBytes, open as openBytes, versionOfFiles } from "./seal.js";
 
 const SECRET = "cloud:secret";
@@ -157,9 +158,14 @@ async function pullCourses(listing, taken) {
 
     if (c.deleted) {
       /* The account says this is gone. Removing it here is what makes a
-         deletion on one device mean anything on the others; the answer history
-         stays, because learner state is keyed on the course code. */
-      if (holding) { removeCourse(c.id); removed.push(c.id); }
+         deletion on one device mean anything on the others — and that has to
+         include the answers, or the two devices disagree about what Remove
+         did. The device that pressed the button purged (lib/purge.js); this
+         one does the same thing to its own copy. */
+      if (holding) {
+        await purge(c.id, (importedIndex()[c.id] || {}).code);
+        removeCourse(c.id); removed.push(c.id);
+      }
       continue;
     }
     if (here === c.version) continue;

@@ -124,10 +124,25 @@ if (single) {
      `${ops.exports} of ${ops.cards} exportable`);
 
   const before = ops.cards;
-  await page.locator(".lcard .lop.warn").first().click(); await page.waitForTimeout(220);
+
+  /* Remove and Hide do opposite things to the reader's answers — Remove purges
+     them (lib/purge.js), Hide keeps them because it is reversible — so the two
+     dialogs have to say opposite things. A confirmation that promised the wrong
+     one would be the most expensive sentence in the product. */
+  const openConfirm = word => page.evaluate(w => {
+    const card = [...document.querySelectorAll(".lcard")]
+      .find(c => c.querySelector(".lop.warn").textContent.trim() === w);
+    if (!card) return false;
+    card.querySelector(".lop.warn").click();
+    return true;
+  }, word);
+
+  await openConfirm("Remove"); await page.waitForTimeout(220);
   ck("removal asks first", await page.locator(".modal.danger").count() === 1);
-  ck("the confirmation says history survives",
-     /history is kept/i.test(await page.locator(".modal.danger").innerText()));
+  const removeSays = await page.locator(".modal.danger").innerText();
+  ck("removing says the answers go too",
+     /answers go with it/i.test(removeSays) && /cannot be undone/i.test(removeSays),
+     removeSays.replace(/\s+/g, " "));
   await shot("library-remove");
   await page.locator(".modal.danger .dbtn.ghost").click(); await page.waitForTimeout(220);
   ck("cancelling removes nothing",
@@ -211,8 +226,10 @@ if (single) {
       .find(c => c.querySelector(".lhit").getAttribute("href") === "#/demo")
       .querySelector(".lop.warn").click());
     await page.waitForTimeout(200);
-    ck("hiding a bundled course explains that it is bundled",
-       /bundled with the site/i.test(await page.locator(".modal.danger").innerText()));
+    const hideSays = await page.locator(".modal.danger").innerText();
+    ck("hiding says the answers are kept, and that it comes back",
+       /answers are kept/i.test(hideSays) && /add this back/i.test(hideSays),
+       hideSays.replace(/\s+/g, " "));
     await page.locator("#lib-drop").click(); await page.waitForTimeout(300);
     ck("the bundled course leaves the shelf",
        await page.locator(".lcard").count() === before - 1);
@@ -395,7 +412,7 @@ for (const cid of ids) {
   const taps = await page.evaluate(() => {
     const small = [];
     for (const el of document.querySelectorAll(
-      ".topbar .tbtn, .crumb-home, .cbtn, .gbtn, .tstub-b, .note-add")) {
+      ".topbar .tbtn, .crumb-home, .cbtn, .gbtn, .tstub-b, .note-pull")) {
       const r0 = el.getBoundingClientRect();
       if (!r0.width || !r0.height) continue;
       el.scrollIntoView({ block: "center" });
@@ -566,7 +583,83 @@ for (const cid of ids) {
     [...document.querySelectorAll(".sec")].map(e => Math.round(e.getBoundingClientRect().top)));
   const moved = rowsBefore.filter((v, i) => Math.abs(v - rowsAfter[i]) > 1).length;
   ck(P("hovering the rail moves nothing"), moved === 0, moved + " rows moved");
-  await page.mouse.move(4, 4);
+  /* Off the sidebar, not to 4,4 — that is over it, and the rail deliberately
+     holds still while the pointer is on it. */
+  await page.mouse.move(Math.round(page.viewportSize().width * 0.7), 400);
+
+  /* The rail marks where the reader IS, not where they clicked. The two agree
+     for one screen and then part company for the rest of the section, which is
+     most of a session — a subsection runs 2000px and the route does not change
+     while somebody reads. */
+  const railSubs = await page.evaluate(() => [...document.querySelectorAll(".sub")].map(e => e.id));
+  if (railSubs.length > 1) {
+    const marked = () => page.evaluate(() =>
+      document.querySelector(".rail .subs a.cur")?.getAttribute("href")?.split("/").pop() || null);
+    /* Park the reader on the last subsection without touching the route. */
+    await page.evaluate(id => {
+      const el = document.getElementById(id);
+      const bar = document.querySelector(".topbar").getBoundingClientRect().bottom;
+      scrollTo({ top: scrollY + el.getBoundingClientRect().top - bar - 1, behavior: "instant" });
+    }, railSubs[railSubs.length - 1]);
+    await page.waitForTimeout(220);
+    const at = await marked();
+    const route = await page.evaluate(() => location.hash);
+    ck(P("the rail follows the scroll, not the route"),
+       at === railSubs[railSubs.length - 1] && !route.endsWith(at),
+       `rail ${at}, route ${route}`);
+
+    /* A mark below the fold of its own list is not a mark. At 900px of sidebar
+       a 15-section course put it 721px down and a 62-section one 2021px down,
+       so this is most courses, not an edge case. */
+    /* The rail may still be gliding; a fixed wait is a guess, and on the
+       62-section course it was the wrong one. */
+    const railStill = async () => {
+      let last = -1, same = 0;
+      for (let i = 0; i < 40 && same < 3; i++) {
+        const v = await page.evaluate(() => Math.round(document.querySelector(".sidebar").scrollTop));
+        same = v === last ? same + 1 : 0;
+        last = v;
+        await page.waitForTimeout(50);
+      }
+      return last;
+    };
+    await railStill();
+    ck(P("the rail keeps the mark in view"), await page.evaluate(() => {
+      const side = document.querySelector(".sidebar");
+      const cur = side.querySelector(".rail .subs a.cur");
+      if (!cur) return true;
+      const s = side.getBoundingClientRect(), c = cur.getBoundingClientRect();
+      return c.top >= s.top - 1 && c.bottom <= s.bottom + 1;
+    }));
+
+    /* ...but never while the reader is working down the list by hand. */
+    await page.evaluate(() => { document.querySelector(".sidebar").scrollTop = 0; });
+    await railStill();                       /* no glide left to fight */
+    await page.locator(".sidebar .brand").hover();
+    await page.waitForTimeout(150);
+    await page.evaluate(id => {
+      const el = document.getElementById(id);
+      const bar = document.querySelector(".topbar").getBoundingClientRect().bottom;
+      scrollTo({ top: scrollY + el.getBoundingClientRect().top - bar - 1, behavior: "instant" });
+    }, railSubs[0]);
+    await page.waitForTimeout(500);
+    ck(P("a hovered rail is not yanked"), (await railStill()) === 0);
+    await page.mouse.move(Math.round(page.viewportSize().width * 0.7), 400);
+
+    /* And back: it has to let go as well as take hold. */
+    await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(220);
+    ck(P("above the first subsection the rail marks none"), (await marked()) === null);
+
+    /* A subsection reached by its own URL is marked once the scroll settles.
+       This used to be silently broken on a cold load: the course had not
+       arrived, so the scroll found no element and never retried. */
+    await go(`#/${cid}/${railSubs[1]}`);
+    await page.waitForTimeout(900);
+    ck(P("a linked subsection is marked on arrival"), (await marked()) === railSubs[1],
+       `${await marked()} wanted ${railSubs[1]}`);
+    await go(`#/${cid}/${secIds[0]}`);
+  }
 
   /* Ctrl +/- scales the reading column and leaves the chrome alone. */
   /* height, not width: the column is often already at the width its container
@@ -588,10 +681,35 @@ for (const cid of ids) {
   if (await xr.count()) {
     await xr.hover(); await page.waitForTimeout(180);
     ck(P("hover pairs mention and card"), await page.locator(".mnote.hot").count() > 0);
+
+    /* Where the mention sits on screen before the trip, so the return can be
+       measured against it rather than against the subsection it happens to be
+       in. A subsection runs 2000px and a mention can be at the bottom of one. */
+    const seat = await page.evaluate(() => {
+      const a = document.querySelector(".bmain a.xr");
+      return { top: Math.round(a.getBoundingClientRect().top), href: a.getAttribute("href") };
+    });
     await xr.click(); await page.waitForTimeout(400);
     ck(P("return pill appears"), await page.locator(".pill.on").isVisible());
     await page.locator(".pill.on").click(); await page.waitForTimeout(400);
     ck(P("pill returns"), await page.locator("section.sec-body").count() === 1);
+
+    /* And returns to the sentence, not to the heading above it. Waited out
+       rather than sampled once: the section re-renders on the way back and its
+       maths and figures settle over the next few frames, which used to leave
+       the landing 250-380px short. */
+    let seatNow = null;
+    for (let i = 0; i < 30; i++) {
+      seatNow = await page.evaluate(() => {
+        const a = document.querySelector(".bmain a.xr");
+        return a ? Math.round(a.getBoundingClientRect().top) : null;
+      });
+      if (seatNow !== null && Math.abs(seatNow - seat.top) <= 8) break;
+      await page.waitForTimeout(100);
+    }
+    ck(P("the return lands where the link was clicked"),
+       seatNow !== null && Math.abs(seatNow - seat.top) <= 8,
+       `mention was ${seat.top}px from the top, came back at ${seatNow}px`);
 
     /* The trail ends when the reader steps off it. Otherwise the pill sits
        there offering to return to a page they left several sections ago. */
@@ -905,23 +1023,75 @@ for (const cid of ids) {
     await shot(cid + "-primer");
   }
 
-  /* notes live in the margin channel, persist, and stay collapsed until asked for */
+  /* A note is started by pulling the foot of a block down, and once written it
+     is a card in the margin channel stacked with the author's own cards. There
+     is no standing affordance to click: the "+ note" button that used to sit in
+     every block's margin was 32 permanently visible buttons on one section of a
+     phone. */
   await go(`#/${cid}/${secIds[0]}`);
-  const add = page.locator(".note-add").first();
-  if (await add.count()) {
-    ck(P("note affordance is in the margin channel"),
-       await page.locator(".bside .notes").count() > 0);
-    await add.click(); await page.waitForTimeout(200);
-    await page.locator(".note-area").first().fill("check note persistence");
+  const grip = page.locator(".note-pull").first();
+  if (await grip.count()) {
+    ck(P("no standing note button"), await page.locator(".note-add").count() === 0);
+    /* The reason the affordance is allowed to be on every block at all. */
+    ck(P("the note affordance costs no layout"), await page.evaluate(() =>
+      [...document.querySelectorAll(".notes")].every(e => !e.getBoundingClientRect().height)));
+    ck(P("a block with no note shows nothing in the margin"),
+       await page.locator(".mnote.is-n").count() === 0);
+
+    await grip.scrollIntoViewIfNeeded();
+    const g = await grip.boundingBox();
+    const pull = async dy => {
+      await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2);
+      await page.mouse.down();
+      for (const y of [6, dy]) {
+        await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2 + y);
+        await page.waitForTimeout(40);
+      }
+      await page.mouse.up(); await page.waitForTimeout(250);
+    };
+    /* A scroll that grazes the grip must not drop a textarea under the reader. */
+    await pull(12);
+    ck(P("a short pull snaps back"), await page.locator(".note-area").count() === 0);
+    await pull(48);
+    ck(P("a pull past the threshold opens the note in the margin"),
+       await page.locator(".bside .note-area").count() === 1);
+    ck(P("the opened note takes focus"),
+       await page.evaluate(() => document.activeElement?.classList.contains("note-area")));
+
+    await page.locator(".note-area").first().fill("**check** note `persistence`");
     await page.locator(".note-area").first().blur();       /* commit before leaving */
     await page.waitForTimeout(500);
     await go(`#/${cid}/concepts`);
     await go(`#/${cid}/${secIds[0]}`);
-    ck(P("a written note collapses to a marker"), await page.locator(".note-marker").count() >= 1);
-    await page.locator(".note-marker").first().click(); await page.waitForTimeout(250);
-    const body = page.locator(".note-body").first();
-    const saved = await body.count() ? await body.innerText() : "";
+
+    /* Shown by default, and read as Markdown rather than as raw asterisks. */
+    ck(P("a written note shows in the margin by default"),
+       await page.locator(".bside .mnote.is-n .note-body").count() === 1);
+    const body = await page.locator(".note-body").first().innerHTML();
+    ck(P("the note renders as markdown"), /<b>check<\/b>/.test(body) && /<code>persistence<\/code>/.test(body), body);
+    /* T12: a reference card must be level with its mention, a note need not be,
+       so the note is what yields when the two want the same row. */
+    ck(P("the note stacks under the author's cards"), await page.evaluate(() => {
+      const side = [...document.querySelectorAll(".bside")].find(a => a.querySelector(".mnote.is-n"));
+      const kids = [...side.children];
+      return kids.indexOf(side.querySelector(".mnote.is-n")) === kids.length - 1;
+    }));
+
+    /* Folding is per note and is remembered. */
+    await page.locator(".note-fold").first().click(); await page.waitForTimeout(250);
+    ck(P("folding hides the note body"), await page.locator(".note-body").count() === 0);
+    await go(`#/${cid}/concepts`);
+    await go(`#/${cid}/${secIds[0]}`);
+    ck(P("a folded note stays folded"),
+       await page.locator(".mnote.is-n.is-shut").count() === 1 &&
+       await page.locator(".note-body").count() === 0);
+    await page.locator(".note-fold").first().click(); await page.waitForTimeout(250);
+    ck(P("unfolding brings it back"), await page.locator(".note-body").count() === 1);
+
+    await page.locator(".note-edit").first().click(); await page.waitForTimeout(250);
+    const saved = await page.locator(".note-area").first().inputValue();
     ck(P("notes persist"), saved.includes("persistence"), saved.slice(0, 30) || "not found");
+    await page.locator(".note-area").first().blur(); await page.waitForTimeout(300);
   }
 
   /* One course's styles at a time: they used to be appended and never removed,

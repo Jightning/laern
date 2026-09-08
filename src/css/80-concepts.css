@@ -1,6 +1,6 @@
 /* 80-concepts — Concept hub and concept entries. */
 
-.chub{padding:56px 0 0}
+.chub{padding:var(--view-top) 0 0}
 .chub h1{font-family:var(--mono);font-size:2.0rem;font-weight:700;letter-spacing:-.03em;margin:0 0 12px}
 .chub .lede{color:var(--ink-2);margin:0 0 30px;max-width:var(--measure)}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:13px}
@@ -12,7 +12,7 @@
 .ccard h3{font-family:var(--mono);font-size:.98rem;margin:0 0 7px;letter-spacing:-.01em}
 .ccard .uses{font-family:var(--mono);font-size:.70rem;color:var(--hi-ink)}
 .ccard .where{color:var(--ink-3);font-size:.78rem;margin-top:7px;line-height:1.5}
-.cdet{padding:56px 0 0;max-width:70ch}
+.cdet{padding:var(--view-top) 0 0;max-width:70ch}
 .cdet .eyebrow{margin-bottom:10px}
 .cdet h1{font-family:var(--mono);font-size:1.85rem;font-weight:700;letter-spacing:-.03em;margin:0 0 18px}
 .cdet .body{font-size:1.0rem}
@@ -32,11 +32,24 @@
 .appears .at,.toc .tt2{overflow-wrap:anywhere}
 
 /* Grouped by the section that first needs the concept, so the hub reads in
-   course order rather than as one ranked list. */
+   course order rather than as one ranked list. The gap belongs *between*
+   groups; on the last one it is 44px of nothing on top of the page's own
+   bottom gutter, which on a phone is most of a thumb's worth of scrolling
+   past the end of the material. */
 .cgroup{margin:0 0 var(--sp-4)}
+.cgroup:last-child{margin-bottom:0}
 .cghead{
   font-family:var(--mono);font-size:.70rem;letter-spacing:.10em;text-transform:uppercase;
   font-weight:400;color:var(--ink-3);margin:0 0 var(--sp-2);
   padding-bottom:6px;border-bottom:1px solid var(--rule-2);
 }
 .cghead b{font-weight:600;color:var(--hi-ink);letter-spacing:.04em;text-transform:none}
+
+/* A view ends where its last block ends. Whatever bottom margin that block
+   carries was there to hold a sibling off, and the last one has no sibling —
+   so it lands on top of the page's own bottom gutter and reads as a stretch of
+   nothing to scroll past, worst on a phone. Stated per sheet rather than once
+   in 30-typography.css because the margins it cancels are declared here: the
+   file numbers mean later corrects earlier, so one shared rule up at 30 would
+   lose to every single one of them. */
+.chub>*:last-child,.cdet>*:last-child{margin-bottom:0}

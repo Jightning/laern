@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "preact/hooks";
 import { IconStart, IconConcept, IconPractice, IconMap, IconTuck } from "./Icon.jsx";
 import CourseActions from "./CourseActions.jsx";
 
@@ -12,8 +13,40 @@ function Cycle({ n, active, visited }) {
   );
 }
 
-export default function Sidebar({ course, cid, rest, open, onNavigate, onTuck, onClose, actions }) {
+/* How much of the rail to keep beyond the mark, so it never lands flush
+   against an edge and read as clipped. */
+const EDGE = 28;
+
+export default function Sidebar({ course, cid, rest, here, open, onNavigate, onTuck, onClose, actions }) {
   const H = r => `#/${cid}${r ? "/" + r : ""}`;
+  const rail = useRef(null);
+
+  /* Bring the mark into view, because on anything longer than a short course
+     it is not. Measured at 900px of sidebar: a 15-section course marks 721px
+     down, a 62-section one 2021px down — a highlight below the fold of its own
+     list is not a highlight.
+     
+     Minimally, and only the sidebar: never the page, never centred, and never
+     while the pointer is over it, so a reader working down the list by hand is
+     never yanked back to where the page happens to be. */
+  useEffect(() => {
+    const box = rail.current;
+    if (!box || box.matches(":hover")) return;
+    const mark = box.querySelector(".subs a.cur") || box.querySelector(".sec.active");
+    if (!mark) return;
+    const b = box.getBoundingClientRect(), m = mark.getBoundingClientRect();
+    const over = m.bottom - (b.bottom - EDGE);
+    const under = (b.top + EDGE) - m.top;
+    const by = under > 0 ? -under : over > 0 ? over : 0;
+    if (!by) return;
+    /* Smooth for a nudge, instant for a relocation. Reading down a section
+       moves the mark a row at a time and the glide is what makes that legible;
+       arriving at section 40 of 62 is a 2000px jump, and animating that is a
+       second of the rail streaming past on a control nobody was looking at. */
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const far = Math.abs(by) > b.height;
+    box.scrollTo({ top: box.scrollTop + by, behavior: calm || far ? "auto" : "smooth" });
+  }, [here, rest]);
   /* the primer belongs to the section it introduces, so the rail marks it too */
   const target = rest && rest.startsWith("primer/") ? rest.slice(7) : rest;
   const activeSec = target && target.startsWith("s") ? target.split("-")[0] : null;
@@ -27,7 +60,7 @@ export default function Sidebar({ course, cid, rest, open, onNavigate, onTuck, o
   ];
 
   return (
-    <aside class={"sidebar" + (open ? " open" : "")} id="sidebar">
+    <aside class={"sidebar" + (open ? " open" : "")} id="sidebar" ref={rail}>
       {/* Below the sidebar breakpoint this is a drawer over the page, so it
           needs a way out that is not a sliver of scrim beside it. Above it the
           sidebar is permanent and there is nothing to close. */}
@@ -77,7 +110,9 @@ export default function Sidebar({ course, cid, rest, open, onNavigate, onTuck, o
               <ul class="subs">
                 {s.subs.map((sub, k) => (
                   <li key={sub.id}>
-                    <a href={H(sub.id)} class={rest === sub.id ? "cur" : ""} onClick={onNavigate}>
+                    {/* `here` is where the reader is, not where they clicked —
+                        see useReading in lib/nav.js. */}
+                    <a href={H(sub.id)} class={here === sub.id ? "cur" : ""} onClick={onNavigate}>
                       {`${s.num}.${k + 1}  ${sub.title}`}
                     </a>
                   </li>

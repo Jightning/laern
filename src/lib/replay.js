@@ -21,7 +21,7 @@
  * ==========================================================================*/
 import { getItem, setItem, removeItem, logRows } from "./store.js";
 import { step as retentionStep, install as installRetention, configOf } from "./retention.js";
-import { rateStep, forget } from "./state.js";
+import { rateStep, forget, keyFor } from "./state.js";
 
 const DAY = 864e5;
 const ckptKey = cid => `ckpt:${cid}`;
@@ -82,8 +82,7 @@ export function rebuild(cid, course) {
   const next = fold(rows, cfg, prior || undefined);
   installRetention(cid, next.retain);
 
-  const code = String(course.code || cid).replace(/\s+/g, "");
-  setItem("study:" + code, JSON.stringify({ q: next.study }));
+  setItem(keyFor(cid, course.code), JSON.stringify({ q: next.study }));
   setItem(ckptKey(cid), JSON.stringify(next));
   forget(cid);
   return next;

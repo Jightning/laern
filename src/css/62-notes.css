@@ -1,54 +1,101 @@
-/* 62-notes — the learner's own writing, living in the margin channel.
+/* 62-notes — the learner's own writing, in the margin beside what prompted it.
  *
- * Deliberately unlike course content: no card, a hand-annotation accent, so it
- * never reads as something the material said. Collapsed to a marker by default
- * once written — an expanded note competes with the lesson for attention, which
- * coherence forbids, so it shows on demand. */
+ * The written note is an `.mnote` (50-refs.css), the same card the reference
+ * and "used later" widgets are, so the margin is one stack of one kind of
+ * thing rather than three shapes competing. It carries its own accent, the
+ * hand-annotation colour, so it never reads as something the material said.
+ *
+ * A block with no note shows nothing there. What offers to start one is a grip
+ * on the block's own bottom edge, drawn at the opacity of page texture and
+ * costing no layout at all. See Notes.jsx for why it is a pull. */
 
-.notes{margin:0}
+/* ---------------------------------------------------- starting a note ----- */
 
-/* the empty affordance stays quiet until the row is hovered or focused,
-   so 90-odd "+ note" buttons do not become page furniture */
-.notes.empty{opacity:0;transition:opacity .12s ease}
-.brow:hover .notes.empty,
-.brow:focus-within .notes.empty{opacity:1}
-@media (hover:none){ .notes.empty{opacity:1} }
+/* Zero-height, so 42 of these on a section page add 42 × 0 pixels. The grip is
+   positioned against this box and hangs in the gap below the block, which is
+   space the row already owns. */
+.notes{position:relative;height:0}
 
-.note-add{
-  font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;
-  background:none;border:1px dashed var(--rule);border-radius:6px;
-  color:var(--ink-3);padding:4px 9px;cursor:pointer;
+.note-pull{
+  /* 26px tall because WCAG 2.5.8 sets 24px as the floor for a target, and the
+     grip is hit-tested against that in tools/test-ui.mjs like every other
+     control. Entirely below the block's edge, never straddling it: two pixels
+     of overlap cost 3px of hit area under a subsection's sticky heading, which
+     paints above everything at z-index 4, and leaning further up started
+     covering a cross-reference in the line above. */
+  position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  width:72px;height:26px;padding:0;
+  background:none;border:0;cursor:grab;
+  /* Required, and the reason the grip is 72px wide rather than full width:
+     a touch drag cannot work unless the browser stops treating the gesture as
+     a scroll, and that decision is made at touchstart from this property. The
+     cost is that a scroll begun exactly here does not scroll, so the region
+     that pays it is kept as small as the target guidance allows. */
+  touch-action:none;
 }
-.note-add:hover{border-color:var(--dc);color:var(--dc-ink);border-style:solid}
+.note-pull:active{cursor:grabbing}
 
-/* written but collapsed */
-.note-marker{
-  display:inline-flex;align-items:center;gap:7px;
-  font-family:var(--mono);font-size:.68rem;letter-spacing:.03em;
-  background:none;border:0;padding:2px 0;cursor:pointer;color:var(--dc-ink);
+/* The sheet-handle shape, because it is the one shape that says "pull" without
+   a word on it. Nearly invisible until looked for. */
+.note-grip{
+  width:24px;height:2px;border-radius:2px;
+  background:var(--ink-3);opacity:.16;
+  transition:opacity .13s ease,background-color .13s ease,width .13s ease;
 }
-.note-marker:hover{text-decoration:underline}
-.note-dot{
-  width:7px;height:7px;border-radius:50%;background:var(--dc);flex:none;
-}
+.brow:hover .note-grip,
+.note-pull:hover .note-grip{opacity:.45}
+/* No hover to reveal it on a touch device, so it rests a little higher there.
+   Still page texture rather than furniture: 32 of these are on screen. */
+@media (hover:none){ .note-grip{opacity:.3} }
+.note-pull:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
+.note-pull:hover .note-grip,
+.note-pull:active .note-grip{background:var(--dc);opacity:.7;width:30px}
 
-/* expanded */
-.notes.open{border-left:2px solid var(--dc);padding:2px 0 2px 11px}
-.note-head{display:flex;align-items:baseline;gap:9px;margin-bottom:5px;flex-wrap:wrap}
-.note-eyebrow{
-  font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--dc-ink);
+/* ------------------------------------------------------- the note card ---- */
+
+.mnote.is-n{border-left-color:var(--dc)}
+.mnote.is-n .mn-k{color:var(--dc-ink)}
+.mnote.is-n .mn-go{color:var(--dc-ink)}
+
+/* The header is the fold control, so the whole label is the target rather than
+   a caret the thumb has to hunt for. It keeps .mn-k's type, since it is the
+   same eyebrow every other card in this stack wears. */
+.note-fold{
+  display:flex;align-items:center;gap:6px;width:100%;
+  background:none;border:0;padding:0;cursor:pointer;text-align:left;
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;
+  text-transform:uppercase;
 }
+.mnote.is-n.is-shut .mn-k{margin-bottom:0}
+.note-caret{
+  width:0;height:0;flex:none;
+  border-left:4px solid currentColor;border-top:3.5px solid transparent;
+  border-bottom:3.5px solid transparent;
+  transform:rotate(90deg);transition:transform .13s ease;
+}
+.mnote.is-n.is-shut .note-caret{transform:none}
+
+/* The reader's own prose, rendered from Markdown by lib/md.js. Sized like the
+   card's own body text, so a note and a reference read at one weight. */
+.note-body{color:var(--ink-2);font-size:.765rem;line-height:1.55}
+.note-body p{margin:0 0 6px}
+.note-body>:last-child{margin-bottom:0}
+.note-body ul,.note-body ol{margin:0 0 6px;padding-left:18px}
+.note-body li{margin-bottom:3px}
+.note-body code{font-size:.9em}
+.note-body a{color:var(--dc-ink)}
+
 .note-edit{
-  font-family:var(--mono);font-size:.62rem;background:none;border:0;
-  color:var(--ink-3);cursor:pointer;padding:0;text-decoration:underline;
+  margin-top:6px;background:none;border:0;padding:0;cursor:pointer;
+  font-family:var(--mono);font-size:.68rem;
+  border-bottom:1px solid transparent;
 }
-.note-edit:hover{color:var(--dc-ink)}
+.note-edit:hover{border-bottom-color:currentColor}
 
-.note-body{margin:0;font-size:.84rem;color:var(--ink-2);white-space:pre-wrap;line-height:1.55}
 .note-area{
-  width:100%;font:inherit;font-size:.84rem;line-height:1.55;color:var(--ink);
-  background:var(--surface);border:1px solid var(--rule);border-radius:7px;
-  padding:8px 10px;resize:vertical;
+  width:100%;font:inherit;font-size:.78rem;line-height:1.5;color:var(--ink);
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
+  padding:7px 9px;resize:vertical;
 }
 .note-area:focus{outline:2px solid var(--dc);outline-offset:1px}

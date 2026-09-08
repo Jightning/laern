@@ -67,8 +67,10 @@ const PHASES = [
     pick: d => d.concepts.map(c => ({ id: `3:${c.key}`,
       target: `concepts/${c.key}.yaml`, written: c.body })) },
 
+  /* 13* rides along because this is the phase that writes prose. Without it the
+     voice rules are a document nothing reads at the moment they apply. */
   { n: 4, key: "spine", what: "spine blocks",
-    cc: ["0", "1", "6", "6.1", "6.2", "6.4", "10*"], mt: ["2*", "3*", "5*"],
+    cc: ["0", "1", "6", "6.1", "6.2", "6.4", "10*", "13*"], mt: ["2*", "3*", "5*"],
     pick: d => d.subs.map(u => ({ ...sub(4, u), written: u.blocks > 0 })) },
 
   { n: 5, key: "quizzes", what: "quiz items",
@@ -81,7 +83,7 @@ const PHASES = [
       .map(c => ({ id: `6:${c.key}`, target: `drills/${c.key}.yaml`, written: c.drills > 0 })) },
 
   { n: 7, key: "tiers", what: "depth and apply blocks",
-    cc: ["0", "1", "6.3", "13"], mt: ["7*"],
+    cc: ["0", "1", "6.3", "13*", "14"], mt: ["7*"],
     pick: d => d.subs.map(u => ({ ...sub(7, u),
       written: u.tiers.size > 1, needs: !u.blocks })) },
 

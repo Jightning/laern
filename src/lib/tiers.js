@@ -6,7 +6,7 @@
  * apply may lean on it, never the other way round — so collapsing them removes
  * repetition rather than material.
  */
-import { getItem, setItem } from "./store.js";
+import { getItem, setItem, removeItem } from "./store.js";
 export const TIERS = ["spine", "depth", "apply"];
 
 export const LANES = [
@@ -49,3 +49,6 @@ const KEY = cid => `lane:${cid}`;
    and persists per course. */
 export function laneFor(cid) { return getItem(KEY(cid)) || "apply"; }
 export function setLane(cid, lane) { setItem(KEY(cid), lane); }
+
+/** Forget which lane a course was being read in. lib/purge.js is the caller. */
+export function dropLane(cid) { removeItem(KEY(cid)); }
