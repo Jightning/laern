@@ -1,4 +1,4 @@
-/* DEMO 001 — the per-course escape hatch (create_course §16).
+/* DEMO 001 — the per-course escape hatch (create_course §15).
  *
  * A course that needs a renderer the built-ins cannot express ships one here
  * and nothing else in the project changes. It is loaded automatically; the

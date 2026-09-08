@@ -27,7 +27,7 @@ export function readReader(path) {
     throw new Error(
       `${path} still has ${unset} UNSET field${unset === 1 ? "" : "s"}. ` +
       `Fill them in — a course written against UNSET is calibrated to nobody ` +
-      `(create_course.md 0.1).`);
+      `(create_course.md 0.3).`);
   }
   if (!/^\s*reader\s*:/m.test(text)) throw new Error(`${path} has no \`reader:\` block.\n\n${HELP}`);
   return text.trim();

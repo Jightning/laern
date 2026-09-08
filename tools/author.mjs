@@ -54,41 +54,41 @@ const sub = (n, u) => ({ id: `${n}:${u.id}`, target: u.file, sub: u.id });
 
 const PHASES = [
   { n: 1, key: "calibrate", what: "materials/expectations.md",
-    cc: ["0", "1", "3", "11*"], mt: ["6*", "9*"],
+    cc: ["0", "1*", "3", "11*"], mt: ["6*", "9*"],
     pick: d => [{ id: "1:course", target: "materials/expectations.md",
                   written: d.subs.length > 0 }] },
 
   { n: 2, key: "sequence", what: "sections/NN-slug/_section.yaml",
-    cc: ["0", "1", "2", "3"], mt: ["4*"],
+    cc: ["0", "1*", "2*", "3"], mt: ["4*"],
     pick: d => [{ id: "2:course", target: "sections/", written: d.subs.length > 0 }] },
 
   { n: 3, key: "concepts", what: "concepts/<key>.yaml",
-    cc: ["0", "1", "5"], mt: ["4*"],
+    cc: ["0", "1*", "5*"], mt: ["4*"],
     pick: d => d.concepts.map(c => ({ id: `3:${c.key}`,
       target: `concepts/${c.key}.yaml`, written: c.body })) },
 
   /* 13* rides along because this is the phase that writes prose. Without it the
      voice rules are a document nothing reads at the moment they apply. */
   { n: 4, key: "spine", what: "spine blocks",
-    cc: ["0", "1", "6", "6.1", "6.2", "6.4", "10*", "13*"], mt: ["2*", "3*", "5*"],
+    cc: ["0", "1*", "6", "6.1", "6.2", "6.4", "10*", "13*"], mt: ["2*", "3*", "5*"],
     pick: d => d.subs.map(u => ({ ...sub(4, u), written: u.blocks > 0 })) },
 
   { n: 5, key: "quizzes", what: "quiz items",
-    cc: ["0", "1", "6.5", "7", "9"], mt: ["2*"],
+    cc: ["0", "1*", "6.5", "7*", "9"], mt: ["2*"],
     pick: d => d.subs.map(u => ({ ...sub(5, u), written: u.quiz > 0, needs: !u.blocks })) },
 
   { n: 6, key: "drills", what: "drills/<key>.yaml",
-    cc: ["0", "1", "8"], mt: ["8*"],
+    cc: ["0", "1*", "8*"], mt: ["8*"],
     pick: d => d.concepts.filter(c => c.review)
       .map(c => ({ id: `6:${c.key}`, target: `drills/${c.key}.yaml`, written: c.drills > 0 })) },
 
   { n: 7, key: "tiers", what: "depth and apply blocks",
-    cc: ["0", "1", "6.3", "13*", "14"], mt: ["7*"],
+    cc: ["0", "1*", "6.3", "13*", "14"], mt: ["7*"],
     pick: d => d.subs.map(u => ({ ...sub(7, u),
       written: u.tiers.size > 1, needs: !u.blocks })) },
 
   { n: 8, key: "verify", what: "re-derive every answer",
-    cc: ["0", "1", "12*"], mt: ["6*", "9*"],
+    cc: ["0", "1*", "12*"], mt: ["6*", "9*"],
     pick: d => d.subs.map(u => ({ ...sub(8, u), written: false, needs: !u.blocks })) }
 ];
 

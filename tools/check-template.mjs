@@ -31,6 +31,13 @@ const run = (f, a = []) => execFileSync(process.execPath, [join(ROOT, "tools", f
  * So the guard runs on the way *in*, where nothing can prevent it. It matches
  * on the scaffold's own title and not the name prefix alone, so no real course
  * can be caught by it.
+ *
+ * `packed/` is swept for the same reason. A `pack.mjs --private` run while a
+ * probe was planted bundles it like any other private course, and every gate
+ * that calls installPacked() then installs it as a real subject — three had
+ * accumulated there, showing up as three "Cloneability Probe" cards in the
+ * library the suite tests against. The scaffold leaks into two places, so both
+ * are cleaned.
  */
 function sweep() {
   for (const n of readdirSync(join(ROOT, "courses"))) {
@@ -38,6 +45,17 @@ function sweep() {
     const y = join(ROOT, "courses", n, "course.yaml");
     if (existsSync(y) && readFileSync(y, "utf8").includes(TITLE))
       rmSync(join(ROOT, "courses", n), { recursive: true, force: true });
+  }
+  const packed = join(ROOT, "packed");
+  if (!existsSync(packed)) return;
+  for (const n of readdirSync(packed)) {
+    if (!/^probe[0-9a-z]+\.course\.json$/.test(n)) continue;
+    /* A bundle is a map of path -> contents, so the title is read from the
+       course.yaml inside it rather than from the filename. */
+    let bundle;
+    try { bundle = JSON.parse(readFileSync(join(packed, n), "utf8")); } catch { continue; }
+    if (String(bundle["course.yaml"] || "").includes(TITLE))
+      rmSync(join(packed, n), { force: true });
   }
 }
 sweep();

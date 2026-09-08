@@ -94,5 +94,16 @@
    nothing to scroll past, worst on a phone. Stated per sheet rather than once
    in 30-typography.css because the margins it cancels are declared here: the
    file numbers mean later corrects earlier, so one shared rule up at 30 would
-   lose to every single one of them. */
-.lib>*:last-child{margin-bottom:0}
+   lose to every single one of them.
+
+   `dialog` is excluded because it is not one of those blocks. An open modal is
+   in the top layer, and the browser centres it by resolving `margin:auto`
+   against the viewport on all four sides — so a bottom margin here is not a
+   gap before a gutter, it is half the centring. The library is the one view
+   holding a dialog, and its confirm is the last element in the tree, so this
+   rule was zeroing that half and dropping the dialog onto the viewport floor:
+   "remove this course?" arrived along the bottom edge like a notification
+   rather than in front of the reader as a question. It read correctly only on
+   a phone, where the sheet rules in 71-modal.css restate the margin and win on
+   source order. */
+.lib>*:last-child:not(dialog){margin-bottom:0}

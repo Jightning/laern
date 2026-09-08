@@ -145,6 +145,32 @@ if (single) {
         promise are made — irreversible, and the answers go too. */
      /answers[^.]*deleted/i.test(removeSays) && /cannot be undone/i.test(removeSays),
      removeSays.replace(/\s+/g, " "));
+  /* A question waits in front of the reader; a notification slides in along an
+     edge. The confirm is the first kind, and on a desktop it was rendering as
+     the second: `.lib>*:last-child{margin-bottom:0}` matched the dialog and
+     zeroed the bottom half of the `margin:auto` the browser centres it with,
+     so it sat on the viewport floor. Measured rather than asserted on the
+     rule, because any later rule reaching the dialog's margin breaks it the
+     same way. The phone sheet is a deliberate exception and is checked
+     alongside it, so a fix to one cannot quietly undo the other. */
+  {
+    const box = () => page.evaluate(() => {
+      const r = document.querySelector("dialog[open]").getBoundingClientRect();
+      return { top: Math.round(r.top), gap: Math.round(innerHeight - r.bottom) };
+    });
+    const wide = await box();
+    ck("the confirm sits in the middle of a desktop window",
+       Math.abs(wide.top - wide.gap) <= 2, `top ${wide.top} / bottom ${wide.gap}`);
+
+    await page.setViewportSize({ width: 390, height: 780 });
+    await page.waitForTimeout(250);
+    const narrow = await box();
+    ck("the confirm stays centred on a phone rather than docking",
+       Math.abs(narrow.top - narrow.gap) <= 2, `top ${narrow.top} / bottom ${narrow.gap}`);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(250);
+  }
+
   await shot("library-remove");
   await page.locator(".modal.danger .dbtn.ghost").click(); await page.waitForTimeout(220);
   ck("cancelling removes nothing",

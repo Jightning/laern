@@ -65,6 +65,26 @@ for (const [name, spec, ids] of [["create_course", CC, idsIn("cc")], ["material_
 /* §1 is in every phase's prefix, so an empty §1 is an uncalibrated build. */
 ck("§1 carries the reader form", /reader:/.test(CC.pick(["1"])));
 
+/* A heading that owns numbered subsections carries its rules in them, not in
+   its own preamble: §1's D1-D7 table is §1.1, the drill bank's two hardest
+   instructions are §8.1 and §8.2. `pick("8")` returns the preamble alone, so a
+   phase naming the parent alone silently ships a prompt with those rules
+   missing — the build still passes and the course is simply worse. Naming a
+   parent shallow is legal only when the phase also picks subsections of it by
+   hand, which is how phase 4 takes §6.1/6.2/6.4 and leaves §6.3 to phase 7. */
+const parents = new Set(CC.ids.filter(id => /^\d+\.\d+$/.test(id)).map(id => id.split(".")[0]));
+const dropped = [];
+for (const m of src.matchAll(/cc: \[([^\]]*)\]/g)) {
+  const ids = [...m[1].matchAll(/"([^"]+)"/g)].map(x => x[1]);
+  for (const id of ids) {
+    if (id.endsWith("*") || !parents.has(id)) continue;
+    if (!ids.some(o => o.replace(/\*$/, "").startsWith(id + "."))) dropped.push(id);
+  }
+}
+ck("no phase drops a heading's subsections", dropped.length === 0,
+   dropped.length ? "named shallow with no subsection picked: " + [...new Set(dropped)].join(", ")
+                  : [...parents].sort().join(",") + " have subsections");
+
 rmSync(tmp, { recursive: true, force: true });
 
 const bad = R.filter(r => !r.ok);

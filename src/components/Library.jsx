@@ -64,7 +64,7 @@ export default function Library({ courses, order, loading, error, onChange }) {
     /* Only the destructive one reports. Hiding is reversible, the shelf in
        front of the reader already shows it gone, and the empty-shelf text says
        where it went — a third statement of the same fact is noise. */
-    setMsg(own ? `Removed ${name} and everything you answered in it.` : null);
+    setMsg(own ? `Removed ${name}.` : null);
   };
 
   /* The way in to `#/sync` when there is no address bar to type it into.
