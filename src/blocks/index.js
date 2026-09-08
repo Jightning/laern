@@ -127,20 +127,57 @@ R("table", { apart: true, render: b => {
  * so any language works without writing a renderer.
  * -------------------------------------------------------------------------*/
 const reEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/* How many capture groups a pattern opens, so a rule can be found again inside
+   the combined regex below. Alternating with an empty branch makes the match
+   certain, and exec then reports one slot per group. */
+const groupCount = re => { try { return new RegExp(re + "|").exec("").length - 1; } catch { return 0; } };
+
+/* One pass over the raw source, never over its own output.
+ *
+ * This used to run four passes, each rewriting the string the previous one had
+ * already put markup into — so the last pass matched the *first* pass's markup.
+ * With `strings` on, the quoted class name in an emitted `<span class="tok-c">`
+ * is a string literal like any other: it got wrapped in turn, yielding
+ * `<span class=<span class="tok-s">"tok-c"</span>>`, and the browser read the
+ * wreckage as an element whose class was `<span`. Every highlighted listing in
+ * every course was corrupt, and a keyword sitting inside a comment was marked
+ * up twice on top of that.
+ *
+ * Scanning once fixes both: earlier rules win the overlap, so a keyword inside
+ * a comment stays part of the comment, and nothing ever re-reads emitted
+ * markup. Escaping moves to the end, applied per slice, because the source has
+ * to stay literal while it is matched. */
 function highlight(src, syn) {
-  let out = esc(src);
-  if (syn.comment)
-    out = out.replace(new RegExp(`(${reEsc(syn.comment)}[^\\n]*)`, "g"), '<span class="tok-c">$1</span>');
+  const rules = [];
+  if (syn.comment) rules.push({ cls: "tok-c", re: `${reEsc(syn.comment)}[^\n]*` });
+  if (syn.strings !== false) rules.push({ cls: "tok-s", re: '"(?:[^"\\\\]|\\\\.)*"' });
+  /* A bad pattern must not break the page, and now it must not break its
+     neighbours either: it is dropped before it can void the whole alternation. */
+  for (const p of syn.patterns || []) {
+    try { new RegExp(p.re); rules.push({ cls: p.cls || "tok-n", re: p.re }); }
+    catch { /* unusable, and reported by validate.mjs */ }
+  }
   if (syn.keywords?.length)
-    out = out.replace(new RegExp(`\\b(${syn.keywords.map(reEsc).join("|")})\\b`, "g"),
-      '<span class="tok-k">$1</span>');
-  (syn.patterns || []).forEach(p => {
-    try { out = out.replace(new RegExp(p.re, "g"), `<span class="${p.cls || "tok-n"}">$&</span>`); }
-    catch { /* a bad pattern must not break the page */ }
-  });
-  if (syn.strings !== false)
-    out = out.replace(/("(?:[^"\\]|\\.)*")/g, '<span class="tok-s">$1</span>');
-  return out;
+    rules.push({ cls: "tok-k", re: `\\b(?:${syn.keywords.map(reEsc).join("|")})\\b` });
+  if (!rules.length) return esc(src);
+
+  /* where each rule's own capture group lands in the combined match */
+  const at = []; let g = 1;
+  for (const r of rules) { at.push(g); g += 1 + groupCount(r.re); }
+
+  let re;
+  try { re = new RegExp(rules.map(r => `(${r.re})`).join("|"), "g"); }
+  catch { return esc(src); }
+
+  let out = "", last = 0;
+  for (const m of src.matchAll(re)) {
+    const i = at.findIndex(slot => m[slot] !== undefined);
+    if (i < 0) continue;
+    out += esc(src.slice(last, m.index)) + `<span class="${rules[i].cls}">${esc(m[0])}</span>`;
+    last = m.index + m[0].length;
+  }
+  return out + esc(src.slice(last));
 }
 R("code", { apart: true, render: b =>
   `<div class="codewrap"><span class="lang">${esc(b.lang || "code")}</span>` +

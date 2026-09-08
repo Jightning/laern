@@ -24,14 +24,25 @@
  * the one AA failure in the sweep. So a missing token is reported whether or
  * not a fallback stands behind it — under T3 the fallback is itself the defect.
  *
- * Nothing reported any of this on its own: the CSS parses, and the token is
- * simply never there.
+ * The third shape is a rule that was never written. A class the engine emits
+ * with no rule behind it renders as unstyled markup and reports nothing at
+ * all: `syntax:` had been a documented course field for as long as the
+ * highlighter existed, and every `tok-c`/`tok-k`/`tok-n`/`tok-s` span it
+ * produced was flat body text; a table's `split:` marked a column and drew no
+ * rule; the one text box in the primer sat at the browser default inside a
+ * designed card. Each looked like a course that had not configured the
+ * feature.
+ *
+ * Nothing reported any of this on its own: the CSS parses, the token is simply
+ * never there, and the missing rule is simply never written.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "src", "css");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const DIR = join(ROOT, "src", "css");
+const SRC = join(ROOT, "src");
 
 /** top-level selectors of one stylesheet, with the line each starts on */
 function topLevelRules(css) {
@@ -93,6 +104,70 @@ for (const [f, text] of css) {
   }
 }
 
+/* Classes that carry no styling by design: a container whose children are what
+   is dressed, a modifier the markup uses to group, or a hook a tool selects on.
+   Each names its reason, so an entry cannot outlive the thing it stands for —
+   the same discipline FROM_JS keeps. Anything not listed here that the engine
+   emits must have a rule. */
+const HOOKS = {
+  cal:          "Calibration.jsx view container; .cal-h/.cal-t/.cal-c are dressed",
+  "cal-priv":   "PrivacyNote.jsx selector hook; the paragraph is dressed by .lede",
+  cio:          "CourseIO.jsx panel container; its children are dressed",
+  done:         "Review.jsx state hook; the finished panel differs by content, not paint",
+  "fx-miss":    "blocks/index.js malformed-content fallback; validate.mjs keeps it unshipped",
+  "katex-mathml": "not emitted — KaTeX's own class, named by a regex in lib/util.js strip()",
+  "lplus-w":    "Library.jsx text span inside the dressed .lplus button",
+  preq:         "Prequestion.jsx modifier on .primer-card; the .preq-* parts are dressed",
+  prun:         "Practice.jsx run container; .pbar/.pmeta are dressed",
+  rv:           "Topbar.jsx hook on a dressed .tbtn; the button is reached by #rv-open",
+  "tstub-t":    "TierStub.jsx label span inside the dressed .tstub-b button"
+};
+
+/** every class name any rule in the stylesheets mentions */
+const styled = new Set();
+for (const text of css.values())
+  for (const m of text.matchAll(/\.(-?[A-Za-z_][\w-]*)/g)) styled.add(m[1]);
+
+const walk = d => readdirSync(d, { withFileTypes: true }).flatMap(e =>
+  e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]);
+
+/* Classes reach the page from JSX attributes and from strings the block and
+   figure renderers concatenate. Both are read literally: a capture that ends
+   because the string ended mid-word — `class="is-' + kind` — drops that last
+   token, since it is a prefix and not a class. Missing a form here costs a
+   defect unreported; inventing one costs a false alarm, so the scan errs
+   toward the first. */
+const emitted = new Map();
+for (const file of walk(SRC).filter(p => /\.(js|jsx)$/.test(p))) {
+  const text = readFileSync(file, "utf8");
+  for (const m of text.matchAll(/class(?:Name)?=\{?["`]([^"'`${}\n]*)(.?)/g)) {
+    const names = m[1].split(/\s+/).filter(Boolean);
+    if (m[2] && !/["`\s]/.test(m[2])) names.pop();   /* cut off mid-word */
+    for (const n of names)
+      (emitted.get(n) || emitted.set(n, new Set()).get(n))
+        .add(file.slice(ROOT.length + 1));
+  }
+}
+
+const unstyled = [...emitted]
+  .filter(([c]) => !styled.has(c) && !(c in HOOKS))
+  .sort(([a], [b]) => a.localeCompare(b));
+if (unstyled.length) {
+  failed += unstyled.length;
+  console.log("FAIL src/css");
+  for (const [c, where] of unstyled)
+    console.log(`       ✗ .${c} is emitted by ${[...where].join(", ")} and no rule styles it`);
+}
+/* A listed hook that no longer reaches the page is the mirror defect: the note
+   outlives the markup and the next reader trusts it. */
+const stale = Object.keys(HOOKS).filter(c => !emitted.has(c));
+if (stale.length) {
+  failed += stale.length;
+  console.log("FAIL tools/lint-css.mjs");
+  for (const c of stale)
+    console.log(`       ✗ HOOKS lists .${c}, which nothing emits any more`);
+}
+
 for (const f of FILES) {
   const rules = topLevelRules(css.get(f));
   const seen = new Map(), dupes = [];
@@ -107,5 +182,6 @@ for (const f of FILES) {
   }
 }
 console.log(failed ? `\n${failed} problem(s)`
-  : "ok   css        no selector declared twice, no var() naming a missing token");
+  : "ok   css        no selector declared twice, no var() naming a missing token,\n" +
+    "                no class emitted without a rule");
 process.exit(failed ? 1 : 0);

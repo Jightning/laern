@@ -29,6 +29,28 @@
 .primer-done h3{margin:0 0 6px;font-size:1.1rem}
 .primer-done p{margin:0 0 18px;color:var(--ink-2)}
 
+/* The prequestion is the primer's retrieval step: the reader commits a guess
+   before the answer exists on screen (T15, T32). Its three parts carried no
+   rule at all — the box the reader types into rendered at the browser default
+   inside a designed card, the only unstyled text input in the app — while the
+   identical mechanism in the drill (`.why-in`, `.why-prior` in 64-drill.css)
+   was fully dressed. These mirror it, so one mechanism looks like itself in
+   both places. */
+.preq-q{font-size:1.05rem;font-weight:600;line-height:1.5;margin:0 0 14px}
+.preq-in{
+  display:block;width:100%;font:inherit;font-size:.86rem;
+  border:1px solid var(--rule);border-radius:6px;padding:7px 9px;
+  background:var(--surface-2);color:var(--ink);resize:vertical;
+}
+.preq-in:focus{outline:2px solid var(--hi);outline-offset:1px}
+/* The reader's own words are learner content, so they never wear the styling
+   the material wears — the rule `.why-prior` states in 64-drill.css. */
+.preq-mine{
+  margin:14px 0 0;border-left:2px solid var(--dc);border-radius:0 6px 6px 0;
+  background:color-mix(in srgb,var(--dc) 7%,transparent);
+  padding:7px 10px;font-size:.79rem;color:var(--ink-2);
+}
+
 /* A view ends where its last block ends. Whatever bottom margin that block
    carries was there to hold a sibling off, and the last one has no sibling —
    so it lands on top of the page's own bottom gutter and reads as a stretch of

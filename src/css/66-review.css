@@ -1,8 +1,14 @@
 /* 66-review — The review route. Its own chrome: no sidebar, no rail, no measure. */
 
+/* This route draws its own frame, which means it also owes its own safe area:
+   there is no toolbar here to hold the status bar off, so without these the
+   session counter sat under the Dynamic Island. `.topbar` pays for every other
+   page (10-shell.css); these two are the pages that have none. */
 .review{
-  max-width:34rem;margin:0 auto;padding:1rem 1.1rem 3rem;
-  min-height:100vh;background:var(--ground);
+  max-width:34rem;margin:0 auto;
+  padding:calc(1rem + var(--safe-t)) calc(1.1rem + var(--safe-r))
+          calc(3rem + var(--safe-b)) calc(1.1rem + var(--safe-l));
+  min-height:100vh;min-height:100dvh;background:var(--ground);
 }
 .review-bar{
   display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;

@@ -74,7 +74,7 @@
    per token, only hue moves. The four base hues reproduce the original
    hand-picked palette at --hue:0.
         hi = logic 1 · lo = logic 0 · dc = don't care X · hz = high-Z
-        wn = warning, the one accent with a job outside the legend
+        wn = warning, the one accent whose job is not a course's identity
 
    `wn` is warm because a warning that is not warm does no semantic work — the
    reader has to learn the mapping instead of arriving with it. It stops short

@@ -141,7 +141,9 @@ if (single) {
   ck("removal asks first", await page.locator(".modal.danger").count() === 1);
   const removeSays = await page.locator(".modal.danger").innerText();
   ck("removing says the answers go too",
-     /answers go with it/i.test(removeSays) && /cannot be undone/i.test(removeSays),
+     /* The wording is the author's; what is asserted is that both halves of the
+        promise are made — irreversible, and the answers go too. */
+     /answers[^.]*deleted/i.test(removeSays) && /cannot be undone/i.test(removeSays),
      removeSays.replace(/\s+/g, " "));
   await shot("library-remove");
   await page.locator(".modal.danger .dbtn.ghost").click(); await page.waitForTimeout(220);
@@ -246,6 +248,40 @@ if (single) {
     await page.locator('[data-restore="demo"]').click(); await page.waitForTimeout(300);
     await page.keyboard.press("Escape"); await page.waitForTimeout(200);
     ck("restoring puts it back", await page.locator(".lcard").count() === before);
+  }
+
+  /* The Home Screen advice is for a reader who is not already there. WebKit
+     deletes an origin's storage after seven days without a visit and installing
+     is the exemption, so once installed the sentence names a rule that no
+     longer applies and an action already taken. Driven under an iOS user agent
+     because that is the only place the warning is shown at all. */
+  const IOS = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 " +
+              "(KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
+  for (const [where, standalone] of [["a Safari tab", false], ["the Home Screen", true]]) {
+    const ip = await browser.newPage({ viewport: { width: 390, height: 844 },
+                                       isMobile: true, hasTouch: true, userAgent: IOS });
+    await ip.addInitScript(on => {
+      Object.defineProperty(navigator, "standalone", { get: () => on, configurable: true });
+      const mm = window.matchMedia.bind(window);
+      window.matchMedia = q => /display-mode/.test(q)
+        ? { matches: on && /standalone/.test(q), media: q,
+            addEventListener() {}, removeEventListener() {},
+            addListener() {}, removeListener() {} }
+        : mm(q);
+      /* storage that is never granted persistence, which is the case the
+         warning exists for */
+      if (navigator.storage) {
+        navigator.storage.persisted = async () => false;
+        navigator.storage.persist = async () => false;
+      }
+    }, standalone);
+    await ip.goto(URL); await ip.waitForTimeout(400);
+    await installPacked(ip, ROOT);
+    await ip.goto(URL); await ip.waitForTimeout(1100);
+    const warn = await ip.locator(".cio-warn").count();
+    ck(`on ${where} the install advice is ${standalone ? "silent" : "shown"}`,
+       standalone ? warn === 0 : warn === 1, "warnings: " + warn);
+    await ip.close();
   }
 }
 
@@ -684,12 +720,21 @@ for (const cid of ids) {
 
     /* Where the mention sits on screen before the trip, so the return can be
        measured against it rather than against the subsection it happens to be
-       in. A subsection runs 2000px and a mention can be at the bottom of one. */
+       in. A subsection runs 2000px and a mention can be at the bottom of one.
+     *
+     * Positioned and clicked from inside the page rather than through the
+     * locator. Playwright re-runs scrollIntoViewIfNeeded as part of clicking,
+     * so a seat measured beforehand is a seat the click then moves — which
+     * read as a 50px miss by the product when the product was exact. */
+    await page.evaluate(() =>
+      document.querySelector(".bmain a.xr").scrollIntoView({ block: "center", behavior: "instant" }));
+    await page.waitForTimeout(250);
     const seat = await page.evaluate(() => {
       const a = document.querySelector(".bmain a.xr");
       return { top: Math.round(a.getBoundingClientRect().top), href: a.getAttribute("href") };
     });
-    await xr.click(); await page.waitForTimeout(400);
+    await page.evaluate(() => document.querySelector(".bmain a.xr").click());
+    await page.waitForTimeout(400);
     ck(P("return pill appears"), await page.locator(".pill.on").isVisible());
     await page.locator(".pill.on").click(); await page.waitForTimeout(400);
     ck(P("pill returns"), await page.locator("section.sec-body").count() === 1);
@@ -1067,6 +1112,9 @@ for (const cid of ids) {
     /* Shown by default, and read as Markdown rather than as raw asterisks. */
     ck(P("a written note shows in the margin by default"),
        await page.locator(".bside .mnote.is-n .note-body").count() === 1);
+    ck(P("the card is labelled NOTE"),
+       (await page.locator(".note-fold").first().innerText()).trim().toUpperCase() === "NOTE",
+       await page.locator(".note-fold").first().innerText());
     const body = await page.locator(".note-body").first().innerHTML();
     ck(P("the note renders as markdown"), /<b>check<\/b>/.test(body) && /<code>persistence<\/code>/.test(body), body);
     /* T12: a reference card must be level with its mention, a note need not be,
@@ -1092,6 +1140,29 @@ for (const cid of ids) {
     const saved = await page.locator(".note-area").first().inputValue();
     ck(P("notes persist"), saved.includes("persistence"), saved.slice(0, 30) || "not found");
     await page.locator(".note-area").first().blur(); await page.waitForTimeout(300);
+
+    /* A block takes more than one note: a lecture adds one thing and a past
+       paper another, and a single textarea makes the reader edit around what
+       they already wrote. The grip stays put and adds the next one. */
+    await grip.scrollIntoViewIfNeeded();
+    await grip.click(); await page.waitForTimeout(300);
+    await page.locator(".note-area").first().fill("a second note");
+    await page.locator(".note-edit", { hasText: "done" }).first().click();
+    await page.waitForTimeout(400);
+    ck(P("a block takes a second note"), await page.locator(".note-one").count() === 2,
+       (await page.locator(".note-one").count()) + " shown");
+    await go(`#/${cid}/concepts`);
+    await go(`#/${cid}/${secIds[0]}`);
+    ck(P("both notes survive"), await page.locator(".note-one").count() === 2);
+
+    /* Deleting one was impossible at first: the textarea blurs before the
+       button beside it receives pointerdown, and both handlers then wrote the
+       same stale array back, so the note reappeared. */
+    await page.locator(".note-edit", { hasText: "edit" }).last().click();
+    await page.waitForTimeout(250);
+    await page.locator(".note-drop").click(); await page.waitForTimeout(400);
+    ck(P("a note can be deleted"), await page.locator(".note-one").count() === 1,
+       (await page.locator(".note-one").count()) + " left");
   }
 
   /* One course's styles at a time: they used to be appended and never removed,
@@ -1126,6 +1197,56 @@ for (const cid of ids) {
       document.documentElement.scrollWidth - document.documentElement.clientWidth);
     ck("review does not scroll sideways on a phone", overflow <= 1, overflow + "px");
     await page.setViewportSize({ width: 1440, height: 900 });
+  }
+}
+
+/* Syntax highlighting, on the route a reader actually arrives at.
+ *
+ * Two defects hid behind each other here. The block config is read while a
+ * block renders, and it used to be set in an effect that runs after that
+ * render — so a deep link or a reload painted a section with no highlighting
+ * and no valueStyles, and only navigating in from another view looked right.
+ * Underneath that, the highlighter ran a regex pass per token type over a
+ * string the previous pass had already put markup into, so the `strings` pass
+ * matched the quoted class name inside an emitted span and shredded it.
+ *
+ * So this loads the route cold rather than clicking to it, and asserts on the
+ * markup rather than on a span count: a corrupt run still produces spans. */
+{
+  let found = null;
+  for (const cid of ids) {
+    await go("#/" + cid);
+    const secs = await page.evaluate(() =>
+      [...document.querySelectorAll(".toc a[href]")].map(a => a.getAttribute("href")));
+    for (const h of secs) {
+      await go(h);                       /* go() is a full load, not a click */
+      if (await page.locator("pre code [class^=tok-]").count()) { found = h; break; }
+    }
+    if (found) break;
+  }
+  if (found) {
+    /* A hash change is not a load. goto() with only the fragment different
+       leaves the app mounted, so the config the previous view's effect set is
+       still in place — which is exactly the state that hid this bug. Only a
+       reload puts a reader on the route cold. */
+    await page.reload();
+    await page.waitForTimeout(600);
+    const r = await page.evaluate(() => {
+      const el = document.querySelector("pre code");
+      return { html: el.innerHTML, text: el.textContent,
+               classes: [...new Set([...el.querySelectorAll("[class]")].map(e => e.className))] };
+    });
+    ck("a code block reloaded cold is highlighted",
+       r.classes.some(c => /^tok-/.test(c)), r.classes.join(",") || "no spans");
+    /* The shredded form produced `class="<span`: an emitted class that is
+       itself markup. It survives any span count, so the count is not the test. */
+    ck("highlighter does not mark up its own output",
+       r.classes.every(c => /^[\w- ]+$/.test(c)) && !/&lt;span|class="&lt;/.test(r.html),
+       r.classes.join(","));
+    /* The listing must read as the author wrote it. A class name showing up as
+       visible text is the corruption reaching the reader. */
+    ck("no markup leaks into the listing text",
+       !/tok-[cksn]|<span|&lt;/.test(r.text), JSON.stringify(r.text.slice(0, 60)));
   }
 }
 

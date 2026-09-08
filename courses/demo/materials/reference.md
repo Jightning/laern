@@ -49,6 +49,6 @@ not-yet-audited, counted separately.
 ## Course-level
 
 `valueStyles`, `styles`, `syntax` (comment / keywords / patterns / strings),
-`theme.hue`, `state.enabled`, `blocks.js`. The optional `legend` chips are not
-used here: §1.4 teaches the tier vocabulary in the material itself, where it can
-say what the words are for.
+`theme.hue`, `state.enabled`, `blocks.js`. A colour encoding is explained where
+it is used, not on the start page — §1.4 teaches the tier vocabulary in the
+material itself, where it can say what the words are for [T12].

@@ -26,9 +26,6 @@ audit:
   unprompted: 1     # questions with no why_prompt
   unrouted: 1       # questions that resolve to no concept in the drill bank
 
-# Optional chips shown on the start page.
-legend: []
-
 # Optional: how table/grid cell values are coloured. Keys are cell contents,
 # values are CSS class names you define in `styles` below.
 valueStyles: {}

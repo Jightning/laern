@@ -6,7 +6,7 @@ import { runsOf } from "../lib/tiers.js";
 import { MarginRefs, UsedLater } from "./MarginNote.jsx";
 import Quiz from "./Quiz.jsx";
 import KeyTerms from "./KeyTerms.jsx";
-import { useNote, NoteGrip, NoteCard } from "./Notes.jsx";
+import { useNotes, NoteGrip, NoteCard } from "./Notes.jsx";
 import LaneSelect from "./LaneSelect.jsx";
 import TierStub from "./TierStub.jsx";
 import Attempt from "./Attempt.jsx";
@@ -19,7 +19,7 @@ function ReadingRow({ html, notes, noteAt, noteLabel, apart, ctx, children }) {
   const [hot, setHot] = useState(null);
   /* The row owns the note because the note is in two of its zones: the grip at
      the foot of the block, and the card in the margin beside it. */
-  const note = useNote(ctx.cid, noteAt || null);
+  const note = useNotes(ctx.cid, noteAt || null);
 
   /* The inline mention lives inside injected HTML, so it cannot take a prop.
      One scoped effect marks both sides of the pair within this row only. */
@@ -140,7 +140,7 @@ export default function Section({ section, ctx, expandAll, lane, onLane }) {
               notes={(sub.blocks || []).length === 0
                 ? <UsedLater id={sub.id} ctx={ctx} />
                 : null}
-              noteAt={sub.id} noteLabel="Note on this part">
+              noteAt={sub.id}>
               <h3><span class="sid">{num}</span>{sub.title}</h3>
             </ReadingRow>
 

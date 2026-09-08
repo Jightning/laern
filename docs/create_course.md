@@ -244,8 +244,6 @@ audit:                           # optional: fail ceilings for `npm run audit`
   unverified: 0
   unprompted: 0
   unrouted: 0
-legend:                          # optional chips on the course home page
-  - {k: "1", v: logic high, cls: k1}
 valueStyles:                     # optional: colour cell values in mono tables
   "1": b1
 styles: |                        # optional: CSS for the classes above
@@ -255,12 +253,12 @@ syntax:                          # optional: highlighting for `code` blocks
   keywords: [module, always, assign]
   strings: true
   patterns:                      # optional: what the three above cannot catch
-    - {re: "\\b\\d+'[bhd][0-9a-fA-F_]+", cls: k2}
+    - {re: "\\b\\d+'[bhd][0-9a-fA-F_]+", cls: tok-n}
 ```
 
 Only the first four fields are required.
 
-`theme.hue` rotates the four legend accents; lightness and chroma stay fixed, so
+`theme.hue` rotates the four palette accents; lightness and chroma stay fixed, so
 contrast holds at any angle [T1, T3]. A `trap` block's warning colour never
 rotates: a warning is not a course's identity [T27].
 

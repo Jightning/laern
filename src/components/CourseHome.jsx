@@ -15,14 +15,6 @@ export default function CourseHome({ ctx }) {
       <h1>{C.title}</h1>
       <p class="lede">{C.tagline}</p>
 
-      {C.legend?.length > 0 && (
-        <div class="legend">
-          {C.legend.map(l => (
-            <span class={"chip " + (l.cls || "")} key={l.k}><i>{l.k}</i> {l.v}</span>
-          ))}
-        </div>
-      )}
-
       <StateStrip ctx={ctx} drills={drills} />
 
       {/* Two rows, because they are two kinds of thing: what the reader has
@@ -55,9 +47,9 @@ export default function CourseHome({ ctx }) {
               <span class="tsub">
                 {s.subs.map((u, i) => `${s.num}.${i + 1} ${u.title}`).join(" · ")}
               </span>
-              {ss && ss.total > 0 && (
-                <span class="tbar"><i style={`width:${Math.round((ss.got / ss.total) * 100)}%`} /></span>
-              )}
+              {/* No progress bar. The row already says "3/11 mastered" in
+                  words two columns over, and a 3px track under every row put a
+                  second horizontal line above the one that separates them. */}
             </a>
           );
         })}

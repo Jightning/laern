@@ -45,9 +45,20 @@
     width:100vw;max-width:100vw;max-height:90vh;
     margin:auto auto 0;border-radius:12px 12px 0 0;border-left:0;border-right:0;
   }
+  /* Except the confirm. The sheet exists to give two file controls the width,
+     and a yes/no question needs neither the width nor the thumb reach — docked
+     to the bottom edge it read as a notification that had slid up rather than
+     as a question waiting on an answer. */
+  .modal.danger{
+    width:min(34rem,calc(100vw - 32px));max-width:calc(100vw - 32px);
+    margin:auto;border-radius:12px;border-left:1px solid var(--rule);
+    border-right:1px solid var(--rule);
+  }
   /* A sheet docked to the bottom edge ends on the home indicator, and it runs
      the full width, so its own padding is the only thing holding the controls
      off the rounded corners. */
   .modal-in{padding-bottom:calc(28px + var(--safe-b));
     padding-left:calc(22px + var(--safe-l));padding-right:calc(22px + var(--safe-r))}
+  /* Centred, so the home indicator is not underneath it. */
+  .modal.danger .modal-in{padding-bottom:22px}
 }

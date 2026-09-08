@@ -4,7 +4,7 @@
  * A course is a folder. No JavaScript, anywhere.
  *
  *   courses/<id>/
- *     course.yaml                metadata, theme, state, legend, syntax, styles
+ *     course.yaml                metadata, theme, state, syntax, styles
  *     concepts/<key>.yaml        one file per recurring concept
  *     drills/<key>.yaml          one file per concept: the retention pool
  *     materials/expectations.md  front matter: the exam, and the review-set basis

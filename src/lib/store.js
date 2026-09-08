@@ -126,7 +126,17 @@ const webkitEviction = () => {
   return ios || safari;
 };
 
+/* Already installed? Then the advice has been taken, and WebKit's seven-day
+   rule no longer applies to this origin. `display-mode: standalone` is the
+   standard signal and `navigator.standalone` is the older iOS one; Safari
+   answers only the second on some versions, so both are asked. */
+const installed = () =>
+  navigator.standalone === true ||
+  (typeof matchMedia === "function" &&
+   ["standalone", "fullscreen", "minimal-ui"].some(m => matchMedia(`(display-mode: ${m})`).matches));
+
 export async function evictionRisk() {
+  if (installed()) return false;
   return (await durable()) === false && webkitEviction();
 }
 

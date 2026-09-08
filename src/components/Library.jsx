@@ -1,4 +1,4 @@
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect, useRef } from "preact/hooks";
 import { clip } from "../lib/util.js";
 import { stateFor } from "../lib/state.js";
 import { counts } from "../lib/retention.js";
@@ -13,6 +13,11 @@ import CloudPanel from "./CloudPanel.jsx";
 
 /* `courses` is the index, not the courses: a split build has not fetched any
    of them yet, and every number on a card is a scalar the index carries. */
+/* Taps on the heading that open the backup route, and how long they have to
+   arrive in. See `knock` below. */
+const KNOCKS = 5;
+const KNOCK_MS = 2500;
+
 export default function Library({ courses, order, loading, error, onChange }) {
   const [adding, setAdding] = useState(false);
   const [doomed, setDoomed] = useState(null);   /* the course a confirm is open for */
@@ -56,9 +61,30 @@ export default function Library({ courses, order, loading, error, onChange }) {
     else setDismissed(cid, true);
     onChange && onChange();
     setDoomed(null);
-    setMsg(own
-      ? `Removed ${name} and everything you answered in it.`
-      : `${name} is hidden. Bring it back from Add a course.`);
+    /* Only the destructive one reports. Hiding is reversible, the shelf in
+       front of the reader already shows it gone, and the empty-shelf text says
+       where it went — a third statement of the same fact is noise. */
+    setMsg(own ? `Removed ${name} and everything you answered in it.` : null);
+  };
+
+  /* The way in to `#/sync` when there is no address bar to type it into.
+   *
+   * Installed to the Home Screen, an iPhone gives the app no URL bar at all,
+   * so a route nothing links to is a route nobody can reach — including the
+   * one person it is for, on the one device where the backup matters most.
+   *
+   * Five taps on the heading inside two and a half seconds. The count is the
+   * point: it cannot happen by accident, it shows nothing and says nothing to
+   * a reader who does not already know it is there, and it needs no control on
+   * a public page. Same reasoning as the route being unlinked in the first
+   * place — see lib/cloud.js. */
+  const taps = useRef({ n: 0, at: 0 });
+  const knock = () => {
+    const t = taps.current;
+    const now = Date.now();
+    t.n = now - t.at > KNOCK_MS ? 1 : t.n + 1;
+    t.at = now;
+    if (t.n >= KNOCKS) { t.n = 0; location.hash = "#/sync"; }
   };
 
   const restore = cid => {
@@ -82,7 +108,7 @@ export default function Library({ courses, order, loading, error, onChange }) {
           a thing done to this list, and a control at the end of a grid is a
           control below the fold as soon as the grid has two rows. */}
       <div class="lhead">
-        <h1>Courses</h1>
+        <h1 onClick={knock}>Courses</h1>
         <button class="lplus" id="lib-add" onClick={() => setAdding(true)}
                 aria-label="Add a course">
           <span class="lplus-x" aria-hidden="true">+</span>
@@ -92,12 +118,7 @@ export default function Library({ courses, order, loading, error, onChange }) {
 
       {order.length === 0 ? (
         <p class="lempty">
-          {dismissed().length > 0
-            ? <>Nothing on the shelf. The guide that ships with the site is hidden
-                on this device — <button class="linkish" onClick={() => setAdding(true)}>
-                Add a course</button> restores it, or installs one of your own.</>
-            : <>No courses yet. <button class="linkish" onClick={() => setAdding(true)}>Add one</button> —
-                a course is a folder of YAML, and it stays on this device.</>}
+          <>No courses yet. <button class="linkish" onClick={() => setAdding(true)}>Add one</button></>
         </p>
       ) : (
         <div class="lgrid">
@@ -168,7 +189,6 @@ export default function Library({ courses, order, loading, error, onChange }) {
               a course onto this device". */}
           {dismissed().length > 0 && (
             <div class="cio-back">
-              <p class="cal-cap">Bundled with the site, hidden on this device:</p>
               {dismissed().map(id => (
                 <button class="dbtn ghost" key={id} data-restore={id}
                         onClick={() => restore(id)}>
@@ -187,8 +207,7 @@ export default function Library({ courses, order, loading, error, onChange }) {
             <>
               <p>This action cannot be undone.</p>
               <p>
-                <b>Your answers go with it.</b> Quiz history, review schedule,
-                notes and reasons for this course are all deleted.
+                <b>Your answers will also be deleted.</b>
               </p>
             </>
           ) : (

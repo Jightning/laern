@@ -1,18 +1,5 @@
-/* 40-blocks — Content blocks: callouts, code, tables, chips. */
+/* 40-blocks — Content blocks: callouts, code, tables. */
 
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--sp-2)}
-.chip{
-  font-family:var(--mono);font-size:.70rem;padding:4px 10px;border-radius:20px;
-  border:1px solid var(--rule);color:var(--ink-2);
-}
-.chip i{font-style:normal;font-weight:700}
-.chip.k1{border-color:color-mix(in srgb,var(--hi) 45%,transparent)}
-.chip.k1 i{color:var(--hi-ink)}
-.chip.k0{border-color:color-mix(in srgb,var(--lo) 45%,transparent)}
-.chip.k0 i{color:var(--lo-ink)}
-.chip.kx{border-color:color-mix(in srgb,var(--dc) 45%,transparent)}
-.chip.kx i{color:var(--dc-ink)}
-.chip.kz i{color:var(--hz-ink)}
 .blk{margin:0 0 var(--sp-2)}
 /* Nine block types used to be one card with a different 3px stripe, which
    satisfied signaling only technically. They are different kinds of thing, so
@@ -87,6 +74,19 @@ pre{
   padding:14px 16px;overflow-x:auto;
 }
 pre code{background:none;border:0;padding:0;font-size:inherit}
+/* Highlighting is signaling, not decoration: a comment, a keyword and a
+   literal are different kinds of thing (T13). The four spans have always been
+   emitted by blocks/index.js and never had a rule, so every `syntax:` a course
+   declared rendered as flat text.
+   Only ink tokens are used, so both themes hold AA with no separate dark rule
+   (T1), and `wn` is excluded deliberately — it is the one accent with a fixed
+   job, and a warning colour inside a code listing would mean nothing (T27).
+   Colour is an aid here and never the sole carrier: the token is its own text
+   (T26), so a listing reads identically in greyscale. */
+.tok-c{color:var(--ink-3);font-style:italic}
+.tok-k{color:var(--lo-ink);font-weight:600}
+.tok-s{color:var(--hi-ink)}
+.tok-n{color:var(--dc-ink)}
 .codewrap{position:relative;margin:0 0 var(--sp-3)}
 .codewrap .lang{
   position:absolute;top:0;right:0;font-family:var(--mono);font-size:.62rem;
@@ -109,7 +109,13 @@ thead th{
   letter-spacing:.03em;background:var(--surface-2);white-space:nowrap;
 }
 tbody tr:last-child td{border-bottom:0}
-.legend,.kleg,.quiz-h{flex-wrap:wrap}
+/* `split: N` on a table marks the last input column, so the rule falls between
+   inputs and outputs. It is the one vertical rule in a table and it is heavier
+   than the row rules, because it divides two kinds of column rather than two
+   rows. Without it the block rendered as an ordinary table and the split the
+   author declared was invisible. */
+.tbl th.sep,.tbl td.sep{border-right:2px solid var(--rule)}
+.quiz-h{flex-wrap:wrap}
 .tscroll,pre{max-width:100%}
 
 /* Where a claim came from. Text, never colour alone: an unverified one says so

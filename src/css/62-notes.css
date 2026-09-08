@@ -51,12 +51,24 @@
 .note-pull:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
 .note-pull:hover .note-grip,
 .note-pull:active .note-grip{background:var(--dc);opacity:.7;width:30px}
+/* A block that already carries notes: the grip adds another rather than the
+   first, and says so without a word. */
+.note-grip.has{background:var(--dc);opacity:.5}
 
 /* ------------------------------------------------------- the note card ---- */
 
 .mnote.is-n{border-left-color:var(--dc)}
 .mnote.is-n .mn-k{color:var(--dc-ink)}
 .mnote.is-n .mn-go{color:var(--dc-ink)}
+
+/* One card can hold several notes. They are ruled apart rather than boxed
+   apart: a box inside a box reads as two cards that failed to separate. */
+.note-one + .note-one{
+  margin-top:9px;padding-top:9px;
+  border-top:1px dashed color-mix(in srgb,var(--dc) 40%,transparent);
+}
+.note-ops{display:flex;gap:12px;align-items:baseline;margin-top:6px}
+.note-drop{color:var(--wn-ink)}
 
 /* The header is the fold control, so the whole label is the target rather than
    a caret the thumb has to hunt for. It keeps .mn-k's type, since it is the
@@ -66,6 +78,9 @@
   background:none;border:0;padding:0;cursor:pointer;text-align:left;
   font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;
   text-transform:uppercase;
+  /* More than .mn-k's own 4px: this label sits over the reader's prose rather
+     than over a title, and at 4px the two ran together. */
+  margin-bottom:9px;
 }
 .mnote.is-n.is-shut .mn-k{margin-bottom:0}
 .note-caret{

@@ -1,5 +1,7 @@
 # Learn
 
+[Check it out here!]("https://learn-12i.pages.dev/")
+
 A site for more optimized learning. A course gets imported and displayed in nice and structured fashion. This functions as a study tool for both long and short term learning.
 
 A course is this specific thing you want to learn/study (like a class, or certain subject). The courses themselves have a specific file structure. You can ask an AI to design the course by giving it the needed content, and then providing it the instructions in `docs/create_course.md` (the AI must be able to create/edit files). The courses and quiz data stays locally in your browser. You can sync it with another device using Tailscale (below).

@@ -60,7 +60,7 @@ blocks:
     tier: depth
     source: src/blocks/index.js
     h: |-
-      The highlighter is regex over an escaped string: the comment marker, then <code>\b(keyword|…)\b</code>, then each course pattern, then string literals unless <code>strings: false</code>. A malformed pattern is caught and skipped rather than breaking the page.
+      The highlighter is one regex over the raw source: the comment marker, then string literals unless <code>strings: false</code>, then each course pattern, then <code>\b(keyword|…)\b</code>, joined into a single alternation and scanned once. Order is precedence — the earlier rule wins an overlap, so a keyword inside a comment stays part of the comment. Escaping happens per slice as the output is assembled, which is the point of scanning the raw text: a pass that re-read its own output would match the quoted class name in a span it had already emitted. A malformed pattern is dropped before the alternation is built, and <code>validate.mjs</code> reports it rather than leaving it silent.
 
 quiz:
   - type: Choose the table mode

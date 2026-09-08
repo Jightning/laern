@@ -22,6 +22,10 @@
   padding-left:var(--safe-l);
 }
 main{padding:0 0 calc(40px + var(--safe-b));min-width:0}
+/* A route that renders no toolbar has nothing holding the status bar off, so
+   the column takes the inset itself. `#/sync` is the one such page inside the
+   shell; the review route has its own frame and pays for it in 66-review.css. */
+.shell.bare main{padding-top:var(--safe-t)}
 .topbar{
   position:sticky;top:0;z-index:30;display:flex;flex-wrap:nowrap;align-items:center;gap:14px;
   background:color-mix(in srgb,var(--ground) 88%,transparent);

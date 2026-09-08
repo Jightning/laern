@@ -50,13 +50,21 @@ const WIDE = "(min-width: 64.01em)";
  * It also stops the moment the reader scrolls for themselves. Correcting a
  * page somebody has taken hold of is worse than landing a little short.
  */
+/* Watching costs nothing; only moving the page does, and the rule below moves
+   it solely when the anchor has actually shifted. So the window is generous:
+   the maths course renders its KaTeX in a burst well past half a second, and a
+   short budget stopped watching 50px before the layout was finished. Any input
+   from the reader ends it immediately, whenever it comes. */
+const LAND_QUIET = 30;    /* frames of a still anchor that mean the layout is done */
+const LAND_MAX = 90;      /* and a hard stop, in case it never is */
+
 function land(el, into) {
-  let anchor = null, frames = 0, live = true;
+  let anchor = null, still = 0, frames = 0, live = true;
   const stop = () => { live = false; };
   /* Asking whether scrollY moved on its own cannot tell a reader apart from
      the browser's own scroll anchoring, which fires under exactly these
      conditions. Their input can. */
-  const watch = ["wheel", "touchstart", "keydown"];
+  const watch = ["wheel", "touchstart", "keydown", "mousedown"];
   const done = () => watch.forEach(k => removeEventListener(k, stop));
   watch.forEach(k => addEventListener(k, stop, { passive: true }));
 
@@ -69,8 +77,14 @@ function land(el, into) {
          1.5 second animation that the next frame then measured mid-flight. */
       scrollTo({ top: top + into, behavior: "instant" });
       anchor = top;
-    }
-    if (++frames < 40) requestAnimationFrame(step); else done();
+      still = 0;
+    } else still++;
+    /* Stop as soon as the anchor has held for a few frames. Running the full
+       budget every time leaves the page moving under the reader for half a
+       second after it has already arrived, which is long enough for a click to
+       land on the wrong line. */
+    if (still < LAND_QUIET && ++frames < LAND_MAX) requestAnimationFrame(step);
+    else done();
   };
   step();
 }
@@ -164,10 +178,19 @@ export default function App() {
   const drills = useMemo(() => indexDrills(course || {}), [course]);
   const state = useMemo(() => (course ? stateFor(cid, course) : { on: false, stats: () => ({}) }), [course, cid]);
 
+  /* During render, not in the effect below. Blocks read this config *while*
+     they render, and an effect runs after that render has painted — so a deep
+     link or a reload straight onto a section drew its code blocks with no
+     highlighting and its mono tables with no valueStyles, and nothing ever
+     corrected it, because the config is a module variable and not state. It
+     only looked right when the reader arrived from another view, which had
+     already run the effect. Arriving directly is the normal case: search
+     results, schedule.md and checklist.md all deep-link to a section. */
+  setBlockConfig(course);
+
   useEffect(() => {
     applyHue(course);
     if (!course) return;
-    setBlockConfig(course);
     /* One course's styles at a time. They used to be appended and never
        removed, so opening three courses left three stylesheets fighting. */
     document.querySelectorAll('style[id^="cs-"]').forEach(el => {
@@ -339,7 +362,7 @@ export default function App() {
 
   if (inSetup)
     return (
-      <div class="shell solo">
+      <div class="shell solo bare">
         <main>
           <div class="wrap">
             <div class="lib">

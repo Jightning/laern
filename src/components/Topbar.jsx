@@ -5,8 +5,13 @@ import { M } from "../lib/math.js";
 export default function Topbar({ crumb, inCourse, stateOn, onSearch, onExpand, expanded, onReset, onMenu, zoom, onZoomReset, due, onReview }) {
   return (
     <div class="topbar">
-      <button class="tbtn mobnav" onClick={onMenu} aria-label="Open navigation"
-              aria-controls="sidebar">Menu</button>
+      {/* Only where there is a sidebar to open. The library is `shell.solo` and
+          renders none, so on a phone this button used to dim the page behind a
+          scrim covering nothing and wait to be dismissed. */}
+      {inCourse && (
+        <button class="tbtn mobnav" onClick={onMenu} aria-label="Open navigation"
+                aria-controls="sidebar">Menu</button>
+      )}
       {/* Home is the breadcrumb's root rather than a control beside it. The
           sidebar has an "All courses" link, but it is inside a drawer on a
           phone and gone entirely when the sidebar is collapsed — and the

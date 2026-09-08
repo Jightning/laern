@@ -257,6 +257,15 @@ for (const id of courses) {
     warns.push(`theme.hue ${Number(C.theme && C.theme.hue) || 0} is also used by ${sharesHue.join(", ")} — ` +
       `the two are indistinguishable in the library; pick another angle`);
 
+  /* `syntax.patterns[].re` is the other authored expression nothing compiled:
+     the highlighter builds one regex per rule, so a pattern that does not
+     parse is dropped, and the course simply renders with that rule missing.
+     Same defect shape as a plot's fn below, so it is caught the same way. */
+  for (const pat of (C.syntax && C.syntax.patterns) || []) {
+    try { new RegExp(pat.re); }
+    catch (e) { errs.push(`syntax pattern "${pat.re}" does not parse — ${e.message}`); }
+  }
+
   /* A section with no _section.yaml falls back to its folder name, which then
      shows up in the sidebar as "03-systematic-analysis". The blurb is what the
      course home and the section head read from, so an absent one leaves a
