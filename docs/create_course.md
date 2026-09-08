@@ -438,12 +438,29 @@ phrase where the phrase is the name of the thing — "Common slip", "The cut
 property". If it runs to a sentence, that sentence is the block's first line and
 belongs in `h`.
 
+**An `ex` block's `title:` names what is worked, not how you worked it.** A noun
+phrase for the thing itself: "Overflow in a 4-bit sum", "The screening numbers
+through the rule". A title describing your treatment of the material — "counted
+out", "step by step", "revisited", "in detail" — is a caption on steps the
+reader is already looking at, and it reads as a fragment because it is one.
+
 **Two fields default, so write them only when they carry information.**
 `tier:` defaults to `spine` — an absent tier *is* the declaration of it [M23] —
 so write it only for `depth` and `apply`. `label:` defaults to the callout's own
 name ("Definition", "Key rule", "Common mistake", "Worked example", "Note"), so
 write it only to override one. Repeating a default is a line you pay for on
 every write and every re-read, and it buys nothing.
+
+**Never write the interface's own words.** Every block renders a frame you did
+not author: a callout prints its label, a figure prints its number, a collapsed
+tier prints its count, an `attempt` prints a text box, a submit button, and a
+line telling the reader the section teaches this next. Text repeating any of it
+is redundant against the engine rather than against other prose, which is the
+one kind of repetition M1 cannot see and no gate will catch. So an `attempt`
+poses the problem and stops. It does not ask for an answer, tell the reader to
+record one, or promise what comes after. Before writing a sentence that tells
+the reader what to do on the page, check §2.1 for whether the page already
+does it.
 
 **`source:` belongs on every `def`, `key` and `trap`** — those three carry the
 conclusions a reader cannot catch by reading around them, they are the three
@@ -494,11 +511,19 @@ on its first page:
 Second person, one concrete act, and the general term ("primitive expression")
 arrives only after the reader has seen an instance of it.
 
-**The `def` must retire the opener.** It generalises the anchor and names it a
-special case, or refers back to what the `attempt` tried. This is the mechanism,
-not a courtesy: an unretired anchor leaves the reader holding an instance where
-they need a schema, which is the transfer failure in §1. **The anchor also names
-where it breaks** — one sentence: "this stops being a good picture once X."
+**The `def` states the term and nothing else.** A definition is what the reader
+returns to in week six, and what the margin card shows on a page far from this
+one (§5), so it has to read cold. No numbers borrowed from the anchor, no "as we
+saw above", no reference to what the `attempt` asked. A definition that needs
+the example beside it is a definition that has not been written yet.
+
+**The block after it retires the opener.** One or two sentences, in the `p` or
+the `key` that follows: generalise the anchor and name it a special case, or say
+what the `attempt` was reaching for. That block may lean on the example freely,
+because nothing returns to it. The retirement is the mechanism rather than a
+courtesy. An unretired anchor leaves the reader holding an instance where they
+need a schema, which is the transfer failure in §1. **The anchor also names
+where it breaks**, in one sentence: "this stops being a good picture once X."
 
 **Every `key` rule is derived, not announced** (0.2). The reader must be able to
 see where the rule comes from, using only what they have already read. Three
@@ -976,7 +1001,7 @@ No script decides any of these. Skip this list and nothing else catches it.
       execution trap and an error-spotting item (§6.4, §6.5). No script detects
       "procedural".
 - [ ] **The quiz types are actually distinct.** Could a reader answer one and
-      fail another? If not, they are one type in two labels (14.5).
+      fail another? If not, they are one type in two labels (14.6).
 - [ ] **Every composing section has a synthesis item**, and every exempt section
       says in its blurb why it is exempt (§7.1)
 - [ ] **Recurring ideas are concepts** (M13). No script sees an un-promoted idea.
@@ -1034,6 +1059,17 @@ learner directly — improves retention at d = 0.30 and **transfer at d = 0.54**
 meta-analysis). Transfer is the larger of the two, and it is what §1's D4 and D5
 already spend budget on. Second person is a lever on the same outcome, and it is
 free.
+
+**Address is not instruction.** Second person names the reader's situation,
+their reasoning, and what they already hold: "the group you are standing in",
+"you were given the other direction". It does not turn a statement of fact into
+an order. "It is written P(A | B)" is a fact about notation; "Write it P(A | B)"
+commands an action the reader is not performing and has no reason to. The
+difference costs nothing and is invisible while you write, because both forms
+contain "you" and both feel direct. A course that drifts into the imperative
+reads as a worksheet, and the reader starts skipping the instructions, which are
+where the content went. §13.2's count is a floor on address. It is not a quota
+imperatives can fill.
 
 **Cut the clause that adds nothing.** Sentence-level coherence measures
 g = 0.63, the largest of the layout effects, and it is subtractive [T11]. A
@@ -1155,11 +1191,19 @@ prompt to check the *shape* of the sentence, not to reach for a synonym.
 
 `crucial`, `essential` and `vital` are one error committed three ways: the
 sentence asserts importance instead of demonstrating it. If a thing matters, the
-reason it matters is the sentence you should have written. If you cannot state
-that reason, it does not matter here.
+reason it matters is the sentence you should have written.
+
+**The error is wider than importance.** Any adjective handing the reader a
+judgement they were about to reach from the evidence in the same sentence does
+it: "the test is good", "a surprising result", "a simple rule", "the obvious
+choice". "The mammogram is good: it flags 80 of those 100" spends a clause
+telling the reader what to think about a number they have not read yet, and it
+arrives before anything has earned it. Give the number first and let the reader
+conclude. If you cannot say what makes it good, surprising or simple, it is
+not.
 
 A hedge is a defect in the *claim* rather than in the sentence, and is caught at
-14.8.
+14.9.
 
 ### 13.7 Read a human first
 
@@ -1209,19 +1253,20 @@ has a fix in one line.
 |---|---|---|
 | **14.1** | **Assumed knowledge.** You reach for the convenient tool — a matrix, a limit, a piece of notation — that `background` never granted. | Check the list, not your instinct (0.2, §12b). |
 | **14.2** | **The asserted rule.** A `key` block states a rule and moves on, because the derivation felt like a digression. | Derive it, or declare it given (§6.2). |
-| **14.3** | **Encyclopedic drift.** Balanced survey prose covering a topic from all sides. | If a paragraph would sit unchanged in a Wikipedia article, it is wrong here. A course teaches one reader one thing in an order. |
-| **14.4** | **The example that re-explains.** A worked example opening by restating the definition. The most common non-redundancy violation there is. | The example starts at the first step of the work. |
-| **14.5** | **Fake variety in the quiz.** The same question three times with different numbers and different `type` labels. | Could a reader answer one and fail another? If not, merge them. |
-| **14.6** | **Trap inflation.** Every caution marked as a `trap`, because traps look valuable. | One or two per subsection (§6.4). |
-| **14.7** | **Depth as a dumping ground.** Anything long pushed into `depth`. | The rule is examinability, not length (§6.3). |
-| **14.8** | **Hedged claims.** "Generally", "typically", "in most cases". A hedge is a claim the reader cannot use. | Name the condition, or write `unverified`. |
-| **14.9** | **Confident fabrication of institutional fact.** A plausible grading split, exam date, or textbook edition. | Do not (0.5). |
-| **14.10** | **Manufactured confusability.** Any two concepts in a course are relatable. | Only pairs readers actually mix up (D2). |
-| **14.11** | **The four-example subsection.** Worked examples added because a topic feels hard. | Where schema acquisition is not the failure mode that is the wrong lever (D1). One example, three drill items. |
-| **14.12** | **Skipping Phase 6.** Drills are the least interesting thing here and the most important one for the stated priorities. | A course that stops after Phase 5 is a well-made document with no retention loop. |
-| **14.13** | **Marking everything for review.** Twenty concepts become sixty drill items, most about things nothing will ask. | The cap is judgement, which is exactly why you overshoot it (§5.1). |
-| **14.14** | **Coverage mistaken for mastery.** Every type answered, and the reader has still never constructed anything. | The synthesis item (§7.1). |
-| **14.15** | **Density drift.** By the fortieth subsection the `key` blocks are half again as long, carrying the same point through a second example, a restated setup and a "which is exactly why" tail. | A `key` block is two to four sentences; a subsection runs three or four blocks of a kind, not five. Five `key` blocks means two are one rule split in half. Calibrate against the sections already shipped. |
+| **14.3** | **The imperative drift.** Told to address the reader, you convert statements into orders and re-narrate the interface: "write this down", "note that", "click to reveal", "write it as X". | Second person names the reader's situation, not their next action (13.1). Check §2.1 before telling the reader what to do on the page. |
+| **14.4** | **Encyclopedic drift.** Balanced survey prose covering a topic from all sides. | If a paragraph would sit unchanged in a Wikipedia article, it is wrong here. A course teaches one reader one thing in an order. |
+| **14.5** | **The example that re-explains.** A worked example opening by restating the definition. The most common non-redundancy violation there is. | The example starts at the first step of the work. |
+| **14.6** | **Fake variety in the quiz.** The same question three times with different numbers and different `type` labels. | Could a reader answer one and fail another? If not, merge them. |
+| **14.7** | **Trap inflation.** Every caution marked as a `trap`, because traps look valuable. | One or two per subsection (§6.4). |
+| **14.8** | **Depth as a dumping ground.** Anything long pushed into `depth`. | The rule is examinability, not length (§6.3). |
+| **14.9** | **Hedged claims.** "Generally", "typically", "in most cases". A hedge is a claim the reader cannot use. | Name the condition, or write `unverified`. |
+| **14.10** | **Confident fabrication of institutional fact.** A plausible grading split, exam date, or textbook edition. | Do not (0.5). |
+| **14.11** | **Manufactured confusability.** Any two concepts in a course are relatable. | Only pairs readers actually mix up (D2). |
+| **14.12** | **The four-example subsection.** Worked examples added because a topic feels hard. | Where schema acquisition is not the failure mode that is the wrong lever (D1). One example, three drill items. |
+| **14.13** | **Skipping Phase 6.** Drills are the least interesting thing here and the most important one for the stated priorities. | A course that stops after Phase 5 is a well-made document with no retention loop. |
+| **14.14** | **Marking everything for review.** Twenty concepts become sixty drill items, most about things nothing will ask. | The cap is judgement, which is exactly why you overshoot it (§5.1). |
+| **14.15** | **Coverage mistaken for mastery.** Every type answered, and the reader has still never constructed anything. | The synthesis item (§7.1). |
+| **14.16** | **Density drift.** By the fortieth subsection the `key` blocks are half again as long, carrying the same point through a second example, a restated setup and a "which is exactly why" tail. | A `key` block is two to four sentences; a subsection runs three or four blocks of a kind, not five. Five `key` blocks means two are one rule split in half. Calibrate against the sections already shipped. |
 
 ---
 
