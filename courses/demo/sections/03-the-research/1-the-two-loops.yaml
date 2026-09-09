@@ -1,34 +1,28 @@
 title: The two loops
 blocks:
   - t: p
-    tier: spine
     source: docs/code_truth.md §3c
     h: |-
       The site runs two learning loops over the same material. They share the concept keys and nothing else. One asks whether you can produce an answer today; the other asks whether you still can in six weeks.
 
   - t: def
-    tier: spine
     source: docs/code_truth.md §3c
     term: The two loops
-    label: Definition
     h: |-
-      <p><b>Loop A</b> — the subsection quiz, keyed by question <em>type</em>. One item per type: can you derive this on the spot? <b>Loop B</b> — the drill bank, keyed by <em>concept</em>. Many items, spaced: do you still hold it?</p>
+      <p><b>Loop A</b> is the subsection quiz, keyed by question <em>type</em>. One item per type: can you derive this on the spot? <b>Loop B</b> is the drill bank, keyed by <em>concept</em>. Many items, spaced: do you still hold it?</p>
 
   - t: key
-    tier: spine
     source: docs/create_course.md §8
     label: The seam runs one way
     h: |-
       <p>A confident miss in Loop A pulls that concept into Loop B. A Loop B success never marks a Loop A type as covered. <c k="retrieval-practice">Retrieval practice</c> is the shared mechanism of <c k="two-loops">the two loops</c>; the one-way direction is what keeps coverage and retention from being confused for each other.</p>
 
   - t: math
-    tier: spine
     label: What Loop B schedules against
     tex: R(t) = e^{-t/S}
     note: Recall probability R decays with time t since the last review; S is memory stability, which each successful spaced retrieval increases. The scheduler places the next review where R would fall to a fixed target.
 
   - t: ex
-    tier: spine
     source: docs/create_course.md §8
     title: A confident miss, routed
     h: |-
@@ -39,7 +33,6 @@ blocks:
       </ol>
 
   - t: trap
-    tier: spine
     source: docs/material_truth.md M5
     label: Volume belongs in one loop only
     h: |-
@@ -87,6 +80,6 @@ quiz:
     a: |-
       It reverses the seam. Loop B → Loop A feedback does not exist; a drill success says nothing about whether the reader can handle each distinct question type.
     why: |-
-      <p>The tempting idea is that mastering the concept should discharge the questions about it. But the quiz tracks <em>types</em> — forwards, backwards, boundary, error-spotting — and holding the concept in memory is not the same as being fluent in every form the examiner can use.</p>
+      <p>The tempting idea is that mastering the concept should discharge the questions about it. But the quiz tracks <em>types</em>: forwards, backwards, boundary, error-spotting. Holding the concept in memory is not the same as being fluent in every form the examiner can use.</p>
     why_prompt: Which identity does Loop A track that Loop B does not?
     verified: 2026-09-02

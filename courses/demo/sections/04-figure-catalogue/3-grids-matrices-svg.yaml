@@ -1,21 +1,17 @@
 title: Grids, matrices, and the escape hatch
 blocks:
   - t: p
-    tier: spine
     source: docs/create_course.md §11.1
     h: |-
-      <b>grid</b> is a labelled 2-D grid with optional highlighted groups — Karnaugh maps, state tables, confusion matrices. <b>matrix</b> is a bracketed array. <b>svg</b> is the last resort when none of the other eight fit.
+      <b>grid</b> is a labelled 2-D grid with optional highlighted groups: Karnaugh maps, state tables, confusion matrices. <b>matrix</b> is a bracketed array. <b>svg</b> is the last resort when none of the other eight fit.
 
   - t: def
-    tier: spine
     source: docs/create_course.md §11.1
     term: The svg escape hatch
-    label: Definition
     h: |-
       <p>The <code>svg</code> kind takes a raw <code>body</code> and a <code>viewBox</code> and draws exactly that. It is the admission that the declarative kinds are finite; reach for it only after checking that <code>grid</code>, <code>graph</code> or a <code>table</code> genuinely cannot express the shape.</p>
 
   - t: figure
-    tier: spine
     kind: grid
     cap: "grid — Gray-coded labels, a binary index per cell, two highlighted groups, cell values coloured by the course's valueStyles"
     spec:
@@ -34,7 +30,6 @@ blocks:
         - {label: "centre", cells: [[1, 1], [1, 2]]}
 
   - t: figure
-    tier: spine
     kind: matrix
     cap: "matrix — a 2×2 identity, with a label"
     spec:
@@ -59,7 +54,6 @@ blocks:
         <text x="160" y="52" text-anchor="middle" font-size="11" fill="var(--ink-3)">confident miss</text>
 
   - t: trap
-    tier: spine
     source: docs/create_course.md §16
     label: The escape hatch is not the first move
     h: |-
@@ -71,7 +65,7 @@ quiz:
     q: |-
       You want a 4×4 map with two overlapping highlighted regions and an index in each cell. Which kind, and could a table do it?
     a: |-
-      grid. A plain table has no concept of highlighted cell groups or a per-cell binary index, so it would need manual markup in every cell — which is what grid exists to avoid.
+      grid. A plain table has no concept of highlighted cell groups or a per-cell binary index, so it would need manual markup in every cell, which is what grid exists to avoid.
     why: |-
       <p>grid takes the groups and the index as data and renders the decoration itself. The table block is for tabular values without that structure.</p>
     why_prompt: What does grid take as data that a table would force you to hand-write per cell?

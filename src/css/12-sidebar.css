@@ -31,9 +31,17 @@
      way down to the breakpoint. */
   margin-right:var(--wrap-pad);
 }
-/* and the bar follows the column it sits above, here too */
+/* The bar does *not* follow the column here, which is the one place it does
+   not. Untucked, the crumb starts where the heading starts, because the two
+   are the same words and reading them at two different left edges is noise.
+   Tucked, that alignment costs the whole vacated sidebar: the bar spans the
+   full width and the crumb sat 420px in, with an empty 420px of chrome to its
+   left and the trail truncating on the right while that space went unused. So
+   the crumb takes the page's own gutter instead and the column stays where it
+   is. Nothing is misaligned by it — the crumb is chrome, and above it there is
+   no heading to line up with. */
 .shell.tucked .topbar{
-  padding-left:calc(50% - var(--measure) / 2);
+  padding-left:calc(var(--wrap-pad) + var(--safe-l));
   padding-right:var(--wrap-pad);
 }
 

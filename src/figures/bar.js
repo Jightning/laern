@@ -1,6 +1,6 @@
 /* Figure kind: bar — comparing magnitudes across labelled categories.
  * {bars:[{label, value, accent?}], ylabel, xlabel, baseline?} */
-import { esc, tone, txt } from "./base.js";
+import { esc, tone, txt, fmt } from "./base.js";
 import { frame, grid, axisLabels, scale } from "./axes.js";
 
 export function bar(spec) {
@@ -14,6 +14,8 @@ export function bar(spec) {
   const dom = [base, top === base ? base + 1 : top];
   const f = frame(spec, dom, spec.ticks || 5);
   const py = scale(dom, [f.m.t + f.ih, f.m.t]);
+
+  const label = fmt(spec.valueFmt, String);
 
   const slot = f.iw / bars.length;
   const bw = Math.min(slot * 0.62, 74);
@@ -43,7 +45,7 @@ export function bar(spec) {
     out += `<rect x="${x.toFixed(1)}" y="${Math.min(y, y0).toFixed(1)}" width="${bw.toFixed(1)}" ` +
       `height="${Math.abs(y0 - y).toFixed(1)}" rx="2" class="fx-bar" ` +
       `style="fill:${tone(b.accent != null ? b.accent : i)}"/>`;
-    out += txt(x + bw / 2, y - 7, spec.valueFmt ? spec.valueFmt(v) : String(v), "fx-el");
+    out += txt(x + bw / 2, y - 7, label(v), "fx-el");
     labelLines(b.label).forEach((ln, li) => {
       out += txt(x + bw / 2, f.m.t + f.ih + 17 + li * 11, ln, "fx-ax");
     });

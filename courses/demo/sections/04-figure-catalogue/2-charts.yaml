@@ -1,21 +1,17 @@
 title: Charts — plot, bar, scatter
 blocks:
   - t: p
-    tier: spine
     source: docs/create_course.md §11.1
     h: |-
       Three kinds carry magnitude. <b>plot</b> draws functions or measured series against continuous axes, <b>bar</b> compares values across labelled categories, <b>scatter</b> shows how two measured quantities relate. The decay curves are figure <f k="decay"/>.
 
   - t: def
-    tier: spine
     source: docs/material_truth.md M17
     term: Figure coherence
-    label: Definition
     h: |-
       <p>A figure must carry information the prose does not. Removing decorative or restated detail improves learning at <m>g = 0.37</m> to <m>0.41</m>; a chart that only repeats a sentence costs attention and returns nothing.</p>
 
   - t: figure
-    tier: spine
     id: decay
     kind: plot
     cap: "plot — one function series and one measured series (dashed), with explicit ranges and a legend"
@@ -30,7 +26,6 @@ blocks:
         - {label: "observed", dash: true, points: [[0, 0.98], [2, 0.72], [4, 0.55], [6, 0.44], [8, 0.30], [10, 0.22]]}
 
   - t: figure
-    tier: spine
     kind: bar
     cap: "bar — effect sizes, one bar accented, baseline at 0"
     spec:
@@ -61,7 +56,7 @@ blocks:
     source: tools/validate.mjs
     label: Plot functions are compiled at build time
     h: |-
-      <p>A <code>fn</code> series is JavaScript the reader's browser evaluates. The validator parses it, runs it at sample points, and fails the build if it throws or never returns a finite value — so a broken chart is caught in the file, not on the page.</p>
+      <p>A <code>fn</code> series is JavaScript the reader's browser evaluates. The validator parses it, runs it at sample points, and fails the build if it throws or never returns a finite value. A broken chart is caught in the file, not on the page.</p>
 
 quiz:
   - type: Choose plot vs bar
@@ -80,7 +75,7 @@ quiz:
     q: |-
       In the scatter figure, the "spaced" series' trend line is steeper than "massed". What does that slope difference mean?
     a: |-
-      Each additional practised item is retained at a higher rate under spacing than under massing — spacing converts practice into retention more efficiently.
+      Each additional practised item is retained at a higher rate under spacing than under massing. Spacing converts practice into retention more efficiently.
     why: |-
       <p>The x-axis is items practised and the y-axis is items retained, so slope is retained-per-practised. A steeper line is a better conversion rate, which is the spacing effect.</p>
     why_prompt: What are the units of the trend line's slope here?

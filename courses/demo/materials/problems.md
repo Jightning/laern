@@ -35,8 +35,8 @@ Work them with a pencil. Solutions follow each set.
 **Solutions**
 
 1. Correctness alone cannot separate a wrong belief from a known gap. → The prediction supplies the second axis; only their disagreement is diagnostic. → The site reports the disagreement as the overconfidence count. → **So a miss you were confident about can be told apart from a miss you expected.**
-2. Reading enrols nothing; a hesitant miss is already known to the reader. → A confident miss is a belief that is wrong, and it returns unless it is corrected. → **(b) — missing something you had just predicted you would get right.**
-3. Immediate re-test is the correction; the next-day interval is the retention. → Feedback alone lets a confident error come back, which is what the seam exists to prevent. → **The same session — it is drilled before you leave the page — and then again the next day.**
+2. Reading enrols nothing; a hesitant miss is already known to the reader. → A confident miss is a belief that is wrong, and it returns unless it is corrected. → **(b) missing something you had just predicted you would get right.**
+3. Immediate re-test is the correction; the next-day interval is the retention. → Feedback alone lets a confident error come back, which is what the seam exists to prevent. → **The same session, before you leave the page, and then again the next day.**
 
 ---
 

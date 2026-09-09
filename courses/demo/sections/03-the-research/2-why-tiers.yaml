@@ -1,28 +1,24 @@
 title: Why tiers, and what the evidence says
 blocks:
   - t: p
-    tier: spine
     source: docs/code_truth.md §3c
     h: |-
       <a href="#s1-4">§1.4</a> said what the three lanes do for a reader. This subsection is the other half: how an author decides which tier a block belongs in, and how far the evidence for splitting a page actually reaches. The <c k="tier">tier</c> card in the margin carries the definition.
 
   - t: def
-    tier: spine
     source: docs/code_truth.md Trade-offs
     term: The coherence principle
     label: The finding tiers are built on
     h: |-
-      <p>Removing interesting-but-nonessential material from a lesson improves what a learner takes from it — the effect that says a page should carry less. Tiers are an attempt to have it both ways: the nonessential material is removed from the default read and kept one click away, rather than deleted.</p>
+      <p>Removing interesting-but-nonessential material from a lesson improves what a learner takes from it. That is the effect that says a page should carry less. Tiers are an attempt to have it both ways: the nonessential material is removed from the default read and kept one click away, rather than deleted.</p>
 
   - t: key
-    tier: spine
     source: docs/material_truth.md M23–M25
     label: Three tests that decide every block
     h: |-
       <p>Removing it breaks the argument → <b>spine</b>. It answers "why" or "what if" and nothing examinable rides on it → <b>depth</b>. It teaches nothing new, only builds fluency → <b>apply</b>. Ambiguous between spine and depth → choose depth.</p>
 
   - t: table
-    tier: spine
     mono: true
     cap: How each tier answers the three tests
     head: [tier, examinable, breaks argument if cut, collapsible]
@@ -33,13 +29,12 @@ blocks:
       - [apply, no, no, yes]
 
   - t: ex
-    tier: spine
     source: docs/create_course.md §7.3
     title: Classifying one block
     h: |-
       <ol>
         <li>A paragraph derives the integrating factor from <m>\rho' = P\rho</m>.</li>
-        <li>Is it examinable? The <em>result</em> is, but the derivation is not — a student can use the factor without reproducing the derivation.</li>
+        <li>Is it examinable? The <em>result</em> is, but the derivation is not, since you can use the factor without reproducing it.</li>
         <li>So the derivation is <b>depth</b>; the factor itself is spine.</li>
       </ol>
 
@@ -48,7 +43,7 @@ blocks:
     source: docs/code_truth.md Trade-offs
     label: The evidence, and its limit
     h: |-
-      <p>The coherence principle — removing nonessential detail helps learning at <m>g = 0.37</m> to <m>0.41</m> — is measured on material the learner cannot avoid. Opt-in collapsed detail has not been tested against a single-density alternative, so tiering is a defensible default, not a proven one.</p>
+      <p>The coherence principle, which says removing nonessential detail helps learning at <m>g = 0.37</m> to <m>0.41</m>, is measured on material the learner cannot avoid. Opt-in collapsed detail has not been tested against a single-density alternative, so tiering is a defensible default, not a proven one.</p>
 
   - t: p
     tier: depth
@@ -64,7 +59,7 @@ blocks:
       <ol>
         <li>A block lists three worked variations of a substitution already defined in the spine.</li>
         <li>It states no new rule and removing it breaks no argument.</li>
-        <li>It is <b>apply</b> — and by budget, a concept gets only one or two of these across the whole course.</li>
+        <li>It is <b>apply</b>. By budget, a concept gets one or two of these across the whole course.</li>
       </ol>
 
 quiz:
@@ -100,3 +95,29 @@ quiz:
       <p>Depth is a promise that collapsing it is free on the exam. A tested boundary case breaks that promise, and a reader in the Spine lane would miss it entirely.</p>
     why_prompt: What promise does putting a block in depth make to the reader?
     verified: 2026-09-02
+
+  - type: Synthesis
+    concept: tier
+    q: |-
+      <p>This subsection concedes that tiering is a defensible default rather
+      than a proven one: the coherence effect is measured on material a learner
+      cannot skip, and collapsed opt-in detail has never been tested against a
+      single-density page.</p>
+      <p>Design the experiment that would settle it. Say what result would make
+      you delete tiers from this site.</p>
+    a: |-
+      <p>A good answer names the comparison the literature is missing: the same
+      material at one density against the same material tiered, with the reader
+      free to expand. It picks an outcome measure that is not immediate recall,
+      because the claim is about attention over a whole course. It commits to a
+      result in advance. Tiered readers scoring no better than single-density
+      readers, on spine content, would end it.</p>
+      <p>The strong answers notice that the reader chooses whether to expand,
+      so the comparison is confounded by who expands and why.</p>
+    why: |-
+      <p>Every other rule in this course is derived from a measured effect. This
+      one is an inference from a nearby effect, and the section says so. A
+      reader who can design the missing study is a reader who can tell the two
+      apart everywhere else.</p>
+    why_prompt: What does the coherence result measure that a collapsed stub does not?
+    verified: 2026-09-08

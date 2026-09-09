@@ -1,21 +1,18 @@
 title: Finding your way around
 blocks:
   - t: p
-    tier: spine
     source: docs/architecture.md §4
     h: |-
       Courses cross-reference themselves heavily, which only works if following a reference is cheap and coming back is free. Everything in this subsection exists to make one idea reachable from wherever you happen to be standing.
 
   - t: def
-    tier: spine
     source: docs/code_truth.md T12
     term: Margin card
     label: References come to you
     h: |-
-      <p>When a page mentions an idea defined elsewhere — like <c k="non-redundancy">non-redundancy</c> — a card appears in the margin <em>beside that line</em>, carrying enough of the definition to keep reading. You are never sent to the end of the section to find out what a word meant, and following the link properly leaves a pill that takes you back to where you were.</p>
+      <p>When a page mentions an idea defined elsewhere, like <c k="non-redundancy">non-redundancy</c>, a card appears in the margin <em>beside that line</em>, carrying enough of the definition to keep reading. You are never sent to the end of the section to find out what a word meant, and following the link properly leaves a pill that takes you back to where you were.</p>
 
   - t: list
-    tier: spine
     source: docs/architecture.md §4
     h: |-
       The rest of the navigation, in one list:
@@ -26,7 +23,6 @@ blocks:
       - <b>The sidebar</b> (<code>\</code> hides it) and <code>[</code> <code>]</code> to page between sections
 
   - t: note
-    tier: spine
     source: docs/deploy.md
     label: Reading on a phone
     h: |-
@@ -36,14 +32,14 @@ blocks:
     tier: depth
     source: docs/deploy.md
     h: |-
-      Two devices can be kept in step without an account existing anywhere: <code>npm run sync</code> runs a server on your own machine, prints an address and a token, and stops on its own after ten idle minutes. Your answers and courses move between your devices and nowhere else — there is no middle.
+      Two devices can be kept in step without an account existing anywhere: <code>npm run sync</code> runs a server on your own machine, prints an address and a token, and stops on its own after ten idle minutes. Your answers and courses move between your devices and nowhere else. There is no middle.
 
   - t: trap
     tier: depth
     source: docs/deploy.md
     label: The folder is the backup
     h: |-
-      <p>A course installed in a browser is one copy in one place, and browsers do evict storage. Keep the folder you imported from, or export the course back out from its card in the library — that round trip is also how you hand a course to a model for editing and take the changes back.</p>
+      <p>A course installed in a browser is one copy in one place, and browsers do evict storage. Keep the folder you imported from, or export the course back out from its card in the library. That round trip is also how you hand a course to a model for editing and take the changes back.</p>
 
 quiz:
   - type: Choose the navigation
@@ -51,7 +47,7 @@ quiz:
     q: |-
       You are mid-paragraph and it uses a term you have forgotten. What does the site expect you to do?
     a: |-
-      Read the margin card that is already beside that line — and if you want the full entry, follow the link and use the return pill to come back.
+      Read the margin card that is already beside that line. For the full entry, follow the link and use the return pill to come back.
     why: |-
       <p>The reference is placed next to the mention rather than collected at the end because a definition you have to go looking for is one you read the paragraph without.</p>
     why_prompt: Why is the card beside the line rather than at the end of the section?
@@ -64,6 +60,30 @@ quiz:
     a: |-
       Because iOS deletes a tab's stored data after seven days without a visit, and review intervals are routinely longer than that. Home-screen apps are exempt.
     why: |-
-      <p>It is the one platform rule that can silently destroy a schedule, and it does so precisely when the schedule is working — long intervals are the goal, and long intervals are what trip the deletion.</p>
+      <p>It is the one platform rule that can silently destroy a schedule, and it does so precisely when the schedule is working. Long intervals are the goal, and long intervals are what trip the deletion.</p>
     why_prompt: Why does a *longer* review interval make this more dangerous, not less?
     verified: 2026-09-06
+
+  - type: Synthesis
+    concept: confidence
+    q: |-
+      <p>You read a course end to end in the Spine lane, answer every quiz item
+      on the first try, and mark high confidence each time. Your review queue
+      stays empty the whole way. Six weeks later most of it is gone.</p>
+      <p>Which part of the design let that happen, and what would you change
+      about it? Say what your change would cost.</p>
+    a: |-
+      <p>A good answer names the mechanism: enrolment is driven by confident
+      misses and by drilling a concept from its own entry, so a reader who never
+      misses never enrols anything. It then picks a side. Auto-enrolling every
+      concept on first read buys retention and costs the reader a queue they
+      did not ask for, full of items about things they already hold. Leaving it
+      manual keeps the queue honest and puts the work of noticing on the
+      reader.</p>
+    why: |-
+      <p>There is no right answer here, and the trade-off is real rather than a
+      teaching device. The site takes the second option on purpose. What is
+      being tested is whether you can see the empty queue as a consequence of a
+      choice rather than as the system working.</p>
+    why_prompt: What are the only two events that put a concept into the queue?
+    verified: 2026-09-08

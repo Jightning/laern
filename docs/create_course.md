@@ -801,13 +801,13 @@ never have to guess what a kind can do.
 
 | `kind` | For | `spec` |
 |---|---|---|
-| `graph` | State machines, block diagrams | `nodes:[{id, label, x, y, note, title, accent, state, here}]`, `edges:[{from, to, label, curve, self}]`, `layout`, `r`, `w`, `h` |
+| `graph` | State machines, block diagrams | `nodes:[{id, label, x, y, note, title, accent, state, here}]`, `edges:[{from, to, label, curve, self}]`, `layout: circle \| row \| layered \| manual`, `r`, `w`, `h` |
 | `plot` | Functions or measured series | `series:[{label, fn \| points, from, to, dash, samples}]`, `xlabel`, `ylabel`, `xrange`, `yrange`, `ticks`, `legend`, `xfmt`, `yfmt`, `w`, `h` |
-| `flow` | Processes and pipelines | `steps:[{label, note}]`, `dir` |
+| `flow` | Processes and pipelines | `steps:[{label, note}]`, `dir: row \| col` |
 | `grid` | Labelled 2-D grids with highlighted groups | `rowVars`, `colVars`, `rowLabels`, `colLabels`, `cells`, `index: binary`, `groups:[{label, cells:[[r,c],…]}]` |
 | `timing` | Digital waveforms | `signals:[{name, wave:"0101"}]`, `unit` |
-| `bar` | Magnitudes across labelled categories | `bars:[{label, value, accent}]`, `ylabel`, `max`, `baseline`, `ticks`, `valueFmt` |
-| `scatter` | How two measured quantities relate | `series:[{label, points}]`, `trend: true`, `xrange`, `yrange`, `ticks`, `xfmt`, `yfmt` |
+| `bar` | Magnitudes across labelled categories | `bars:[{label, value, accent}]`, `xlabel`, `ylabel`, `max`, `baseline`, `ticks`, `valueFmt`, `w`, `h` |
+| `scatter` | How two measured quantities relate | `series:[{label, points}]`, `trend: true`, `xlabel`, `ylabel`, `xrange`, `yrange`, `ticks`, `xfmt`, `yfmt`, `w`, `h` |
 | `matrix` | Bracketed matrices | `rows`, `label` |
 | `svg` | Anything the others cannot express | `body`, `viewBox` |
 
@@ -816,6 +816,35 @@ three rotating colours. A `plot` series' `fn` is JavaScript in `x`; it is
 compiled and sampled by `validate.mjs`, so a function that will not parse or has
 no finite value on its range fails the build rather than rendering an empty
 chart.
+
+**A `spec` may only contain keys the engine reads.** `src/figures/schema.js`
+declares them per kind and `validate.mjs` fails the build on anything else,
+because a renderer ignores a key it does not know — the figure draws without it
+and nothing says so. Two ways in, both of which have shipped:
+
+1. **Quote any value containing a comma.** Inside a YAML flow mapping a comma
+   ends the *pair*, not the value. `{label: resolve, note: path, credential,
+   query}` is four keys — two of them null — and the note renders as `path`.
+   Write `{label: resolve, note: "path, credential, query"}`, or use a block
+   mapping. This is the single most common figure defect.
+2. **`dir` and `layout` take the values in the table and nothing else.**
+   `dir: down` is not `col`, so `flow` falls back to a row.
+
+**A `valueFmt`, `xfmt` or `yfmt` is a template string**, not a function — a
+course is data. `{}` stands for the value, already formatted:
+
+```yaml
+- t: figure
+  kind: bar
+  cap: Recall after a week
+  spec:
+    valueFmt: "{}%"          # 40 → "40%";  "{} ms" → "40 ms"
+    bars:
+      - {label: restudy, value: 40}
+```
+
+A format with no `{}` fails the build: every label would otherwise read the
+same, which looks deliberate.
 
 **A figure must carry information the prose does not** [M17]. A decorative
 diagram costs attention and returns nothing; removing it improves learning.

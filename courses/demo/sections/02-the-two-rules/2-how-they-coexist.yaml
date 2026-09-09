@@ -1,21 +1,17 @@
 title: How they coexist
 blocks:
   - t: attempt
-    tier: spine
     label: Try it first
     h: |-
       <p>The two rules contradict each other on their face: completeness says write every step, non-redundancy says write each thing once. Before reading on, write how both can hold in the same course at the same time.</p>
 
   - t: def
-    tier: spine
     source: docs/architecture.md §1
     term: The reference system
-    label: Definition
     h: |-
       <p>The set of links that let a reader reach any definition from anywhere: <code>&lt;a href="#s5-2"&gt;</code> to a subsection, <code>&lt;c k="key"&gt;</code> to a concept, <code>&lt;f k="id"/&gt;</code> to a figure. Because the definition is always one hop away, a subsection can be complete without carrying its own copy of every idea it uses.</p>
 
   - t: ex
-    tier: spine
     source: docs/architecture.md
     title: One definition, two readers served
     h: |-
@@ -26,7 +22,6 @@ blocks:
       </ol>
 
   - t: list
-    tier: spine
     source: docs/create_course.md §2.1
     h: |-
       One <code>&lt;c k="…"&gt;</code> mention produces, with no extra authoring:
@@ -37,7 +32,6 @@ blocks:
       - an edge on the dependency map
 
   - t: list
-    tier: spine
     ordered: true
     source: docs/material_truth.md M14
     h: |-
@@ -72,7 +66,7 @@ quiz:
     a: |-
       Move the idea earlier so it precedes §2, or promote it to a concept and link it from both places.
     why: |-
-      <p>An unresolvable forward reference strands the reader — the one thing the reference system exists to prevent. Restating the idea inline in §2 is not a fix; it is a non-redundancy violation.</p>
+      <p>An unresolvable forward reference strands the reader, which is the one thing the reference system exists to prevent. Restating the idea inline in §2 is not a fix; it is a non-redundancy violation.</p>
     why_prompt: Why is "just restate it in §2" not on the list?
     verified: 2026-09-02
 
@@ -86,3 +80,30 @@ quiz:
       <p>The point of routing everything through one mention is leverage: the author writes a link, the engine writes the navigation. This is also why the two loops can share a concept identity without extra bookkeeping.</p>
     why_prompt: Why does the author only have to write the link and not the navigation?
     verified: 2026-09-02
+
+  - type: Synthesis
+    concept: non-redundancy
+    q: |-
+      <p>An author wants a glossary page: every term in the course, each with
+      its full definition, on one screen.</p>
+      <p>Non-redundancy appears to forbid it. The concept hub already does
+      something very close to it and is allowed. State the rule that separates
+      the two, and give a case your rule gets wrong.</p>
+    a: |-
+      <p>A good answer finds that the rule governs <em>sources</em> of
+      explanation, not renderings of one. The hub is generated from the concept
+      files, so there is still one copy to edit and nothing can drift. A typed
+      glossary is a second copy. The sharper version of the rule is that a
+      second appearance is legal when it cannot disagree with the first.</p>
+      <p>Then it breaks its own rule. A generated page can still be wrong in a
+      way an author would have caught, and a hand-written glossary that says
+      something the definitions do not is the one place a reader might notice
+      the definitions are unclear.</p>
+    why: |-
+      <p>The version of non-redundancy stated in §2.1 is
+      about words on a page, and it is the version worth holding day to day. It
+      does not survive contact with generated material, and the course renders
+      three generated pages. The rule needs the word "source" in it, which is
+      not how anyone states it out loud.</p>
+    why_prompt: What can go wrong with a second copy that cannot go wrong with a second rendering?
+    verified: 2026-09-08

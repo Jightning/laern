@@ -11,6 +11,12 @@ review:
     diagnosis. The two-loop design and retrieval practice are explained but not
     scheduled — knowing they exist is enough, and drilling them would spend
     three items each on something no reader acts on directly.
+
+    Six questions name one of those two unscheduled concepts, so they resolve
+    to a concept file and to no drill bank and never recruit. `npm run audit`
+    counts them as unrouted, and the ceiling in `course.yaml` is set to admit
+    exactly those six. Routing them to a reviewed concept would make the
+    number better and the label wrong.
 ---
 
 # What this course is for

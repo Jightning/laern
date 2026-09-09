@@ -1,7 +1,7 @@
 term: Completeness
 body: |-
   <p>The first of the two rules: assume no prior knowledge beyond the written calibration. Do not skip a step because it looks obvious.</p>
-  <p>Where a course uses tiers, completeness is measured against the <b>spine</b> alone — a reader who never expands a stub has still read a complete course.</p>
+  <p>Where a course uses tiers, completeness is measured against the <b>spine</b> alone. A reader who never expands a stub has still read a complete course.</p>
 src: Defined in §2.1
 review: true
 confusable_with: [non-redundancy]

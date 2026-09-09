@@ -1,28 +1,24 @@
 title: How much of a page you have to read
 blocks:
   - t: p
-    tier: spine
     source: docs/code_truth.md §3d
     h: |-
       At the top of every section is a control marked <b>Read</b>, with three settings. It decides how much of the page renders, and it is the single most useful thing to know about this site: the same page serves a first pass before an exam and a slow pass in week two, without you reading around material you did not want.
 
   - t: def
-    tier: spine
     source: src/lib/tiers.js
     term: Tier
     label: The three kinds of block
     h: |-
-      <p>Every block on every page declares one of three. <b>spine</b> — definition, rule, mechanism, one canonical instance; removing it breaks the argument. <b>depth</b> — why it is true, what happens at the edges; never examinable. <b>apply</b> — another instance of something the spine already said, there to build fluency.</p>
+      <p>Every block on every page declares one of three. <b>spine</b> is definition, rule, mechanism, one canonical instance; removing it breaks the argument. <b>depth</b> is why it is true and what happens at the edges; never examinable. <b>apply</b> is another instance of something the spine already said, there to build fluency.</p>
 
   - t: key
-    tier: spine
     source: docs/material_truth.md M25
     label: The spine alone is a complete course
     h: |-
-      <p>This is a promise, not a style: nothing examinable is allowed to live in a collapsible tier. A reader who stays in the <b>Spine</b> lane for an entire course has read a complete one — depth and apply may lean on the spine, never the other way round.</p>
+      <p>This is a promise, not a style: nothing examinable is allowed to live in a collapsible tier. A reader who stays in the <b>Spine</b> lane for an entire course has read a complete one. Depth and apply may lean on the spine, never the other way round.</p>
 
   - t: table
-    tier: spine
     mono: true
     cap: The three lanes, and what each renders
     head: [lane, key, renders, use it when]
@@ -33,10 +29,9 @@ blocks:
       - [All, "3", everything, you want the reasons]
 
   - t: p
-    tier: spine
     source: docs/architecture.md §3d
     h: |-
-      A collapsed run does not vanish silently. It leaves one line saying what it holds — "2 in depth · 1 more application" — and clicking that line brings the blocks back in place, so a skipped passage is always visible as a skipped passage rather than as a hole you never knew about. This subsection is collapsible itself: switch to <b>Spine</b> and watch the note below disappear into a stub.
+      A collapsed run does not vanish silently. It leaves one line saying what it holds: "2 in depth · 1 more application". Clicking that line brings the blocks back in place, so a skipped passage stays visible as a skipped passage rather than as a hole you never knew about. This subsection is collapsible itself: switch to <b>Spine</b> and watch the note below disappear into a stub.
 
   - t: note
     tier: depth
@@ -53,7 +48,7 @@ blocks:
       <ol>
         <li>A paragraph derives a result you are expected to be able to <em>use</em> but never to reproduce.</li>
         <li>The result is examinable, so the statement of it is spine.</li>
-        <li>The derivation is not, so it is depth — and a reader in the Spine lane loses nothing they could be tested on.</li>
+        <li>The derivation is not, so it is depth. A reader in the Spine lane loses nothing they could be tested on.</li>
       </ol>
 
 quiz:

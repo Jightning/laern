@@ -1,22 +1,18 @@
 title: Tables and code
 blocks:
   - t: p
-    tier: spine
     source: docs/architecture.md §3
     h: |-
       A table is a table, not a special block type. Three switches change how it renders: <code>mono</code> for fixed-width centred cells that pick up the course's <code>valueStyles</code>, <code>map</code> for a per-block value-to-class map, and <code>split</code> for a ruled separator column.
 
   - t: def
-    tier: spine
     source: docs/architecture.md §3
     term: Configuration, not code
-    label: Definition
     h: |-
       <p>Subject-specific rendering is data. Cell colouring is <code>valueStyles</code>, code highlighting is <code>syntax</code> (a comment marker, keywords, and regex <code>patterns</code>), extra styling is <code>styles</code>. The build prints "no code" when a subject needs none of the <code>blocks.js</code> escape hatch.</p>
       <p>This is <c k="non-redundancy">non-redundancy</c> applied to the engine: one generic renderer per block type, configured per course, rather than one renderer written per subject. The tier split in <a href="#s3-2">§2.1</a> is the same idea for reading paths.</p>
 
   - t: table
-    tier: spine
     cap: "plain table — no mono, no colouring"
     head: [block type, boxed, feeds the primer]
     rows:
@@ -25,7 +21,6 @@ blocks:
       - ["note", "ruled, not boxed", "no"]
 
   - t: table
-    tier: spine
     mono: true
     split: 2
     cap: "mono table — centred cells, course valueStyles applied, a rule after column 2"
@@ -47,7 +42,6 @@ blocks:
       - ["problems.md", gen]
 
   - t: code
-    tier: spine
     lang: yaml
     src: |-
       # a subsection is data, highlighted by course.yaml syntax config
@@ -60,7 +54,7 @@ blocks:
     tier: depth
     source: src/blocks/index.js
     h: |-
-      The highlighter is one regex over the raw source: the comment marker, then string literals unless <code>strings: false</code>, then each course pattern, then <code>\b(keyword|…)\b</code>, joined into a single alternation and scanned once. Order is precedence — the earlier rule wins an overlap, so a keyword inside a comment stays part of the comment. Escaping happens per slice as the output is assembled, which is the point of scanning the raw text: a pass that re-read its own output would match the quoted class name in a span it had already emitted. A malformed pattern is dropped before the alternation is built, and <code>validate.mjs</code> reports it rather than leaving it silent.
+      The highlighter is one regex over the raw source: the comment marker, then string literals unless <code>strings: false</code>, then each course pattern, then <code>\b(keyword|…)\b</code>, joined into a single alternation and scanned once. Order is precedence. The earlier rule wins an overlap, so a keyword inside a comment stays part of the comment. Escaping happens per slice as the output is assembled, which is the point of scanning the raw text: a pass that re-read its own output would match the quoted class name in a span it had already emitted. A malformed pattern is dropped before the alternation is built, and <code>validate.mjs</code> reports it rather than leaving it silent.
 
 quiz:
   - type: Choose the table mode

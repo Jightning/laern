@@ -208,8 +208,13 @@ const call = async (route, payload, { auth = SECRET, env = {}, db, counter } = {
         needsUpload({ id: "x", version: "abc" }, "abc", "abc") === false);
   check("a course the account holds at an older version is sent",
         needsUpload({ id: "x", version: "older" }, "older", "abc") === true);
-  check("a course tombstoned on the account is never resurrected by an upload",
+  /* A tombstone and a local copy: which copy this device holds decides.
+     Reading both rows as "never resurrect" is what made a re-import vanish —
+     the upload was skipped and the pull then purged the fresh copy. */
+  check("a tombstoned course this device got from the account is not sent back up",
         needsUpload({ id: "x", version: "abc", deleted: true }, "abc", "abc") === false);
+  check("a tombstoned course just hand-installed here is sent, which restores it",
+        needsUpload({ id: "x", version: "abc", deleted: true }, null, "fresh") === true);
 }
 
 console.log(fail.length ? `\nFAIL cloud  ${fail.length} failing` : "\nall passing");

@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 /* Figure rendering rules a browser test would otherwise be the only check on:
- * node labels that stay inside the node, and large figures that scroll rather
- * than shrink to an unreadable size.
+ * node labels that stay inside the node, large figures that scroll rather than
+ * shrink to an unreadable size, value formats a course can actually author,
+ * and the spec check that fails a build on a key the renderer never reads.
  *
  *   node tools/test-figures.mjs
  */
 import { graph } from "../src/figures/graph.js";
 import { bar } from "../src/figures/bar.js";
+import { plot } from "../src/figures/plot.js";
+import { scatter } from "../src/figures/scatter.js";
 import { leftMargin, tickLabels, MARGIN } from "../src/figures/axes.js";
+import { checkFigure } from "./lib/figures.mjs";
 
 let failed = 0;
 const ck = (name, ok, detail = "") => {
@@ -99,6 +103,74 @@ const ck = (name, ok, detail = "") => {
   const axisX = g => Number(/<line x1="([\d.]+)"[^>]*class="fx-g"/.exec(g)?.[1] ?? 0);
   ck("the rendered chart uses the wider margin",
      axisX(rich) > axisX(plain), `${axisX(rich)} vs ${axisX(plain)}`);
+}
+
+/* ---- formats: a course is YAML, so a format is a template string ---- */
+{
+  /* This used to be documented as a spec field and called as a function, so
+     the one thing a course could write threw inside the renderer. */
+  const pct = bar({ bars: [{ label: "a", value: 40 }], valueFmt: "{}%" });
+  ck("a bar value format is a template string", pct.includes(">40%<"));
+
+  const plain = bar({ bars: [{ label: "a", value: 40 }] });
+  ck("no format leaves the value bare", plain.includes(">40<"));
+
+  const fn = bar({ bars: [{ label: "a", value: 40 }], valueFmt: v => v + " ms" });
+  ck("a function still works, for a caller that is JavaScript", fn.includes(">40 ms<"));
+
+  const p = plot({ series: [{ label: "s", points: [[0, 0], [10, 10]] }], yfmt: "{} ms", xfmt: "t={}" });
+  ck("a plot formats both axes", p.includes(">10 ms<") && p.includes(">t=10<"));
+
+  /* scatter declared yfmt and never read it — the frame and the gridlines
+     both took the default, so only the horizontal axis could carry units */
+  const sc = scatter({ series: [{ points: [[0, 0], [10, 10]] }], yrange: [0, 10], xrange: [0, 10],
+                       yfmt: "{} ms", xfmt: "t={}" });
+  ck("a scatter formats both axes too", sc.includes(">10 ms<") && sc.includes(">t=10<"));
+}
+
+/* ---- spec check: what the renderer silently ignores, the build refuses ---- */
+{
+  const errsFor = (kind, spec) => {
+    const e = [];
+    checkFigure({ t: "figure", kind, spec }, "s1-1", e);
+    return e;
+  };
+  const one = (name, kind, spec, needle) => {
+    const e = errsFor(kind, spec);
+    ck(name, e.length === 1 && e[0].includes(needle), e[0] || "no error raised");
+  };
+
+  /* The defect this exists for. `{label: resolve, note: path, credential,
+     query}` is four keys, two of them null, and the note renders as "path". */
+  const truncated = errsFor("flow",
+    { steps: [{ label: "resolve", note: "path", credential: null, query: null }] });
+  ck("an unquoted comma in a flow mapping is caught, every truncated key named",
+     truncated.length === 2 && truncated.every(e => e.includes("unquoted comma")),
+     truncated[0] || "no error raised");
+
+  one("a dir the renderer does not know is caught", "flow", { steps: [], dir: "down" },
+      'is not one of row, col');
+  one("so is a layout", "graph", { nodes: [], layout: "column" }, "is not one of circle");
+
+  one("a format with no placeholder is caught", "bar", { bars: [], valueFmt: "ms" }, "has no {}");
+  one("a format that is not a string is caught", "bar", { bars: [], valueFmt: 5 },
+      "must be a format string");
+  ck("a well-formed format passes", errsFor("bar", { bars: [], valueFmt: "{}%" }).length === 0);
+
+  one("a misspelt top-level key is caught", "bar", { bars: [], baselne: 0 }, 'unknown key "baselne"');
+  one("so is one nested in a list item", "graph", { nodes: [{ id: "a", labe: "x" }] },
+      'unknown key "labe"');
+  one("an unregistered kind is caught", "sankey", {}, 'unknown figure kind "sankey"');
+
+  ck("a valid spec raises nothing",
+     errsFor("graph", { layout: "row", nodes: [{ id: "a", label: "A", note: "n" }],
+                        edges: [{ from: "a", to: "a", self: true }] }).length === 0);
+
+  /* the plot fn check moved into lib/figures.mjs with everything else */
+  one("a plot fn that does not parse is still caught", "plot", { series: [{ fn: "x*" }] },
+      "does not parse");
+  one("a plot fn with no finite value is still caught", "plot",
+      { series: [{ fn: "Math.log(x - 100)", from: 0, to: 10 }] }, "renders empty");
 }
 
 console.log(failed ? `\n${failed} failed` : "\nfigures ok");

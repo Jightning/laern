@@ -19,6 +19,7 @@ drill bank, where a tick means durable rather than answered once.
 - [ ] Apply the spine promise — [1.4](../index.html#s1-4)
 - [ ] Choose the navigation — [1.5](../index.html#s1-5)
 - [ ] Protect your data — [1.5](../index.html#s1-5)
+- [ ] Synthesis — [1.5](../index.html#s1-5)
 
 ## 2 The two rules
 
@@ -28,6 +29,7 @@ drill bank, where a tick means durable rather than answered once.
 - [ ] Resolve the apparent contradiction — [2.2](../index.html#s2-2)
 - [ ] Choose the fix for a forward reference — [2.2](../index.html#s2-2)
 - [ ] Count the outputs of one link — [2.2](../index.html#s2-2)
+- [ ] Synthesis — [2.2](../index.html#s2-2)
 
 ## 3 The research behind it
 
@@ -37,6 +39,7 @@ drill bank, where a tick means durable rather than answered once.
 - [ ] Assign a tier — [3.2](../index.html#s3-2)
 - [ ] Predict the lane behaviour — [3.2](../index.html#s3-2)
 - [ ] Apply the depth constraint — [3.2](../index.html#s3-2)
+- [ ] Synthesis — [3.2](../index.html#s3-2)
 
 ## 4 The figure catalogue
 
@@ -53,6 +56,7 @@ drill bank, where a tick means durable rather than answered once.
 - [ ] Add a language — [5.1](../index.html#s5-1)
 - [ ] Choose the source value — [5.2](../index.html#s5-2)
 - [ ] Read the numbered-figure rule — [5.2](../index.html#s5-2)
+- [ ] Synthesis — [5.2](../index.html#s5-2)
 
 ## Concepts held over time
 

@@ -37,6 +37,7 @@
  *  30. `confusable_with` resolves, and is symmetric                     (T16)
  *  31. every primer prequestion asks something and answers it          (M29)
  *  32. no course is named `review` — the review route owns that id      (architecture §2)
+ *  33. every figure spec key, enum value and format is one the engine reads (T30)
  */
 import { readdirSync, existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -44,21 +45,20 @@ import { fileURLToPath } from "node:url";
 import { loadCourse } from "./lib/load.mjs";
 import { tex } from "./lib/math.mjs";
 import { INTERACTIVE } from "../src/blocks/interactive.js";
-import { KINDS as FIGURE_KINDS } from "../src/figures/index.js";
+import { checkFigure } from "./lib/figures.mjs";
 import { TIERS, tierOf } from "../src/lib/tiers.js";
 import { textOf } from "../src/lib/util.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const COURSES = join(ROOT, "courses");
 
-/* Renderable block types and figure kinds, read from the source so the list
-   cannot drift from the code. The figure kinds come from the registry itself
-   rather than from the directory listing: `src/figures/` also holds shared
+/* Renderable block types, read from the source so the list cannot drift from
+   the code. Figure kinds are checked by lib/figures.mjs, against the registry
+   itself rather than a directory listing: `src/figures/` also holds shared
    helpers, and a listing minus a hand-kept exclude list would have made every
    new helper a "valid" kind that renders nothing. */
 const coreBlocks = readFileSync(join(ROOT, "src/blocks/index.js"), "utf8");
 const KNOWN = new Set([...[...coreBlocks.matchAll(/\bR\("([a-z]+)"/g)].map(m => m[1]), ...INTERACTIVE]);
-const KINDS = new Set(FIGURE_KINDS);
 
 const wanted = process.argv.slice(2);
 const courses = existsSync(COURSES)
@@ -302,37 +302,10 @@ for (const id of courses) {
       for (const b of u.blocks || []) {
         if (!b || !b.t) { errs.push(`${where}: a block has no type`); continue; }
         if (!KNOWN.has(b.t) && !extraBlocks.has(b.t)) errs.push(`${where}: unknown block type "${b.t}"`);
-        if (b.t === "figure" && !KINDS.has(b.kind)) errs.push(`${where}: unknown figure kind "${b.kind}"`);
-        /* A plot series may be a function of x, and that function is
-           JavaScript the reader's browser evaluates while they are reading.
-           It was the one authored expression nothing compiled here: a syntax
-           error renders an empty chart with no message at all, and a runtime
-           error paints "Render error" onto the page someone is revising from.
-           Maths is rendered at build time for exactly this reason (T30), so a
-           plot's function is compiled and sampled here for the same one.
-           Course JavaScript already runs in this process — the bundler imports
-           courses/<id>/blocks.js — so this adds no trust that is not assumed. */
-        if (b.t === "figure" && b.kind === "plot") {
-          const spec = b.spec || {};
-          for (const ser of spec.series || []) {
-            if (!ser || ser.points || ser.fn == null) continue;
-            let f;
-            try { f = new Function("x", "return (" + ser.fn + ");"); }
-            catch (e) { errs.push(`${where}: plot fn "${ser.fn}" does not parse — ${e.message}`); continue; }
-            const from = ser.from != null ? ser.from : (spec.xrange ? spec.xrange[0] : 0);
-            const to = ser.to != null ? ser.to : (spec.xrange ? spec.xrange[1] : 10);
-            let finite = 0, threw = null;
-            for (let i = 0; i <= 20 && !threw; i++) {
-              try {
-                const y = f(from + (to - from) * (i / 20));
-                if (typeof y === "number" && isFinite(y)) finite++;
-              } catch (e) { threw = e.message; }
-            }
-            if (threw) errs.push(`${where}: plot fn "${ser.fn}" throws — ${threw}`);
-            else if (!finite)
-              errs.push(`${where}: plot fn "${ser.fn}" has no finite value on [${from}, ${to}] — the chart renders empty`);
-          }
-        }
+        /* A spec is the one authored payload the renderer picks over rather
+           than validating, so a key it has never heard of draws nothing and
+           says nothing. lib/figures.mjs holds the whole check. */
+        if (b.t === "figure") checkFigure(b, where, errs);
         if (b.tier && !TIERS.includes(b.tier))
           errs.push(`${where}: unknown tier "${b.tier}" — one of ${TIERS.join(", ")}`);
         /* An attempt is a deliberate failure that primes the definition, which

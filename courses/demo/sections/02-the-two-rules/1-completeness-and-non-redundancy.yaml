@@ -1,21 +1,18 @@
 title: Completeness and non-redundancy
 blocks:
   - t: p
-    tier: spine
     source: docs/material_truth.md §1
     h: |-
       You are reading a course whose only job is to show the system. It still obeys the system's two rules: nothing here leans on knowledge the calibration did not grant, and no explanation appears twice. This subsection states both rules; the rest of the course is what it takes to hold them together.
 
   - t: def
-    tier: spine
     source: docs/material_truth.md M2
     term: Completeness
     label: Rule 1
     h: |-
-      <p>Assume no prior knowledge beyond the written calibration in <code>expectations.md</code>. Do not skip a step because it seems obvious — obviousness is measured against the reader on record, not the author.</p>
+      <p>Assume no prior knowledge beyond the written calibration in <code>expectations.md</code>. Do not skip a step because it seems obvious. Obviousness is measured against the reader on record, not against the author.</p>
 
   - t: def
-    tier: spine
     source: docs/material_truth.md M1
     term: Non-redundancy
     label: Rule 2
@@ -23,24 +20,21 @@ blocks:
       <p>Every piece of <em>explanation</em> appears exactly once. Two subsections that need one idea: one defines it, the other links. Three or more: it becomes a concept.</p>
 
   - t: key
-    tier: spine
     source: docs/material_truth.md §1
     label: Why they need each other
     h: |-
-      <p><c k="completeness">Completeness</c> and <c k="non-redundancy">non-redundancy</c> pull in opposite directions — one wants every step written, the other wants nothing written twice. The reference system dissolves the conflict: a reader can always reach a definition from wherever they stand, so a course is complete <em>without</em> repeating itself.</p>
+      <p><c k="completeness">Completeness</c> and <c k="non-redundancy">non-redundancy</c> pull in opposite directions. One wants every step written, the other wants nothing written twice. The reference system dissolves the conflict: a reader can always reach a definition from wherever they stand, so a course is complete <em>without</em> repeating itself.</p>
 
   - t: trap
-    tier: spine
     source: docs/material_truth.md M1
     label: A second application is not a second copy
     h: |-
       <p>Non-redundancy governs explanation, not practice. Deleting the drill bank's repeated worked instances "to avoid redundancy" removes exactly the repetition long-term retention needs. The rule forbids restating the <em>definition</em>, nothing else.</p>
 
   - t: p
-    tier: spine
     source: docs/architecture.md
     h: |-
-      How the two rules survive contact with a real course — links, concepts, and tiers — is <a href="#s2-2">§2.2</a>.
+      How the two rules survive contact with a real course, through links, concepts and tiers, is <a href="#s2-2">§2.2</a>.
 
   - t: note
     tier: depth
@@ -57,7 +51,7 @@ quiz:
     a: |-
       Non-redundancy. §5.1 should link to §3.2 (or the idea should be promoted to a concept, since it is now used in several places).
     why: |-
-      <p>The second full explanation is a second copy that will drift. A link renders a margin card, feeds the prerequisite list, and draws a dependency edge — one action, several benefits, no duplication.</p>
+      <p>The second full explanation is a second copy that will drift. A link renders a margin card, feeds the prerequisite list, and draws a dependency edge. One action, several benefits, no duplication.</p>
     why_prompt: What does the reader lose when the two copies eventually disagree?
     verified: 2026-09-02
 
@@ -68,7 +62,7 @@ quiz:
     a: |-
       Completeness. The step is only omittable if the calibration says the reader already has it, and this one does not.
     why: |-
-      <p>Completeness is measured against the written record, not the author's sense of the median student. If the reader on record needs the step, it is not obvious — it is missing.</p>
+      <p>Completeness is measured against the written record, not the author's sense of the median student. If the reader on record needs the step, it is not obvious. It is missing.</p>
     why_prompt: Against whom is "obvious" measured?
     verified: 2026-09-02
 
@@ -77,7 +71,7 @@ quiz:
     q: |-
       A reviewer flags a drill bank for "repeating the same procedure five times" and asks the author to cut it to one. Is the reviewer right?
     a: |-
-      No. The drill bank is required to repeat applications — that repetition is the retention loop. Non-redundancy forbids repeating the <em>explanation</em>, which the drills do not do.
+      No. The drill bank is required to repeat applications, and that repetition is the retention loop. Non-redundancy forbids repeating the <em>explanation</em>, which the drills do not do.
     why: |-
       <p>The tempting reading is that any repetition is waste. The rule is narrower: one copy of the words that teach the idea. Repeated practice on the idea is a different reader activity, and cutting it removes the only thing that makes the concept stick past the week.</p>
     why_prompt: Which kind of repetition does Rule 2 actually prohibit?

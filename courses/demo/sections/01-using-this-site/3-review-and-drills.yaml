@@ -1,13 +1,11 @@
 title: Review and drills
 blocks:
   - t: p
-    tier: spine
     source: docs/architecture.md §3c
     h: |-
       Quizzes ask whether you can produce an answer today. Review asks whether you still can in six weeks, and it is the half of the site that decides what you see rather than waiting for you to choose. The <b>Review</b> button in the toolbar carries the count of what is due across every course you have installed, and <code>r</code> opens it.
 
   - t: def
-    tier: spine
     source: docs/architecture.md §3c
     term: Drill
     label: What review serves you
@@ -15,14 +13,12 @@ blocks:
       <p>A short retrieval item attached to a concept, not to a subsection. A concept's drill bank holds several, so the same idea comes back wearing a different surface each time; the schedule decides when, and the criterion is three correct recalls on three <em>different</em> items, followed by three sessions on separate days.</p>
 
   - t: key
-    tier: spine
     source: src/lib/retention.js
     label: How a concept gets into review
     h: |-
       <p>Two doors, and reading is neither of them. Either you open a concept from <b>Core concepts</b> and press <b>Drill this</b>, or you miss a quiz question you were <c k="confidence">confident</c> about and the seam enrols it for the next day. An untouched course therefore has nothing due, and that is the system working, not an empty page.</p>
 
   - t: table
-    tier: spine
     cap: What each surface is for
     head: [Surface, Asks, Chooses items by]
     rows:
@@ -31,11 +27,10 @@ blocks:
       - [Review, Do I still hold this?, what the schedule says is due, across every course]
 
   - t: trap
-    tier: spine
     source: docs/architecture.md §3c
     label: Nothing due does not mean nothing to do
     h: |-
-      <p>An empty review queue means no concept has reached its next scheduled date — often because none have been enrolled yet. Mixed practice is available at any time and draws from the quiz pool, so "nothing is due" is never a reason to close the tab.</p>
+      <p>An empty review queue means no concept has reached its next scheduled date, often because none have been enrolled yet. Mixed practice is available at any time and draws from the quiz pool, so "nothing is due" is never a reason to close the tab.</p>
 
   - t: p
     tier: depth
@@ -50,7 +45,7 @@ blocks:
     h: |-
       <ol>
         <li>Monday: you miss a confident question. The concept is enrolled and drilled once immediately.</li>
-        <li>Tuesday: it is due. You recall it correctly — that is one distinct item down.</li>
+        <li>Tuesday: it is due. You recall it correctly. That is one distinct item down.</li>
         <li>Thursday, then the following week: two more items, two more days. The criterion is met, and the interval starts stretching.</li>
       </ol>
 
@@ -71,7 +66,7 @@ quiz:
     q: |-
       You want twenty questions on one procedure, right now, before an exam tomorrow. Where do you go?
     a: |-
-      Mixed practice, with the scope set to that section — review only ever serves what is due today.
+      Mixed practice, with the scope set to that section. Review only ever serves what is due today.
     why: |-
       <p>The two are not interchangeable: review protects the long interval that makes memory durable, so it will not hand you twenty items because you asked. Practice exists for exactly the case where you want volume now.</p>
     why_prompt: Why will review not simply give you more items when you ask for them?

@@ -11,14 +11,14 @@ items:
       - "The prediction supplies the second axis; only their disagreement is diagnostic."
       - "The site reports the disagreement as the overconfidence count."
     why: |-
-      <p>The tempting answer is "to grade how well you know it" — but correctness already does that. What confidence adds is a claim you made about yourself, which is the only thing that can turn out to be wrong in an interesting way.</p>
+      <p>The tempting answer is "to grade how well you know it". Correctness already does that. What confidence adds is a claim you made about yourself, which is the only thing that can turn out to be wrong in an interesting way.</p>
     verified: 2026-09-06
 
   - format: multiple-choice
     stem: |-
       Which single outcome enrols a concept into spaced review on its own?
       (a) any wrong answer · (b) a wrong answer marked high confidence · (c) a correct answer marked low confidence · (d) reading the subsection
-    answer: (b) — missing something you had just predicted you would get right.
+    answer: (b) missing something you had just predicted you would get right.
     steps:
       - "Reading enrols nothing; a hesitant miss is already known to the reader."
       - "A confident miss is a belief that is wrong, and it returns unless it is corrected."
@@ -26,7 +26,7 @@ items:
 
   - format: cued-recall
     stem: After a confident miss, how soon does the concept come back?
-    answer: The same session — it is drilled before you leave the page — and then again the next day.
+    answer: The same session, before you leave the page, and then again the next day.
     steps:
       - "Immediate re-test is the correction; the next-day interval is the retention."
       - "Feedback alone lets a confident error come back, which is what the seam exists to prevent."

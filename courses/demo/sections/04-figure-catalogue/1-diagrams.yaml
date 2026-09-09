@@ -1,21 +1,17 @@
 title: Diagrams — graph, flow, timing
 blocks:
   - t: p
-    tier: spine
     source: docs/create_course.md §11.1
     h: |-
       Three kinds carry structure rather than magnitude: <b>graph</b> for nodes and edges, <b>flow</b> for an ordered procedure, <b>timing</b> for square-wave traces. The state machine below is figure <f k="loop-machine"/>.
 
   - t: def
-    tier: spine
     source: docs/material_truth.md M18
     term: Declarative figure
-    label: Definition
     h: |-
-      <p>A figure written as a <code>spec</code> — nodes, steps, signals — and rendered by the engine. It follows the theme, stays sharp at any size, and is edited by changing data. Preferred over a supplied image wherever the content can be described as data.</p>
+      <p>A figure written as a <code>spec</code> of nodes, steps or signals, and rendered by the engine. It follows the theme, stays sharp at any size, and is edited by changing data. Preferred over a supplied image wherever the content can be described as data.</p>
 
   - t: figure
-    tier: spine
     id: loop-machine
     kind: graph
     cap: "graph, circle layout — a concept's retention state, with one node ringed as \"here\""
@@ -25,7 +21,7 @@ blocks:
         - {id: new, label: new, title: not yet seen, state: new, accent: 3}
         - {id: learning, label: learning, title: below the criterion count, state: learning, accent: 2}
         - {id: criterion, label: criterion, here: true, state: criterion, accent: 1}
-        - {id: durable, label: durable, note: 3 spaced relearnings, state: durable, accent: 0}
+        - {id: durable, label: durable, note: "3 spaced relearnings", state: durable, accent: 0}
       edges:
         - {from: new, to: learning, label: start}
         - {from: learning, to: criterion, label: 3 items}
@@ -65,16 +61,15 @@ blocks:
         - {from: contrast, to: page}
 
   - t: figure
-    tier: spine
     kind: flow
     cap: "flow, row direction — the authoring procedure, each step with a note"
     spec:
       dir: row
       steps:
         - {label: Calibrate, note: write expectations.md first}
-        - {label: Sequence, note: sections and blurbs, no content}
+        - {label: Sequence, note: "sections and blurbs, no content"}
         - {label: Spine, note: only tier-spine blocks}
-        - {label: Loops, note: quizzes, then drills}
+        - {label: Loops, note: "quizzes, then drills"}
         - {label: Verify, note: re-derive every answer}
 
   - t: figure
@@ -84,12 +79,11 @@ blocks:
     spec:
       dir: col
       steps:
-        - {label: Phase 1–3, note: calibrate, sequence, concepts}
-        - {label: Phase 4–6, note: spine, quizzes, drills}
-        - {label: Phase 7–8, note: depth and apply, then verify}
+        - {label: Phase 1–3, note: "calibrate, sequence, concepts"}
+        - {label: Phase 4–6, note: "spine, quizzes, drills"}
+        - {label: Phase 7–8, note: "depth and apply, then verify"}
 
   - t: figure
-    tier: spine
     kind: timing
     cap: "timing — a clock, an enable, and the gated output"
     spec:
@@ -125,6 +119,6 @@ quiz:
     a: |-
       durable → learning, caused by a miss.
     why: |-
-      <p>Durability is revoked by a single failed retrieval — the curved edge back to "learning". Everything else flows forward toward durable; only a miss moves backward.</p>
+      <p>Durability is revoked by a single failed retrieval. That is the curved edge back to "learning". Everything else flows forward toward durable; only a miss moves backward.</p>
     why_prompt: Which direction do all the other edges point, and what does that tell you?
     verified: 2026-09-02

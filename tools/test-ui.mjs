@@ -419,15 +419,26 @@ for (const cid of ids) {
     ck(P("tucked, the reading column is centred"), t.off <= 2, t.off + "px off centre");
     ck(P("tucked, the rail keeps a gutter"), t.gutter >= 20 && !t.overflow,
        t.gutter + "px, overflow " + t.overflow);
-    /* Nothing sits in front of the crumb, so the bar stays aligned with the
-       column beneath it here too. */
+    /* Tucked is the one state where the bar does *not* follow the column.
+       Holding the alignment here left the crumb 420px in with 420px of empty
+       chrome to its left — the whole vacated sidebar, unused, while the trail
+       truncated on the right. So it takes the page's own gutter instead, and
+       the column stays centred where the two checks above put it. */
     const tuckedCrumb = await page.evaluate(() => {
       const crumb = document.querySelector(".crumb").getBoundingClientRect();
       const text = document.querySelector(".bmain").getBoundingClientRect();
-      return Math.round(Math.abs(crumb.left - text.left));
+      /* The gutter, resolved in pixels: --wrap-pad is a rem below 90em, so the
+         token's own text does not compare against a rect. The wrap declares
+         the same `--wrap-pad + --safe-l` in 10-shell.css and computes it. */
+      const pad = parseFloat(getComputedStyle(document.querySelector(".wrap")).paddingLeft);
+      return { gutter: Math.round(crumb.left), pad: Math.round(pad),
+               fromProse: Math.round(text.left - crumb.left) };
     });
-    ck(P("tucked, the breadcrumb still starts where the prose does"),
-       tuckedCrumb <= 1, tuckedCrumb + "px apart");
+    ck(P("tucked, the breadcrumb takes the page gutter"),
+       Math.abs(tuckedCrumb.gutter - tuckedCrumb.pad) <= 1,
+       `${tuckedCrumb.gutter}px in, gutter is ${tuckedCrumb.pad}px`);
+    ck(P("tucked, the column does not follow the crumb left"),
+       tuckedCrumb.fromProse > 100, tuckedCrumb.fromProse + "px apart");
 
     await page.setViewportSize({ width: 390, height: 800 });
     await page.waitForTimeout(250);
@@ -435,6 +446,21 @@ for (const cid of ids) {
     ck(P("the tuck does not strand a narrow reader"), !stranded);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(220);
+
+    /* The preference outlives the course, and the library has no sidebar to
+       apply it to: `tucked` was set there anyway, so the reading-column rules
+       ran over a view that has no reading column and the shelf sat 171px right
+       of centre with the vacated sidebar width empty beside it. Checked from a
+       tucked course, because that is the only way to arrive in that state. */
+    await go("#/");
+    const shelf = await page.evaluate(() => {
+      const r = document.querySelector(".lib").getBoundingClientRect();
+      return Math.round(Math.abs(r.left - (innerWidth - r.right)));
+    });
+    ck(P("the library ignores a tuck it has no sidebar for"), shelf <= 2,
+       shelf + "px off centre");
+    await go(`#/${cid}/${last}`);
+
     /* the control that brings it back is the tab, not the one that hid it */
     await page.locator(".untuck").click();
     await page.waitForTimeout(220);

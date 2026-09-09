@@ -116,9 +116,21 @@ export function queueDelete(cid) {
  * ever offered. Pure, and separated out, because the truth table is the bug.
  */
 export function needsUpload(remote, localVersion, contentVersion) {
-  /* Tombstoned there: the reader deleted it on another device and this sync is
-     about to remove it here. Re-uploading would resurrect it. */
-  if (remote && remote.deleted) return false;
+  /* Tombstoned there, and this device is holding a copy. Which copy decides
+     what happens, and `localVersion` is what tells them apart:
+
+       null  — hand-installed here and never acknowledged by the account. The
+               reader imported it, which they did *after* the deletion or the
+               deletion would have taken it. Sending it up is what they asked
+               for, and /api/course clears the tombstone on a put for exactly
+               this reason ("a restore by any other name").
+       set   — it came down from this account. The deletion is about this very
+               copy, so re-uploading it would undo another device's removal.
+
+     Reading both as "never resurrect" is what made a re-import vanish: the
+     upload was skipped, and pullCourses below then purged the fresh copy and
+     its answers on the strength of a tombstone that predated it. */
+  if (remote && remote.deleted) return localVersion == null;
   if (!remote) return true;                         /* the account has never seen it */
   return remote.version !== contentVersion;         /* it has an older copy */
 }
@@ -133,7 +145,6 @@ async function pushCourses(listing) {
        version this device recorded, so there is nothing to hash and nothing to
        send. Only a course that might differ costs a digest. */
     if (remote && !remote.deleted && versionOf(id) === remote.version) continue;
-    if (remote && remote.deleted) continue;
 
     const files = filesOf(id);
     if (!files) continue;
@@ -149,10 +160,18 @@ async function pushCourses(listing) {
   return sent;
 }
 
-/** Take down anything new, and apply the account's deletions locally. */
-async function pullCourses(listing, taken) {
+/** Take down anything new, and apply the account's deletions locally.
+ *  `sent` is what pushCourses just handed up. The listing came back *before*
+ *  that, so every entry for one of those ids is stale in both directions: its
+ *  tombstone has since been cleared by the put, and its version is the one the
+ *  upload replaced. Acting on either is acting on the past — it purged a course
+ *  that had just been restored, and re-fetched a body this device is the source
+ *  of, then filed it under the old version so the next sync uploaded it again. */
+async function pullCourses(listing, taken, sent = []) {
+  const justSent = new Set(sent);
   const installed = [], removed = [];
   for (const c of listing) {
+    if (justSent.has(c.id)) continue;
     const here = versionOf(c.id);
     const holding = !!importedIndex()[c.id];
 
@@ -241,7 +260,7 @@ export async function sync({ manual = false } = {}) {
 
     const uploaded = await pushCourses(listing);
     const taken = { ids: Object.keys(importedIndex()), codes: {} };
-    const { installed, removed } = await pullCourses(listing, taken);
+    const { installed, removed } = await pullCourses(listing, taken, uploaded);
 
     setItem(LAST, String(Date.now()));
     setItem(SEEN, JSON.stringify(listing.filter(c => c.deleted)));

@@ -1,13 +1,11 @@
 title: Answering a question
 blocks:
   - t: attempt
-    tier: spine
     label: Before you read this
     h: |-
-      <p>The quiz below this text will ask how confident you are before it shows you anything, and then ask you to type why. Both cost you time. Write down what you think each one buys — then check yourself against the rest of this subsection.</p>
+      <p>The quiz below this text asks how confident you are before it shows you anything, and then asks you to type why. Both cost you time, and neither is graded.</p>
 
   - t: def
-    tier: spine
     source: docs/code_truth.md T18
     term: Confidence
     label: The step before the answer
@@ -15,21 +13,18 @@ blocks:
       <p>Every question asks you to predict, in one tap, whether you will get it right, before the answer is reachable. The prediction is never graded. It is stored beside the outcome so the two can be compared, and the comparison is the point: <b>a wrong answer you were sure about</b> is a different problem from one you knew you were guessing at.</p>
 
   - t: key
-    tier: spine
     source: docs/code_truth.md T32
     label: Then you say why
     h: |-
-      <p>The reveal is gated behind a reason in your own words. Typing it is retrieval — you are producing the idea rather than recognising it — and recognition is what makes re-reading feel like learning when it is not. The text stays on this device; nothing reads it but you.</p>
+      <p>The reveal is gated behind a reason in your own words. Typing it is retrieval: you produce the idea instead of recognising it. Recognition is what makes re-reading feel like learning when it is not. The text stays on this device. Nothing reads it but you.</p>
 
   - t: trap
-    tier: spine
     source: docs/code_truth.md T15
     label: Peeking costs the whole exercise
     h: |-
-      <p>The answer is hidden not to be strict but because seeing it first replaces the one event that builds memory. If you genuinely cannot produce anything, say so with a low-confidence answer and let the miss route the concept into review — that is a better outcome than a revealed answer you nodded along to.</p>
+      <p>The answer is hidden not to be strict but because seeing it first replaces the one event that builds memory. If you genuinely cannot produce anything, say so with a low-confidence answer and let the miss route the concept into review. That beats a revealed answer you nodded along to.</p>
 
   - t: ex
-    tier: spine
     source: docs/architecture.md §3e
     title: What one answer sets in motion
     h: |-
@@ -37,7 +32,7 @@ blocks:
         <li>You mark <b>high confidence</b> and answer.</li>
         <li>You get it wrong. The subsection records the question type as attempted and failed.</li>
         <li>Because you were confident, the concept behind it is pulled into spaced review and drilled before you leave the page.</li>
-        <li>The calibration page adds one to your overconfident count — the number worth studying by.</li>
+        <li>The calibration page adds one to your overconfident count, the number worth studying by.</li>
       </ol>
 
   - t: p
@@ -61,7 +56,7 @@ quiz:
     a: |-
       No. The confident miss is recruited into spaced review and drilled straight away; the hesitant miss is left to ordinary practice.
     why: |-
-      <p>A hesitant miss is a known gap — the reader already knows to go back. A confident miss is a belief that is wrong, and beliefs do not correct themselves by being contradicted once, which is why that case gets the extra retrieval immediately.</p>
+      <p>A hesitant miss is a known gap. You already know to go back. A confident miss is a belief that is wrong, and beliefs do not correct themselves by being contradicted once, which is why that case gets the extra retrieval immediately.</p>
     why_prompt: Which of the two readers already knows they have a problem?
     verified: 2026-09-06
 

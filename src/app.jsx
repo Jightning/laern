@@ -119,7 +119,6 @@ export default function App() {
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
   }, []);
-  const tucked = tuckPref && wide;
   const [, forceRender] = useState(0);
   const [zoom, setZoom] = useState(readZoom);
   const [lane, setLaneFor] = useState("apply");
@@ -131,6 +130,15 @@ export default function App() {
      returns it synchronously so that path never flashes a loading state. */
   const [course, setCourse] = useState(() => (cid ? peek(cid) : null));
   const [loadError, setLoadError] = useState(null);
+
+  /* The preference is about the sidebar, and the library has none — it is
+     `shell.solo` and renders one full-width column already. Applying `tucked`
+     there anyway ran the reading-column rules in 12-sidebar.css over a view
+     that has no reading column, so the shelf slid 171px right of centre and
+     sat against the right edge with the vacated sidebar width empty beside it.
+     Keyed on `course` rather than `cid` so it moves in step with `solo`, which
+     is: a course still loading is not yet a course. */
+  const tucked = tuckPref && wide && !!course;
   useEffect(() => {
     if (!cid) { setCourse(null); return; }
     const here = peek(cid);

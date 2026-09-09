@@ -215,14 +215,17 @@ Object.values(custom).forEach(m => { if (typeof m.default === "function") m.defa
 
 /** render one block, never throwing into the tree.
  *  `env` carries what a renderer cannot know from its own data — currently the
- *  figure's number, which depends on the blocks around it. */
+ *  figure's number, which depends on the blocks around it.
+ *  Both fallbacks carry `fx-miss`, which test-ui counts and expects to be zero:
+ *  a renderer that throws is a build defect, and a build defect that only shows
+ *  as a paragraph on the page is one nothing gates. */
 export function renderBlock(b, env) {
   const d = Blocks.get(b.t);
   if (!d) return `<div class="note"><span class="blabel">Unknown block</span>` +
-    `<p>No renderer for type <code>${esc(b.t)}</code>.</p></div>`;
+    `<p class="fx-miss">No renderer for type <code>${esc(b.t)}</code>.</p></div>`;
   try { return d.render(b, U, env || {}); }
   catch (e) { return `<div class="note"><span class="blabel">Render error</span>` +
-    `<p>${esc(b.t)}: ${esc(e.message)}</p></div>`; }
+    `<p class="fx-miss">${esc(b.t)}: ${esc(e.message)}</p></div>`; }
 }
 
 /* ---------- image ----------------------------------------------------------

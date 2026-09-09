@@ -13,11 +13,16 @@ state:
 # meaning report only; these are locked at what the content pass achieved, so
 # the course cannot regress. `unsourced` is not 0 because the demo deliberately
 # ships one `unverified` and one `generated` block to show both badges.
+# `unrouted` is not 0 because six questions are about `two-loops` and
+# `retrieval-practice`, the two concepts deliberately left out of the review
+# set: they resolve to a concept file and to no bank, so they never recruit.
+# Naming a reviewed concept instead would route them by lying about what they
+# ask. See materials/expectations.md.
 audit:
   unsourced: 0.15
   unverified: 0
   unprompted: 0
-  unrouted: 0.3
+  unrouted: 0.17
 
 # Cell values coloured in mono tables, keyed to classes defined in `styles`.
 valueStyles:

@@ -1,5 +1,5 @@
 /* Figure kind: plot */
-import { esc, tone, attr, txt, round } from "./base.js";
+import { esc, tone, attr, txt, round, fmt } from "./base.js";
 import { leftMargin, tickLabels } from "./axes.js";
 
 /* ---------- kind: plot --------------------------------------------------
@@ -22,6 +22,8 @@ export function plot (spec) {
         return { label: s.label, points: pts, dash: s.dash };
       });
 
+  var xf = fmt(spec.xfmt, round), yf = fmt(spec.yfmt, round);
+
   var xs = [], ys = [];
   series.forEach(function (s) { s.points.forEach(function (p) { xs.push(p[0]); ys.push(p[1]); }); });
   if (!xs.length) return '<svg viewBox="0 0 ' + W + " " + H + '" class="fx"></svg>';
@@ -36,7 +38,7 @@ export function plot (spec) {
      tick labels it will draw rather than to a fixed guess — see axes.js. This
      is also what brings plot onto the same margin as the other chart kinds,
      which had drifted 4px apart for no reason. */
-  m.l = leftMargin(tickLabels([y0, y1], spec.ticks || 5, spec.yfmt || round), spec.ylabel);
+  m.l = leftMargin(tickLabels([y0, y1], spec.ticks || 5, yf), spec.ylabel);
   iw = W - m.l - m.r;
 
   var px = function (x) { return m.l + ((x - x0) / (x1 - x0)) * iw; },
@@ -47,11 +49,11 @@ export function plot (spec) {
   for (i = 0; i <= ticks; i++) {
     var gv = y0 + ((y1 - y0) * i) / ticks, gy = py(gv);
     out += '<line x1="' + m.l + '" y1="' + gy + '" x2="' + (W - m.r) + '" y2="' + gy + '" class="fx-g"/>';
-    out += txt(m.l - 9, gy + 4, spec.yfmt ? spec.yfmt(gv) : round(gv), "fx-ax", "end");
+    out += txt(m.l - 9, gy + 4, yf(gv), "fx-ax", "end");
   }
   for (i = 0; i <= ticks; i++) {
     var xv = x0 + ((x1 - x0) * i) / ticks, gx = px(xv);
-    out += txt(gx, H - m.b + 18, spec.xfmt ? spec.xfmt(xv) : round(xv), "fx-ax");
+    out += txt(gx, H - m.b + 18, xf(xv), "fx-ax");
   }
   out += '<line x1="' + m.l + '" y1="' + (m.t + ih) + '" x2="' + (W - m.r) +
     '" y2="' + (m.t + ih) + '" class="fx-ax-l"/>';

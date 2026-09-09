@@ -54,5 +54,5 @@ items:
       - |-
         Three or more: repeated defs are non-redundancy violations waiting to happen.
     why: |-
-      <p>The threshold follows from the rule — below it there is nothing to drift, at it there is.</p>
+      <p>The threshold follows from the rule. Below it there is nothing to drift; at it there is.</p>
     verified: 2026-09-02

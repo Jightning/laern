@@ -39,7 +39,8 @@ main{padding:0 0 calc(40px + var(--safe-b));min-width:0}
      line up with the reading column underneath: the breadcrumb starts where the
      heading starts. They were 71px apart, which is most visible on the pages
      where the crumb and the H1 are the same word. Stated per side rather than
-     as one padding-inline because only the notched side carries an inset. */
+     as one padding-inline because only the notched side carries an inset.
+     The collapsed sidebar is the exception, and 12-sidebar.css says why. */
   padding-left:max(calc(var(--wrap-pad) + var(--safe-l)),
                    calc((100% - var(--wrap-max)) / 2 + var(--wrap-pad)));
   padding-right:max(calc(var(--wrap-pad) + var(--safe-r)),

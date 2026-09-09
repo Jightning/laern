@@ -123,16 +123,19 @@ check("the phone starts with only the bundled course",
       !beforeB.includes("onlylaptop"), beforeB.join(", "));
 
 /* Installed through the UI, because that is how a course actually arrives. */
-await A.goto(ORIGIN + "/");
-await A.waitForTimeout(500);
-await A.locator("#lib-add").click();
-await A.waitForTimeout(300);
-await A.locator('.modal .cio input[accept*="zip"]').setInputFiles([{
-  name: "onlylaptop.course.json",
-  mimeType: "application/json",
-  buffer: Buffer.from(JSON.stringify(course))
-}]);
-await A.waitForTimeout(1500);
+const install = async page => {
+  await page.goto(ORIGIN + "/");
+  await page.waitForTimeout(500);
+  await page.locator("#lib-add").click();
+  await page.waitForTimeout(300);
+  await page.locator('.modal .cio input[accept*="zip"]').setInputFiles([{
+    name: "onlylaptop.course.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(course))
+  }]);
+  await page.waitForTimeout(1500);
+};
+await install(A);
 
 const beforeA = await shelf(A);
 check("the laptop has the course", beforeA.includes("onlylaptop"), beforeA.join(", "));
@@ -178,6 +181,53 @@ if (binButton) {
   const restored = await shelf(A);
   check("restoring brings it back", restored.includes("onlylaptop"), restored.join(", "));
 }
+
+/* ------------------------------------------------------------ re-adding one --
+ * The reported bug, in the reader's own words: "when I upload the new courses,
+ * and then click backup now, they disappear."
+ *
+ * A removal leaves a tombstone, and the tombstone outlives it. The client read
+ * every tombstone as "never resurrect", so the fresh import was not handed up —
+ * and the pull, still holding a listing fetched before the push, then purged
+ * the copy the reader had just installed, and its answers with it. The server
+ * had always disagreed: a put clears the tombstone, "a restore by any other
+ * name". This is the one path where the two had to agree. */
+{
+  /* Bin it again, so the account is holding a tombstone for this id. */
+  await A.goto(ORIGIN + "/");
+  await A.waitForTimeout(500);
+  await A.evaluate(() => [...document.querySelectorAll(".lcard")]
+    .find(c => c.querySelector(".lhit").getAttribute("href") === "#/onlylaptop")
+    .querySelector(".lop.warn").click());
+  await A.waitForTimeout(300);
+  await A.locator("#lib-drop").click();
+  await A.waitForTimeout(400);
+  await backUp(A);
+  await backUp(B);
+
+  /* Now add it back the way a reader does, and press the button. */
+  await install(A);
+  const readded = await shelf(A);
+  check("the re-imported course is on the shelf before syncing",
+        readded.includes("onlylaptop"), readded.join(", "));
+
+  await backUp(A);
+  const kept = await shelf(A);
+  check("backing up does not delete a course just re-imported",
+        kept.includes("onlylaptop"), kept.join(", "));
+
+  /* And the tombstone is genuinely cleared, not merely ignored here. */
+  await backUp(B);
+  const onPhone = await shelf(B);
+  check("the re-import reaches the other device too",
+        onPhone.includes("onlylaptop"), onPhone.join(", "));
+}
+
+/* A push and a pull in one sync: the listing that came back is older than the
+   upload, so a course handed up must not then be fetched straight back down. */
+hits.course = 0;
+await backUp(A);
+check("a synced shelf still transfers no bodies", hits.course === 0, `${hits.course} body calls`);
 
 await browser.close();
 server.close();

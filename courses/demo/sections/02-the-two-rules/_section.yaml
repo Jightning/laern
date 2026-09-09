@@ -7,9 +7,9 @@ primer:
     answer: |-
       Both
     why: |-
-      <p>A link keeps §4 complete — the reader can reach the idea from where they are — while adding no second copy of the explanation. The reference system is exactly how the two rules coexist.</p>
+      <p>A link keeps §4 complete, because you can reach the idea from where you are, while adding no second copy of the explanation. The reference system is exactly how the two rules coexist.</p>
   - ask: |-
-      Promoting an idea to a <c k="tier">concept</c> and marking it for spaced review — are these the same decision?
+      Promoting an idea to a <c k="tier">concept</c> and marking it for spaced review: are these the same decision?
     answer: |-
       No, they are separate decisions
     why: |-

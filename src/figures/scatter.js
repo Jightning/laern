@@ -1,6 +1,6 @@
 /* Figure kind: scatter — showing how two measured quantities relate.
  * {series:[{label, points:[[x,y]…]}], xlabel, ylabel, trend:true} */
-import { tone } from "./base.js";
+import { tone, round, fmt } from "./base.js";
 import { frame, grid, xTicks, axisLabels, scale, legend, padded } from "./axes.js";
 
 /** least-squares line, drawn only when asked for */
@@ -22,16 +22,20 @@ export function scatter(spec) {
   if (!all.length) return "";
   const xd = spec.xrange || padded(all.map(p => p[0]));
   const yd = spec.yrange || padded(all.map(p => p[1]));
-  const f = frame(spec, yd, spec.ticks || 5);
+  /* `yfmt` was documented and never read: the frame and the gridlines both
+     took the default, so a scatter could not label its vertical axis in the
+     units its horizontal one used. Both formats are threaded through now. */
+  const xf = fmt(spec.xfmt, round), yf = fmt(spec.yfmt, round);
+  const f = frame(spec, yd, spec.ticks || 5, yf);
   const px = scale(xd, [f.m.l, f.w - f.m.r]);
   const py = scale(yd, [f.m.t + f.ih, f.m.t]);
 
   let out = `<svg viewBox="0 0 ${f.w} ${f.h}" class="fx" role="img">`;
-  out += grid(f, yd, spec.ticks || 5);
+  out += grid(f, yd, spec.ticks || 5, yf);
   /* A scatter is about where a point sits, so the horizontal axis needs values
      on it. It was the only kind drawing an axis rule with nothing against it —
      plot labels its x ticks and bar names its categories. */
-  out += xTicks(f, xd, spec.ticks || 5, spec.xfmt || undefined);
+  out += xTicks(f, xd, spec.ticks || 5, xf);
 
   series.forEach((s, i) => {
     const pts = s.points || [];

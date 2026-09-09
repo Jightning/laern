@@ -1,6 +1,6 @@
 title: Blocks and media
 blurb: |-
-  The remaining renderable block types — tables in three modes, highlighted code, embedded media — plus the edge-case displays: a numbered figure with no caption, and the badges a block wears when its claim is not grounded.
+  The remaining renderable block types: tables in three modes, highlighted code, embedded media. Then the edge-case displays, a numbered figure with no caption and the badges a block wears when its claim is not grounded.
 primer:
   - ask: |-
       A block states something the author cannot tie to a checkable origin, and knows it. What goes in the <code>source</code> field?
@@ -9,7 +9,7 @@ primer:
     why: |-
       <p>The reader cannot tell a confident wrong claim from a right one when everything else on the page is verified. The field says so in words, and the audit counts it.</p>
   - ask: |-
-      Adding syntax highlighting for a language the project has never seen — does that need a renderer?
+      Adding syntax highlighting for a language the project has never seen: does that need a renderer?
     answer: |-
       No, it is configuration
     why: |-
