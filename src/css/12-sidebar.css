@@ -88,19 +88,6 @@
   .tuck,.untuck{display:none}
 }
 
-/* The drawer's own close control. The sidebar is permanent above the
-   breakpoint, so there is nothing to close and this is not rendered visible;
-   below it, a drawer covering three-quarters of the screen needs an exit that
-   is not the sliver of scrim beside it. */
-.side-close{
-  display:none;
-  position:absolute;top:12px;right:12px;z-index:1;
-  font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
-  background:var(--surface);border:1px solid var(--rule);color:var(--ink-2);
-  border-radius:6px;padding:8px 12px;cursor:pointer;
-}
-.side-close:hover{border-color:var(--hi);color:var(--hi-ink)}
-
 /* The toolbar's secondary actions, parked here on a narrow screen. The rule
    below them keeps the band from reading as the first row of the section rail
    it sits above. */

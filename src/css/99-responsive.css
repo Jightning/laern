@@ -29,8 +29,7 @@
      has ended. See 00-tokens.css for what it sets. */
   :root{--scroll-clear:calc(76px + var(--safe-t));--view-top:1.75rem}
   .tb-sec{display:none}
-  .side-close,.side-actions{display:flex}
-  .brand{padding-right:84px}          /* clear of the close button */
+  .side-actions{display:flex}
 
   /* The glyph carries it. The word and its "/" shortcut hint are what make the
      button too wide to fit — and the hint names a key that is not there.
@@ -91,14 +90,14 @@
  * they sit in, which costs more than it buys.
  * ------------------------------------------------------------------------ */
 @media (pointer:coarse){
-  .tbtn,.cbtn,.gbtn,.dbtn,.lane-b,.side-close,.qmark,
+  .tbtn,.cbtn,.gbtn,.dbtn,.lane-b,.qmark,
   .tstub-b,.mn-chip,.pt-run,.pt-toggle,.note-add,.note-edit,
   .lplus,.lop,.modal-x,
   .preq-a,.primer-nav button,.review-nav button,.pnav button{
     min-height:44px;
     display:inline-flex;align-items:center;justify-content:center;gap:.45em;
   }
-  .tbtn,.side-close,.lop,.modal-x{padding-left:14px;padding-right:14px}
+  .tbtn,.lop,.modal-x{padding-left:14px;padding-right:14px}
   .cbtn,.gbtn{padding-left:14px;padding-right:14px}
   /* the stub is a full-width row already; it needs height, not width */
   .tstub-b{justify-content:flex-start}

@@ -17,7 +17,7 @@ function Cycle({ n, active, visited }) {
    against an edge and read as clipped. */
 const EDGE = 28;
 
-export default function Sidebar({ course, cid, rest, here, open, onNavigate, onTuck, onClose, actions }) {
+export default function Sidebar({ course, cid, rest, here, open, onNavigate, onTuck, actions }) {
   const H = r => `#/${cid}${r ? "/" + r : ""}`;
   const rail = useRef(null);
 
@@ -61,11 +61,10 @@ export default function Sidebar({ course, cid, rest, here, open, onNavigate, onT
 
   return (
     <aside class={"sidebar" + (open ? " open" : "")} id="sidebar" ref={rail}>
-      {/* Below the sidebar breakpoint this is a drawer over the page, so it
-          needs a way out that is not a sliver of scrim beside it. Above it the
-          sidebar is permanent and there is nothing to close. */}
-      <button class="side-close" onClick={onClose} aria-label="Close navigation">Close</button>
-
+      {/* No close control of its own. It sat pinned to the drawer's top-right,
+          which on an iPhone is under the Dynamic Island — and the drawer
+          already has three ways out that cost no chrome: the scrim beside it,
+          the Menu button that opened it, and Escape. */}
       <div class="brand">
         {/* Not conditional on there being more than one course: the library
             is also where a course is installed and removed, so a single-course

@@ -367,7 +367,7 @@ export default function App() {
         {course && !tucked && (
           <Sidebar course={course} cid={cid} rest={rest} here={reading}
                    open={menuOpen} onNavigate={() => setMenuOpen(false)}
-                   onClose={() => setMenuOpen(false)} onTuck={toggleTuck}
+                   onTuck={toggleTuck}
                    actions={{ stateOn: state.on, expanded: expandAll,
                               onExpand: () => setExpandAll(v => !v), onReset }} />
         )}

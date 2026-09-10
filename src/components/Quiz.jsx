@@ -10,8 +10,8 @@ import { M } from "../lib/math.js";
 
 /** what the outcome means, in the reader's terms rather than the scheduler's */
 function outcomeNote(conf, got, iv) {
-  if (conf === 1 && !got) return "flagged: you expected this one";
-  if (conf === 0 && got) return "you knew more than you thought";
+  if (conf === 1 && !got) return "flagged";
+  if (conf === 0 && got) return "flagged";
   return iv ? `next review in ${iv} day${iv === 1 ? "" : "s"}` : "will come back soon";
 }
 
@@ -75,7 +75,7 @@ function Question({ item, ctx, showWhere, forceOpen }) {
     if (was === 1 && !v && key && drills.byConcept[key]) {
       recruitConcept(cid, key);
       setRecruit(drills.pick(key, []));
-      setNote("flagged: this one goes into review");
+      setNote("flagged");
       return;
     }
     setNote(outcomeNote(was, v, r.iv));
@@ -145,7 +145,7 @@ function Question({ item, ctx, showWhere, forceOpen }) {
           )}
           {recruit && (
             <div class="recruit">
-              <p class="recruit-l">Correct it now — feedback alone lets a confident error come back.</p>
+              <p class="recruit-l">Here's a similar question: </p>
               <Drill cid={cid} C={C} item={recruit} onDone={() => setRecruit(null)} />
             </div>
           )}

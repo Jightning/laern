@@ -24,7 +24,7 @@ export default function Attempt({ b, cid, anchor }) {
       <textarea class="attempt-in" rows="3" value={text} placeholder="However far you get."
                 onInput={e => setText(e.currentTarget.value)} />
       {done
-        ? <p class="attempt-done">Kept. The section teaches this next — compare it with what you wrote.</p>
+        ? <p class="attempt-done">Compare this with what you will now learn.</p>
         : <button class="dbtn" data-attempt-go onClick={submit} disabled={!text.trim()}>Submit and read on →</button>}
     </div>
   );
