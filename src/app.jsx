@@ -13,6 +13,8 @@ import { setBlockConfig } from "./blocks/index.js";
 import { applyHue } from "./lib/theme.js";
 import { readZoom, applyZoom, zoomFromKey } from "./lib/zoom.js";
 import { getItem, setItem } from "./lib/store.js";
+import { land, resume, track, repin } from "./lib/place.js";
+import { warm as warmSearch } from "./lib/search.js";
 
 import Sidebar from "./components/Sidebar.jsx";
 import { IconTuck } from "./components/Icon.jsx";
@@ -34,60 +36,6 @@ import CloudPanel from "./components/CloudPanel.jsx";
 /* The width above which the sidebar is a column rather than a drawer. Mirrors
    the 64em breakpoint in 99-responsive.css. */
 const WIDE = "(min-width: 64.01em)";
-
-/**
- * Put `el` back under the reader at the same offset they left it, and keep it
- * there while the page finishes arriving.
- *
- * One scrollTo is not enough. The section is re-rendered from scratch on the
- * way back and its maths, figures and images finish laying out over the next
- * few frames; everything above the anchor grows, and the position computed on
- * frame one is 250-290px short by the time it stops. So the anchor's own
- * position in the document is watched, and the scroll is re-applied only when
- * that number actually moves — a settled anchor means the layout is done and
- * the reader is left alone.
- *
- * It also stops the moment the reader scrolls for themselves. Correcting a
- * page somebody has taken hold of is worse than landing a little short.
- */
-/* Watching costs nothing; only moving the page does, and the rule below moves
-   it solely when the anchor has actually shifted. So the window is generous:
-   the maths course renders its KaTeX in a burst well past half a second, and a
-   short budget stopped watching 50px before the layout was finished. Any input
-   from the reader ends it immediately, whenever it comes. */
-const LAND_QUIET = 30;    /* frames of a still anchor that mean the layout is done */
-const LAND_MAX = 90;      /* and a hard stop, in case it never is */
-
-function land(el, into) {
-  let anchor = null, still = 0, frames = 0, live = true;
-  const stop = () => { live = false; };
-  /* Asking whether scrollY moved on its own cannot tell a reader apart from
-     the browser's own scroll anchoring, which fires under exactly these
-     conditions. Their input can. */
-  const watch = ["wheel", "touchstart", "keydown", "mousedown"];
-  const done = () => watch.forEach(k => removeEventListener(k, stop));
-  watch.forEach(k => addEventListener(k, stop, { passive: true }));
-
-  const step = () => {
-    if (!live) return done();
-    const top = Math.round(el.getBoundingClientRect().top + scrollY);
-    if (top !== anchor) {
-      /* "instant", not "auto": `auto` defers to CSS, and html carries
-         scroll-behavior:smooth, so what should have been a correction became a
-         1.5 second animation that the next frame then measured mid-flight. */
-      scrollTo({ top: top + into, behavior: "instant" });
-      anchor = top;
-      still = 0;
-    } else still++;
-    /* Stop as soon as the anchor has held for a few frames. Running the full
-       budget every time leaves the page moving under the reader for half a
-       second after it has already arrived, which is long enough for a click to
-       land on the wrong line. */
-    if (still < LAND_QUIET && ++frames < LAND_MAX) requestAnimationFrame(step);
-    else done();
-  };
-  step();
-}
 
 export default function App() {
   const { hash, cid, rest } = useHashRoute();
@@ -124,7 +72,9 @@ export default function App() {
   const [lane, setLaneFor] = useState("apply");
   const contentRef = useRef(null);
 
-  useEffect(() => { applyZoom(zoom); }, [zoom]);
+  /* Watch the reading position: hold it across a change of width, and write it
+     down when the app goes away so a relaunch can come back to it. */
+  useEffect(track, []);
 
   /* A split build fetches the course; a single build already has it, and peek
      returns it synchronously so that path never flashes a loading state. */
@@ -139,6 +89,18 @@ export default function App() {
      Keyed on `course` rather than `cid` so it moves in step with `solo`, which
      is: a course still loading is not yet a course. */
   const tucked = tuckPref && wide && !!course;
+
+  /* Zooming the column and tucking the sidebar both re-wrap every line above
+     the reader — the same reflow a change of width causes, and neither fires a
+     resize event to say so. Skipped on the first run: that one is the mount,
+     where there is nothing to correct and the route's own landing is what
+     should decide where a fresh view starts. */
+  const settled = useRef(false);
+  useEffect(() => {
+    applyZoom(zoom);
+    if (!settled.current) { settled.current = true; return; }
+    repin();
+  }, [zoom, tucked]);
   useEffect(() => {
     if (!cid) { setCourse(null); return; }
     const here = peek(cid);
@@ -183,6 +145,17 @@ export default function App() {
   const onLane = l => { setLane(cid, l); setLaneFor(l); };
 
   const idx = useMemo(() => (course ? buildIndex(course) : null), [course]);
+  /* The inverted index is built once per course and costs a course-sized pass
+     over its text. Paying that on the first keystroke would put it in front of
+     the reader; paying it while they read costs them nothing. */
+  useEffect(() => {
+    if (!idx) return;
+    const go = () => warmSearch(idx.SEARCH);
+    const id = typeof requestIdleCallback === "function"
+      ? requestIdleCallback(go, { timeout: 4000 }) : setTimeout(go, 1200);
+    return () => (typeof cancelIdleCallback === "function"
+      ? cancelIdleCallback(id) : clearTimeout(id));
+  }, [idx]);
   const drills = useMemo(() => indexDrills(course || {}), [course]);
   const state = useMemo(() => (course ? stateFor(cid, course) : { on: false, stats: () => ({}) }), [course, cid]);
 
@@ -244,6 +217,10 @@ export default function App() {
        other arrival still lands on the subsection's own top, which is what a
        link to a subsection means. */
     const home = nav.takeReturn();
+    /* A relaunch is a return too. The app came back with no route, adopted the
+       one it was closed on before rendering, and this is where that route's
+       own offset is put back — once, and only for the route it belongs to. */
+    if (!home && resume(location.hash || "#/")) return;
     const el = subId ? document.getElementById(subId) : null;
     if (home && home.into != null && el) {
       /* Capped at the subsection's height so a layout that shrank while the

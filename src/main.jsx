@@ -2,7 +2,8 @@ import { render } from "preact";
 import App from "./app.jsx";
 import { init, flush, onError, durable } from "./lib/store.js";
 import { auto } from "./lib/cloud.js";
-import { refresh } from "./lib/library.js";
+import { refresh, INDEX } from "./lib/library.js";
+import { restore } from "./lib/place.js";
 
 /* one stylesheet per UI element; filename order is load order */
 import "@fontsource/ibm-plex-serif/latin-400.css";
@@ -58,6 +59,10 @@ onError(e => {
 init().then(() => {
   refresh();                    /* imported courses are readable now */
   durable();                    /* ask the browser not to evict them */
+  /* Before the first render, so the router sees the route rather than a
+     redirect: an installed app relaunches at start_url with no hash, and the
+     place the reader closed it on is the only record of where they were. */
+  restore(cid => !!INDEX[cid]);
   render(<App />, document.getElementById("app"));
   auto();
   addEventListener("pagehide", flush);

@@ -31,7 +31,22 @@ function Question({ item, ctx, showWhere, forceOpen }) {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [recruit, setRecruit] = useState(null);
+  const [graded, setGraded] = useState(false);
   const started = useRef(Date.now());
+
+  /* One answer per attempt.
+   *
+   * The grade buttons used to stay live after they had been pressed, and every
+   * further press was folded in as another answer. `rateStep` multiplies the
+   * interval by the ease factor on each correct one, so three presses of
+   * "Got it" on a question answered once moved the next review from tomorrow
+   * to a fortnight out — and each press wrote a log row, which is the record
+   * everything else is a fold over, so the wrong schedule was durable and
+   * synced. A second press is not a second recall: the answer is on the screen
+   * by then. So the pair settles into a statement of what was recorded, and
+   * comes back only when the schedule says this question is due again — which
+   * is immediately for a miss, since a missed question's interval is zero. */
+  const settled = graded || (state.on && got != null && !state.due(item.id));
 
   const key = idx.CQ[item.id];
   const shown = forceOpen || open;
@@ -41,6 +56,8 @@ function Question({ item, ctx, showWhere, forceOpen }) {
   const commit = entry => { setWhy(entry); setOpen(true); };
 
   const grade = v => {
+    if (settled) return;
+    setGraded(true);
     const was = conf;
     const r = state.rate(item.id, null, v);
     const level = was === 1 ? "sure" : was === 0 ? "unsure" : null;
@@ -115,10 +132,15 @@ function Question({ item, ctx, showWhere, forceOpen }) {
             <div class="qgrade">
               <span>Were you right?</span>
               <button class={"gbtn ok" + (got === 1 ? " sel" : "")} data-got="1" data-qid={item.id}
-                      onClick={() => grade(true)}>Got it</button>
+                      disabled={settled} onClick={() => grade(true)}>Got it</button>
               <button class={"gbtn no" + (got === 0 ? " sel" : "")} data-got="0" data-qid={item.id}
-                      onClick={() => grade(false)}>Missed it</button>
-              <span class="gnote">{note}</span>
+                      disabled={settled} onClick={() => grade(false)}>Missed it</button>
+              {/* A question graded in an earlier session mounts with an
+                  outcome and no note; the row would otherwise settle with two
+                  inert buttons and nothing saying why. */}
+              <span class="gnote">
+                {note || (got != null ? outcomeNote(conf, got, (state.get(item.id) || {}).iv) : "")}
+              </span>
             </div>
           )}
           {recruit && (

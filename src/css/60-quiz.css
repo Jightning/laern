@@ -49,6 +49,14 @@
 .cbtn.sel{border-color:var(--lo);color:var(--lo-ink);background:color-mix(in srgb,var(--lo) 10%,transparent)}
 .gbtn.ok.sel{border-color:var(--hi);color:var(--hi-ink);background:color-mix(in srgb,var(--hi) 12%,transparent)}
 .gbtn.no.sel{border-color:var(--wn);color:var(--wn-ink);background:color-mix(in srgb,var(--wn) 12%,transparent)}
+/* Answered. The pair is now a record of what was said, not a control: the one
+   that was pressed keeps its fill, the other steps back to a hairline, and
+   neither offers a hover it will not honour. The muting is a border rather
+   than an opacity — dimming the label would take a text/background pair below
+   AA (T1) to say something the fill beside it already says. */
+.gbtn[disabled]{cursor:default}
+.gbtn[disabled]:not(.sel),
+.gbtn[disabled]:not(.sel):hover{border-color:var(--rule-2);color:var(--ink-3)}
 .qgrade{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;
   border-top:1px solid var(--rule-2);padding-top:11px;font-size:.78rem;color:var(--ink-3)}
 .gnote{font-family:var(--mono);font-size:.68rem;color:var(--hi-ink)}

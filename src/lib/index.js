@@ -25,8 +25,12 @@ export function buildIndex(C) {
   const SUBS = {}, CUSE = {}, XIN = {}, QALL = [], SEARCH = [], CQ = {};
 
   C.sections.forEach(s => {
+    /* Kept in the case it was written in. The index lowercases as it
+       tokenises, and the snippet is the reader's own material quoted back at
+       them — a lowercased one silently rewrites every symbol and proper noun
+       in the course. */
     SEARCH.push({ kind: "section", id: s.id, num: String(s.num), title: s.title,
-                  ctx: "Section", text: (s.title + " " + (s.blurb || "")).toLowerCase() });
+                  ctx: "Section", text: s.title + " " + (s.blurb || "") });
 
     s.subs.forEach((sub, k) => {
       const num = `${s.num}.${k + 1}`;
@@ -42,16 +46,19 @@ export function buildIndex(C) {
         QALL.push({ id, q, subId: sub.id, num, subTitle: sub.title });
       });
 
-      /* the owning section title is searchable from the subsection, so "karnaugh"
-         reaches subsections that only ever say "K-map" */
+      /* The owning section title is searchable from the subsection, so
+         "karnaugh" reaches subsections that only ever say "K-map" — and it
+         goes at the end, because a snippet is cut around the match and one
+         cut at offset zero opened every result by restating the section the
+         result already names beside it. */
       SEARCH.push({ kind: "sub", id: sub.id, num, title: sub.title, ctx: s.title,
-                    text: (s.title + " " + strip(txt)).toLowerCase() });
+                    text: strip(txt) + " " + s.title });
     });
   });
 
   Object.keys(C.concepts || {}).forEach(k =>
     SEARCH.push({ kind: "concept", id: "c/" + k, num: "", title: C.concepts[k].term,
-                  ctx: "Core concept", text: strip(C.concepts[k].body).toLowerCase() }));
+                  ctx: "Core concept", text: strip(C.concepts[k].body) }));
 
   return { SUBS, CUSE, XIN, QALL, SEARCH, CQ, FIG: numberFigures(C) };
 }

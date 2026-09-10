@@ -29,6 +29,14 @@
 .sb b{display:block;font-size:.88rem;font-weight:640;overflow-wrap:anywhere}
 .sc{display:block;font-size:.72rem;color:var(--ink-3);margin-top:1px}
 .sx{display:block;font-size:.75rem;color:var(--ink-2);margin-top:4px;overflow-wrap:anywhere}
+/* The matched words, in the title and in the passage. A background alone is a
+   colour carrying meaning (T26), so the weight carries it too and the mark
+   element says what it is to anything not reading the page by eye. */
+.sres mark{background:color-mix(in srgb,var(--hi) 22%,transparent);
+  color:var(--ink);font-weight:640;border-radius:2px;padding:0 1px}
+/* How many times the query occurs in the body, beside what kind of entry it
+   is — the two together are the whole of "is this the one I meant". */
+.smn{font-family:var(--mono);font-size:.66rem;color:var(--hi-ink);margin-left:8px}
 
 /* Keyboard selection. Hover and arrow keys drive the same state, so the two
    never disagree about which row is live. */

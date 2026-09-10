@@ -21,18 +21,31 @@ export function graph (spec) {
      the layout spacing and the edge geometry, so bigger nodes push apart
      instead of colliding. --- */
   var SIZES = [11, 10, 9, 8];
+  function words(raw) {
+    return String(raw == null ? "" : raw).replace(/\n/g, " ").split(/\s+/).filter(Boolean);
+  }
+  /* greedy wrap on spaces; a word wider than the measure gets its own line and
+     overruns it, which is what makes the caller widen instead of shrink */
+  function wrap(ws, maxW, cw) {
+    var lines = [], cur = "";
+    ws.forEach(function (w) {
+      var cand = cur ? cur + " " + w : w;
+      if (!cur || cand.length * cw <= maxW) cur = cand;
+      else { lines.push(cur); cur = w; }
+    });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  var widest = function (lines, cw) {
+    return lines.reduce(function (m, t) { return Math.max(m, t.length); }, 0) * cw;
+  };
   function fit(raw, base) {
-    var words = String(raw == null ? "" : raw).replace(/\n/g, " ").split(/\s+/).filter(Boolean);
-    if (!words.length) words = [""];
+    var ws = words(raw);
+    if (!ws.length) ws = [""];
     for (var s = 0; s < SIZES.length; s++) {
-      var fs = SIZES[s], cw = fs * 0.6, maxW = 2 * (base - 4), lines = [], cur = "";
-      words.forEach(function (w) {
-        var cand = cur ? cur + " " + w : w;
-        if (!cur || cand.length * cw <= maxW) cur = cand;
-        else { lines.push(cur); cur = w; }
-      });
-      if (cur) lines.push(cur);
-      var longest = lines.reduce(function (m, t) { return Math.max(m, t.length); }, 0) * cw;
+      var fs = SIZES[s], cw = fs * 0.6, maxW = 2 * (base - 4);
+      var lines = wrap(ws, maxW, cw);
+      var longest = widest(lines, cw);
       var textH = lines.length * (fs + 2);
       if ((longest <= maxW && textH <= maxW) || s === SIZES.length - 1) {
         var need = Math.max(longest / 2 + 6, textH / 2 + 4);
@@ -46,10 +59,36 @@ export function graph (spec) {
   var radOf = function (id) { return (FI[id] || { rEff: r }).rEff; };
   var maxR = nodes.reduce(function (m, n) { return Math.max(m, radOf(n.id)); }, r);
 
+  /* --- A node's note is a caption, not a tag. It is a phrase, it hangs under
+     the node, and the next node's note starts one gap away — so drawn on a
+     single line it ran straight through its neighbour's. It wraps first, to a
+     measure wide enough for whole words and narrow enough not to sprawl; the
+     wrapped width then becomes the node's horizontal footprint, so the layout
+     below spaces nodes by the widest thing under them rather than by the
+     circle alone. Wrapping is what fixes it in the common case; the extra
+     separation is what fixes the case wrapping cannot, a single word wider
+     than the measure. --- */
+  var NFS = 10, NCW = NFS * 0.6, NLH = 12, NPAD = 5, NGAP = 6;
+  function fitNote(raw, base) {
+    var ws = words(raw);
+    if (!ws.length) return null;
+    var lines = wrap(ws, Math.max(2 * base + 30, 132), NCW);
+    return { lines: lines, w: Math.round(widest(lines, NCW)) + 2 * NPAD,
+             h: 2 * NPAD + lines.length * NLH };
+  }
+  var NI = {};
+  nodes.forEach(function (n) { if (n.note) NI[n.id] = fitNote(n.note, radOf(n.id)); });
+  var noteW = function (id) { return NI[id] ? NI[id].w : 0; };
+  var noteH = function (id) { return NI[id] ? NI[id].h + NGAP : 0; };
+  /* what a node occupies across, and how far it reaches below its own circle */
+  var spanOf = function (id) { return Math.max(2 * radOf(id), noteW(id)); };
+  var maxSpan = nodes.reduce(function (m, n) { return Math.max(m, spanOf(n.id)); }, 2 * r);
+  var maxNoteH = nodes.reduce(function (m, n) { return Math.max(m, noteH(n.id)); }, 0);
+
   if (layout === "manual") {
     nodes.forEach(function (n) { pos[n.id] = { x: n.x, y: n.y }; });
   } else if (layout === "row") {
-    W = Math.max(W, nodes.length * (maxR * 2 + 26) + 40);
+    W = Math.max(W, nodes.length * (maxSpan + 26) + 40);
     var gap = W / (nodes.length + 1);
     nodes.forEach(function (n, k) { pos[n.id] = { x: gap * (k + 1), y: H / 2 }; });
   } else if (layout === "layered") {
@@ -126,20 +165,21 @@ export function graph (spec) {
     }
 
     var L = Math.max.apply(null, Object.keys(byL).map(Number)) + 1;
-    var pitch = maxR * 2 + 30;
-    W = Math.max(W, (L + 1) * (maxR * 2 + 40));
+    var pitch = maxR * 2 + 30 + maxNoteH;
+    W = Math.max(W, (L + 1) * (maxSpan + 40));
     var flowH = Math.max(200, Object.keys(byL).reduce(function (m, k) {
       return Math.max(m, byL[k].length); }, 0) * pitch + 40);
     /* the packed band: as many per row as fit at the node's own pitch */
-    var perRow = Math.max(1, Math.floor((W - 40) / (maxR * 2 + 26))),
+    var rowH = maxR * 2 + 26 + maxNoteH;
+    var perRow = Math.max(1, Math.floor((W - 40) / (maxSpan + 26))),
         looseRows = Math.ceil(loose.length / perRow),
-        bandH = loose.length ? looseRows * (maxR * 2 + 26) + 26 : 0;
+        bandH = loose.length ? looseRows * rowH + 26 : 0;
     H = spec.h || (flowH + bandH);
     loose.forEach(function (n, k) {
       var row = Math.floor(k / perRow), col = k % perRow,
           wide2 = Math.min(perRow, loose.length - row * perRow);
       pos[n.id] = { x: (W / (wide2 + 1)) * (col + 1),
-                    y: flowH + 13 + row * (maxR * 2 + 26) + maxR };
+                    y: flowH + 13 + row * rowH + maxR };
     });
     Object.keys(byL).forEach(function (k) {
       var col = byL[k], cx2 = (W / (L + 1)) * (Number(k) + 1);
@@ -148,7 +188,11 @@ export function graph (spec) {
       });
     });
   } else { /* circle */
-    var cx = W / 2, cy = H / 2, rad = Math.min(W, H) / 2 - maxR - 26;
+    var cx = W / 2, cy = H / 2;
+    /* Big enough that neighbouring footprints clear each other, which is a
+       different question from big enough for the circles. */
+    var ring = nodes.length ? (nodes.length * (maxSpan + 16)) / (2 * Math.PI) : 0;
+    var rad = Math.max(Math.min(W, H) / 2 - maxR - 26, ring);
     nodes.forEach(function (n, k) {
       var ang = (k / nodes.length) * Math.PI * 2 - Math.PI / 2;
       pos[n.id] = { x: cx + rad * Math.cos(ang), y: cy + rad * Math.sin(ang) };
@@ -167,8 +211,9 @@ export function graph (spec) {
     var p = pos[n.id]; if (!p) return;
     var rr = radOf(n.id) + (n.here ? 7 : 0);
     var loop = selfOf[n.id] != null ? rr + 34 + String(selfOf[n.id]).length * 2.7 : rr;
-    xs.push(p.x - loop, p.x + loop);
-    ys.push(p.y - loop, p.y + loop + (n.note ? 20 : 0));
+    var half = Math.max(loop, noteW(n.id) / 2);
+    xs.push(p.x - half, p.x + half);
+    ys.push(p.y - loop, p.y + Math.max(loop, rr + noteH(n.id)));
   });
   var vx = 0, vy = 0, vw = W, vh = H;
   if (xs.length) {
@@ -187,6 +232,16 @@ export function graph (spec) {
   out += '<defs><marker id="fxa" viewBox="0 0 10 10" refX="9" refY="5" ' +
     'markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
     '<path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker></defs>';
+
+  /* A node's note: one chip, however many lines the wrap produced. */
+  function nlabel(x, y, f) {
+    var s = '<rect x="' + (x - f.w / 2).toFixed(1) + '" y="' + y.toFixed(1) +
+      '" width="' + f.w + '" height="' + f.h + '" rx="3" class="fx-eh"/>';
+    f.lines.forEach(function (ln, i) {
+      s += txt(x.toFixed(1), (y + NPAD + i * NLH + NFS * 0.82).toFixed(1), ln, "fx-el");
+    });
+    return s;
+  }
 
   /* an edge label with a background chip, so it stays readable where it
      crosses a line or sits near another label */
@@ -267,7 +322,7 @@ export function graph (spec) {
         '" class="fx-t fx-nl" text-anchor="middle" style="font-size:' + f.fs + 'px">' +
         esc(ln) + '</text>';
     });
-    if (n.note) out += elabel(p.x, p.y + rr + 14, n.note);
+    if (NI[n.id]) out += nlabel(p.x, p.y + rr + NGAP, NI[n.id]);
     out += '</g>';
   });
   return out + "</svg>";

@@ -535,14 +535,20 @@ for (const cid of ids) {
            shares one top edge — either way nothing is half-aligned */
         aligned: new Set(steps.map(e => Math.round(e.getBoundingClientRect().left))).size === 1 ||
                  new Set(steps.map(e => Math.round(e.getBoundingClientRect().top))).size === 1,
-        fits: [...document.querySelectorAll(".figure")].every(g =>
-                g.scrollWidth <= g.clientWidth + 1)
+        /* A figure may be wider than the reading column — a graph past a
+           handful of nodes, a row of flow steps each holding a note that needs
+           a measure of its own. `.figure` is overflow-x:auto precisely so it
+           can be, and it carries the shading that says an edge is hiding
+           something. What must never happen is the *page* growing a second
+           axis, which is what an unframed overflow does. */
+        page: document.documentElement.scrollWidth - document.documentElement.clientWidth
       };
     });
     ck(P("flow figure is an ordered list"), flow.ol);
     ck(P("flow figure has no stray arrow glyphs"), flow.strayArrows === 0);
     ck(P("flow steps share an edge"), flow.aligned);
-    ck(P("figures do not overflow their frame"), flow.fits);
+    ck(P("a wide figure scrolls its frame, not the page"), flow.page <= 1,
+       flow.page + "px of page overflow");
   }
 
   /* Questions are separate cards, not one wall of text. */
@@ -946,6 +952,101 @@ for (const cid of ids) {
       [...document.querySelectorAll(".sres")].findIndex(e => e.classList.contains("on")));
     ck(P("arrow keys move the search selection"), second === 1, "row " + second);
   }
+  /* A body mention is a first-class hit, and the row says how many there are:
+     the count is what separates a passing reference from the subsection the
+     subject is actually treated in. */
+  {
+    const word = await page.evaluate(() => {
+      /* A word from deep inside the material, not from any heading — and via
+         innerText, since textContent runs the last word of one element into
+         the first of the next and invents a word no index can hold. */
+      const t = (document.querySelector(".bhtml")?.innerText || "");
+      return (t.match(/\b[A-Za-z]{7,}\b/g) || ["a"])[0].toLowerCase();
+    });
+    await page.locator("#s-input").fill(word); await page.waitForTimeout(350);
+    const hit = await page.evaluate(() => {
+      const r = document.querySelector(".sres");
+      return r && { marks: r.querySelectorAll("mark").length,
+                    snip: r.querySelector(".sx").innerText };
+    });
+    ck(P("a word from the body is found"), !!hit, word);
+    if (hit) {
+      ck(P("the matched words are marked in the snippet"), hit.marks > 0,
+         `${hit.marks} marks for "${word}"`);
+      /* Lowercasing the indexed text used to reach the snippet as well, so the
+         course's own prose was quoted back in a case it was never written in. */
+      ck(P("the snippet keeps the material's own case"), /[A-Z]/.test(hit.snip),
+         JSON.stringify(hit.snip.slice(0, 48)));
+    }
+  }
+  /* Ranking, not merely matching. A title is the strongest evidence there is,
+     so the entry named after the query has to come first — the old scorer
+     never counted term frequency at all and could not order two hits. */
+  {
+    const title = await page.evaluate(() => {
+      const a = [...document.querySelectorAll(".toc a")].pop();
+      return a ? a.textContent.replace(/^[\d.\s]+/, "").trim() : "";
+    });
+    if (title.split(/\s+/).length >= 2) {
+      await page.locator("#s-input").fill(title); await page.waitForTimeout(400);
+      const first = await page.evaluate(() =>
+        document.querySelector(".sres b")?.innerText.trim() || "");
+      ck(P("the entry a query names ranks first"),
+         first.toLowerCase() === title.toLowerCase(), `"${title}" -> "${first}"`);
+    }
+  }
+  /* T1/T2 for the one pair the contrast sweep cannot read. A mark's ground is
+     a translucent tint of the course accent, and `audit-color.mjs` walks up
+     past any background under half opacity — so it would measure the ink
+     against the surface underneath and report a pair that is not on screen.
+     Composited here instead, in both themes, since the tint rotates with the
+     course hue and the ground moves with the theme. */
+  {
+    const measure = () => page.evaluate(() => {
+      const m = document.querySelector(".sres mark");
+      if (!m) return null;
+      const cx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+      const px = v => { cx.clearRect(0, 0, 1, 1); cx.fillStyle = "#000"; cx.fillStyle = v;
+        cx.fillRect(0, 0, 1, 1); const d = cx.getImageData(0, 0, 1, 1).data;
+        return [d[0], d[1], d[2], d[3] / 255]; };
+      const over = (f, b) => f.slice(0, 3).map((c, i) => f[3] * c + (1 - f[3]) * b[i]);
+      const lum = c => { const v = c.map(x => { x /= 255;
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; });
+        return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+      let n = m.parentElement, base = null;
+      while (n && !base) {
+        const b = px(getComputedStyle(n).backgroundColor);
+        if (b[3] > 0.5) base = b.slice(0, 3);
+        n = n.parentElement;
+      }
+      base = base || px(getComputedStyle(document.body).backgroundColor).slice(0, 3);
+      const cs = getComputedStyle(m);
+      const bg = over(px(cs.backgroundColor), base);
+      const fg = over(px(cs.color), bg);
+      const a = lum(fg), b2 = lum(bg);
+      return { r: (Math.max(a, b2) + 0.05) / (Math.min(a, b2) + 0.05),
+               weight: parseInt(cs.fontWeight) || 400 };
+    });
+    const lit = await measure();
+    if (lit) {
+      ck(P("a marked word clears AA on the accent tint"), lit.r >= 4.5,
+         lit.r.toFixed(2) + ":1");
+      /* T26: the tint is not the only thing saying "matched". */
+      ck(P("and is not marked by colour alone"), lit.weight >= 600, "weight " + lit.weight);
+      await page.keyboard.press("Escape");
+      await page.locator(".topbar .tbtn", { hasText: "Theme" }).click();
+      await page.waitForTimeout(250);
+      await page.keyboard.press("/"); await page.waitForTimeout(200);
+      await page.locator("#s-input").fill("the"); await page.waitForTimeout(300);
+      const dark = await measure();
+      if (dark) ck(P("and clears it in the other theme too"), dark.r >= 4.5,
+                   dark.r.toFixed(2) + ":1");
+      await page.keyboard.press("Escape");
+      await page.locator(".topbar .tbtn", { hasText: "Theme" }).click();
+      await page.waitForTimeout(250);
+      await page.keyboard.press("/"); await page.waitForTimeout(200);
+    }
+  }
   await shot(cid + "-search");
   await page.keyboard.press("Escape");
 
@@ -1229,6 +1330,172 @@ for (const cid of ids) {
   const after = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   ck(P("theme toggle repaints"), before !== after, `${before} -> ${after}`);
   await shot(cid + "-dark");
+}
+
+/* ---------------------------------------------------------------------------
+ * The reading position, which is an anchor and not an offset.
+ *
+ * Two things used to move the reader without being asked to: changing the
+ * width re-wrapped every line above them and left the scroll offset pointing
+ * somewhere else, and an installed app relaunched at start_url with no hash at
+ * all. Both are the same question — where was the reader — so both are asserted
+ * against the same anchor.
+ * ------------------------------------------------------------------------ */
+{
+  const anchor = () => page.evaluate(() => {
+    const subs = [...document.querySelectorAll(".sub[id]")];
+    let hit = subs[0];
+    for (const el of subs) if (el.getBoundingClientRect().top <= 4) hit = el;
+    return hit && { id: hit.id, top: Math.round(hit.getBoundingClientRect().top),
+                    y: Math.round(scrollY), hash: location.hash };
+  });
+  const topOf = id => page.evaluate(i => {
+    const el = document.getElementById(i);
+    return el ? Math.round(el.getBoundingClientRect().top) : null;
+  }, id);
+
+  const cid = ids[0];
+  const secs = await page.evaluate(async c => {
+    location.hash = "#/" + c;
+    await new Promise(r => setTimeout(r, 600));
+    return [...document.querySelectorAll(".toc a[href]")].map(a => a.getAttribute("href"));
+  }, cid);
+  /* the longest section available, so a reflow has something to move */
+  let deep = null;
+  for (const h of secs.slice(0, 8)) {
+    await go(h);
+    const tall = await page.evaluate(() => document.documentElement.scrollHeight);
+    if (!deep || tall > deep.tall) deep = { h, tall };
+  }
+  if (deep && deep.tall > 2400) {
+    await go(deep.h);
+    await page.evaluate(t => scrollTo({ top: Math.round(t * 0.45), behavior: "instant" }), deep.tall);
+    await page.waitForTimeout(700);
+    const was = await anchor();
+
+    await page.setViewportSize({ width: 620, height: 900 });
+    await page.waitForTimeout(1200);
+    const now = { top: await topOf(was.id),
+                  y: await page.evaluate(() => Math.round(scrollY)) };
+    /* The offset moved and the anchor did not: that is the whole of the fix.
+       Asserting the offset held would assert the bug. */
+    ck("a change of width holds the reading position",
+       now.top != null && Math.abs(now.top - was.top) <= 8,
+       `anchor ${was.top} -> ${now.top}, offset ${was.y} -> ${now.y}`);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(400);
+
+    /* Relaunch: the platform hands the app start_url and nothing else. */
+    await go(deep.h);
+    await page.evaluate(t => scrollTo({ top: Math.round(t * 0.45), behavior: "instant" }), deep.tall);
+    await page.waitForTimeout(1500);
+    const closed = await anchor();
+    await page.evaluate(() => {
+      Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await page.waitForTimeout(300);
+    await go("");                          /* no hash, as a home-screen launch */
+    await page.waitForTimeout(1800);
+    const back = { hash: await page.evaluate(() => location.hash), top: await topOf(closed.id) };
+    ck("reopening with no route resumes the one it was closed on",
+       back.hash === closed.hash, `${closed.hash} -> ${back.hash}`);
+    ck("and at the place it was closed at",
+       back.top != null && Math.abs(back.top - closed.top) <= 8,
+       `anchor ${closed.top} -> ${back.top}`);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Grading a quiz question is one answer, not a repeatable action.
+ *
+ * The buttons used to stay live, and every extra press was folded in as
+ * another recall: `rateStep` multiplies the interval by the ease factor each
+ * time, so pressing "Got it" five times on a question answered once pushed the
+ * next review out by a fortnight and wrote five rows into the log everything
+ * else is a fold over.
+ * ------------------------------------------------------------------------ */
+{
+  const cid = ids[0];
+  const first = await page.evaluate(async c => {
+    location.hash = "#/" + c;
+    await new Promise(r => setTimeout(r, 600));
+    return (document.querySelector(".toc a[href]") || {}).hash || "";
+  }, cid);
+  await go(first);
+  const q = page.locator(".q").first();
+  if (await q.count() && await q.locator('.cbtn[data-conf="1"]').count()) {
+    await q.scrollIntoViewIfNeeded();
+    await q.locator('.cbtn[data-conf="1"]').click(); await page.waitForTimeout(200);
+    const skip = q.locator("button", { hasText: /^skip$/i });
+    if (await skip.count()) { await skip.click(); await page.waitForTimeout(300); }
+    const ok = q.locator(".gbtn.ok");
+    if (await ok.count()) {
+      /* An earlier check in this run already missed this question, and a missed
+         question's interval is zero — so it is legitimately due again and this
+         is a second answer. Only the rows written from here on are this test's. */
+      const t0 = await page.evaluate(() => Date.now());
+      await ok.click({ force: true }); await page.waitForTimeout(400);
+      const once = await page.evaluate(() =>
+        document.querySelector(".q .gnote").innerText);
+      for (let i = 0; i < 4; i++) { await ok.click({ force: true }); await page.waitForTimeout(100); }
+      await page.waitForTimeout(400);
+      const after = await page.evaluate(() => {
+        const g = document.querySelector(".q .qgrade");
+        return { note: g.querySelector(".gnote").innerText,
+                 inert: g.querySelector(".gbtn.ok").disabled && g.querySelector(".gbtn.no").disabled };
+      });
+      ck("an answered question stops taking answers", after.inert);
+      ck("pressing Got it again does not move the review date",
+         after.note === once, `"${once}" -> "${after.note}"`);
+      const qid = await q.getAttribute("data-qid");
+      const rows = await page.evaluate(([id, since]) => new Promise(res => {
+        const r = indexedDB.open("learn");
+        r.onsuccess = () => {
+          const g = r.result.transaction("log").objectStore("log").getAll();
+          g.onsuccess = () => res(g.result.filter(
+            x => x.loop === "A" && x.itemId === id && x.correct != null && x.ts >= since).length);
+        };
+      }), [qid, t0]);
+      ck("and writes one row, not five", rows === 1, rows + " outcome rows for " + qid);
+    }
+  }
+}
+
+/* A row of flow steps gives each note a measure rather than a share of the
+   column. Four notes across a 566px reading column came out at seventeen
+   characters a line; past the floor the steps stop shrinking and the figure
+   frame is what scrolls. */
+{
+  for (const cid of ids) {
+    await go("#/" + cid);
+    const secs = await page.evaluate(() =>
+      [...document.querySelectorAll(".toc a[href]")].map(a => a.getAttribute("href")));
+    let seen = false;
+    for (const h of secs) {
+      await go(h);
+      await page.keyboard.press("3"); await page.waitForTimeout(300);
+      const row = page.locator(".fx-flow.is-row").first();
+      if (!(await row.count())) continue;
+      seen = true;
+      const m = await row.evaluate(el => {
+        const step = el.querySelector(".fx-step");
+        const cs = getComputedStyle(step);
+        const inner = step.getBoundingClientRect().width -
+          parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        const frame = el.closest(".figure");
+        return { inner: Math.round(inner),
+                 framed: !!frame && frame.scrollWidth >= el.scrollWidth - 1,
+                 nested: getComputedStyle(el).overflowX === "auto" };
+      });
+      /* ~24 characters at the note's size. Below that a note is a squeezed
+         block rather than a sentence. */
+      ck("a flow step gives its note a readable measure", m.inner >= 130, m.inner + "px");
+      ck("the figure frame is what scrolls, not the list", !m.nested && m.framed);
+      break;
+    }
+    if (seen) break;
+  }
 }
 
 /* The review route: cross-course, and deliberately without the reading chrome.

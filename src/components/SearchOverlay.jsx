@@ -1,5 +1,12 @@
-import { useState, useEffect, useRef } from "preact/hooks";
+import { useState, useEffect, useRef, useMemo } from "preact/hooks";
 import { searchRun } from "../lib/search.js";
+
+/* A run of `{t, hit}` from lib/search.js, marked. The engine returns parts
+   rather than a string with tags in it because the material is authored as raw
+   HTML: building a highlighted snippet as markup would mean either escaping it
+   here and injecting it there, or trusting a string this file assembled. */
+const Marked = ({ run }) =>
+  run.map((p, i) => (p.hit ? <mark key={i}>{p.t}</mark> : p.t));
 
 export default function SearchOverlay({ ctx, open, onClose }) {
   const { cid, idx } = ctx;
@@ -12,7 +19,11 @@ export default function SearchOverlay({ ctx, open, onClose }) {
     if (open) { setQ(""); setSel(0); input.current?.focus(); }
   }, [open]);
 
-  const res = open && q.trim() ? searchRun(idx.SEARCH, q.trim()) : [];
+  /* Keyed on the query, so re-rendering for a moved selection does not
+     re-run the search. */
+  const res = useMemo(
+    () => (open && q.trim() ? searchRun(idx.SEARCH, q.trim()) : []),
+    [open, q, idx]);
 
   /* Keep the highlighted row on screen as it moves past the fold. */
   useEffect(() => {
@@ -67,9 +78,15 @@ export default function SearchOverlay({ ctx, open, onClose }) {
                onMouseMove={() => setSel(i)} onClick={onClose}>
               <span class="sn">{r.e.num ? `${r.e.num}` : "◈"}</span>
               <span class="sb">
-                <b>{r.e.title}</b>
-                <span class="sc">{r.e.ctx}</span>
-                <span class="sx">{r.hit}</span>
+                <b><Marked run={r.title} /></b>
+                <span class="sc">
+                  {r.e.ctx}
+                  {/* How often the query occurs in the body, which is what
+                      separates a passing reference from where the subject is
+                      actually treated. */}
+                  {r.mentions > 1 && <span class="smn">{r.mentions} mentions</span>}
+                </span>
+                <span class="sx"><Marked run={r.parts} /></span>
               </span>
             </a>
           ))}

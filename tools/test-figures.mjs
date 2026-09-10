@@ -45,6 +45,37 @@ const ck = (name, ok, detail = "") => {
      `r = ${Math.max(...radii(plain))}`);
 }
 
+/* ---- graph: node notes ---- */
+{
+  /* Four phrases hanging under four nodes. Drawn on one line each they ran
+     through one another, and the canvas was measured as if a note were 20px
+     tall and nothing wide. */
+  const g = graph({
+    layout: "row",
+    nodes: [
+      { id: "a", label: "new", note: "not yet seen" },
+      { id: "b", label: "learning", note: "below the criterion count" },
+      { id: "c", label: "criterion", note: "3 correct on 3 distinct items" },
+      { id: "d", label: "durable", note: "3 spaced relearnings" }
+    ]
+  });
+  const chips = [...g.matchAll(/<rect x="([-\d.]+)"[^>]*width="([\d.]+)"[^>]*class="fx-eh"/g)]
+    .map(m => [Number(m[1]), Number(m[1]) + Number(m[2])])
+    .sort((x, y) => x[0] - y[0]);
+  const clash = chips.some((c, i) => i > 0 && c[0] < chips[i - 1][1]);
+  ck("notes under adjacent nodes do not overlap", chips.length === 4 && !clash,
+     chips.map(c => c.map(Math.round).join("–")).join("  "));
+
+  const lines = (g.match(/class="fx-t fx-el"/g) || []).length;
+  ck("a note longer than its measure wraps before the layout is widened",
+     lines > chips.length, `${lines} note lines for ${chips.length} notes`);
+
+  const [vx, , vw] = /viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"/.exec(g)
+    .slice(1).map(Number);
+  ck("the canvas is wide enough to hold them", chips[0][0] >= vx && chips[3][1] <= vx + vw,
+     `notes ${Math.round(chips[0][0])}–${Math.round(chips[3][1])} in ${Math.round(vx)}–${Math.round(vx + vw)}`);
+}
+
 /* ---- graph: scroll vs shrink ---- */
 {
   const many = graph({

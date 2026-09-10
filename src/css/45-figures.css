@@ -76,12 +76,24 @@ svg.fx{display:block;max-width:100%;height:auto;margin:0 auto}
    has depends on the sidebar and the reader's content zoom, neither of which a
    viewport breakpoint can see. */
 @container (min-width:28rem){
+  /* The frame scrolls, not the list. `.figure` already carries overflow-x and
+     the shading that says an edge is hiding something; a second scroller
+     nested inside it takes the overflow away from the affordance and leaves a
+     row that is cut off with no sign that it is. */
   .fx-flow.is-row{
     display:flex;align-items:stretch;gap:1.5rem;
-    overflow-x:auto;padding-bottom:4px;
+    padding-bottom:4px;
   }
+  /* A step's floor is a measure, not a token width. `flex:1 1 0` alone divides
+     whatever the column has by the number of steps, and a note is a sentence:
+     four of them across a 566px reading column came out at seventeen
+     characters a line, which is narrower than the note's own longest word and
+     reads as a squeezed block rather than prose. The floor is ~24 characters,
+     so the note wraps at whole words first; past that the steps stop
+     shrinking and the figure frame scrolls, which is the same trade the graph
+     kind already makes rather than shrink to unreadable. */
   .fx-flow.is-row .fx-step{
-    flex:1 1 0;min-width:5.4rem;padding:.6rem .7rem;
+    flex:1 1 0;min-width:10.5rem;padding:.6rem .7rem;
     border:1px solid var(--rule);border-radius:8px;background:var(--surface);
   }
   .fx-flow.is-row .fx-step::before{display:none}
