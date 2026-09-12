@@ -2,7 +2,7 @@
 
 .brand{padding:0 20px 18px;border-bottom:1px solid var(--rule-2);margin-bottom:6px}
 .brand .code{
-  font-family:var(--mono);font-size:1.30rem;font-weight:700;
+  font-family:var(--display);font-size:1.34rem;font-weight:600;
   letter-spacing:-.02em;display:block;
 }
 .brand .name{font-size:var(--fs-small);color:var(--ink-3);display:block;margin-top:2px;line-height:1.4}
@@ -10,7 +10,9 @@
    that identifies them — "Edwards, Penney & Calvis 6e" is information, and
    "EDWARDS, PENNEY & CALVIS 6E" is the same string with that stripped out. */
 .brand .meta{
-  font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);
+  /* "Purdue · Edwards, Penney & Calvis 6e" is a sentence naming an
+     institution and a book, not an identifier. */
+  font-family:var(--sans);font-size:var(--fs-small);color:var(--ink-3);
   margin-top:9px;letter-spacing:.02em;
 }
 .rail{position:relative;padding:10px 16px 0 0}
@@ -72,3 +74,31 @@
   background:var(--hi);border-radius:1px;
 }
 .cyc.is-seen .sec-num{color:var(--ink-2)}
+
+/* ----------------------------------------------------------- mode switch
+ * What the reader is here to do, in the toolbar.
+ *
+ * A segmented control rather than three buttons, because the three are one
+ * choice and the group has to read as one object: separate .tbtn buttons in
+ * the same row would say "three things you could press", which is the row of
+ * unrelated controls this replaced. */
+.modesw{
+  display:inline-flex;border:1px solid var(--rule);border-radius:5px;
+  overflow:hidden;flex:none;
+}
+.modesw-b{
+  font-family:var(--ui);font-size:var(--fs-meta);font-weight:450;
+  background:none;border:0;border-right:1px solid var(--rule);
+  color:var(--ink-3);padding:5px 11px;cursor:pointer;white-space:nowrap;
+}
+.modesw-b:last-child{border-right:0}
+.modesw-b:hover{color:var(--hi-ink)}
+/* The selected one is ink on paper rather than the accent: the accent is the
+   course's identity and this is not about the course. It also has to stay
+   legible beside whichever hue the rotation lands on. */
+.modesw-b.sel{background:var(--ink);color:var(--surface);font-weight:500}
+.modesw-b.sel:hover{color:var(--surface)}
+/* The pair has been moved off this preset by hand. A mark rather than a
+   different label, so the control still reads as three fixed choices — and it
+   is a character, not a colour, so it survives without hue (T26). */
+.modesw-e{margin-left:.3em;opacity:.75}

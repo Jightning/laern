@@ -7,7 +7,7 @@
 }
 .hero p{font-size:1.03rem;color:var(--ink-2);margin:0 0 22px;max-width:64ch}
 .start{padding:var(--view-top) 0 0}
-.start h1{font-family:var(--mono);font-size:clamp(1.9rem,4.4vw,2.9rem);font-weight:700;
+.start h1{font-family:var(--display);font-size:clamp(2.0rem,4.4vw,3.0rem);font-weight:600;
   letter-spacing:-.035em;line-height:1.06;margin:0 0 14px}
 .start .lede{font-size:1.03rem;color:var(--ink-2);margin:0 0 26px;max-width:64ch}
 .toc{border-top:1px solid var(--rule);margin-top:30px}
@@ -38,8 +38,11 @@
   border-radius:8px;padding:7px 12px;font-size:var(--fs-small);color:var(--ink-3);background:var(--surface)}
 .dstat b{font-family:var(--mono);font-size:1.05rem;color:var(--ink);font-weight:700}
 .dstat.warn b{color:var(--dc-ink)}
-.dbtn{font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.05em;text-decoration:none;
-  border:1px solid var(--rule);border-radius:8px;padding:8px 14px;color:var(--ink-2);
+/* A button label is read, not matched by shape. This is the shared button on
+   the Desk, the review screens, practice and calibration — the last place mono
+   was doing chrome duty. */
+.dbtn{font-family:var(--ui);font-size:var(--fs-small);text-decoration:none;
+  border:1px solid var(--rule);border-radius:5px;padding:8px 14px;color:var(--ink-2);
   background:var(--surface);cursor:pointer}
 .dbtn:hover{border-color:var(--hi);color:var(--hi-ink)}
 

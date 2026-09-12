@@ -9,8 +9,6 @@ import { MarginRefs, UsedLater, RefChip } from "./MarginNote.jsx";
 import Quiz from "./Quiz.jsx";
 import KeyTerms from "./KeyTerms.jsx";
 import { useNotes, NoteGrip, NoteCard } from "./Notes.jsx";
-import LaneSelect from "./LaneSelect.jsx";
-import DepthSelect from "./DepthSelect.jsx";
 import TierStub from "./TierStub.jsx";
 import Attempt from "./Attempt.jsx";
 import CatChip from "./CatChip.jsx";
@@ -147,6 +145,17 @@ const press = fn => e => {
  * together instead of running down the page as one undifferentiated column.
  * That proximity is the whole mechanism the note-format evidence identifies.
  */
+/* The source declared by the block immediately above this one, or null.
+ *
+ * Read from the subsection's own block list rather than threaded through the
+ * render loop, because a run the lane has hidden still sits between two visible
+ * blocks in the material — and "still the one above" is a claim about what the
+ * author wrote, not about what this lane happens to be showing. */
+function prevSourceOf(blocks, i) {
+  const prev = (blocks || [])[i - 1];
+  return prev && prev.source ? prev.source : null;
+}
+
 function Blocks({ sub, ctx, lane, depth, expandAll, openAt }) {
   const { cid, idx } = ctx;
   const [openRun, setOpenRun] = useState({});
@@ -181,7 +190,8 @@ function Blocks({ sub, ctx, lane, depth, expandAll, openAt }) {
     return (
       <ReadingRow key={i} id={blockId(sub.id, i)} ctx={ctx} notes={notes} noteAt={at}
                   apart={isApart(b.t)}
-                  html={renderBlock(b, { fignum: idx.FIG.numOf(b) })} />
+                  html={renderBlock(b, { fignum: idx.FIG.numOf(b),
+                                        prevSource: prevSourceOf(sub.blocks, i) })} />
     );
   };
 
@@ -352,10 +362,6 @@ export default function Section({ section, ctx, expandAll, lane, onLane, depth, 
         {/* the map answers "what does this sit between", which is a question
             you have here, not back in the course nav */}
         <a class="sec-where" href={H(`map/${section.id}`)}>Where this sits →</a>
-      </div>
-      <div class="lanes">
-        <LaneSelect lane={lane} onLane={onLane} />
-        <DepthSelect depth={depth} onDepth={onDepth} />
       </div>
       <DepthNote section={section} depth={depth} />
       {/* The panel names the section's terms, which is exactly what a closed

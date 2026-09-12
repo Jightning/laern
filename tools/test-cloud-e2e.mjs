@@ -156,12 +156,22 @@ const again = await backUp(A);
 check("an unchanged shelf transfers no bodies", hits.course === 0, `${hits.course} body calls`);
 check("and says so rather than claiming work", !/backed up/i.test(again), again);
 
+/* Bin the course with this id, from the card that holds it.
+ *
+ * Management sits behind each card's overflow control, so removing a course is
+ * two presses and the second one is on markup that does not exist until the
+ * first has re-rendered — which is why this cannot be one page.evaluate. */
+async function binCourse(P, cid) {
+  const card = P.locator(".lcard").filter({ has: P.locator(`.lhit[href="#/${cid}"]`) });
+  await card.locator(".lmore").click();
+  await P.waitForTimeout(120);
+  await card.locator(".lop.warn").click();
+}
+
 /* Deleting on one device reaches the other, and the bin offers it back. */
 await A.goto(ORIGIN + "/");
 await A.waitForTimeout(500);
-await A.evaluate(() => [...document.querySelectorAll(".lcard")]
-  .find(c => c.querySelector(".lhit").getAttribute("href") === "#/onlylaptop")
-  .querySelector(".lop.warn").click());
+await binCourse(A, "onlylaptop");
 await A.waitForTimeout(300);
 await A.locator("#lib-drop").click();
 await A.waitForTimeout(400);
@@ -196,9 +206,7 @@ if (binButton) {
   /* Bin it again, so the account is holding a tombstone for this id. */
   await A.goto(ORIGIN + "/");
   await A.waitForTimeout(500);
-  await A.evaluate(() => [...document.querySelectorAll(".lcard")]
-    .find(c => c.querySelector(".lhit").getAttribute("href") === "#/onlylaptop")
-    .querySelector(".lop.warn").click());
+  await binCourse(A, "onlylaptop");
   await A.waitForTimeout(300);
   await A.locator("#lib-drop").click();
   await A.waitForTimeout(400);

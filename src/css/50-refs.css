@@ -12,7 +12,9 @@ c:hover,.cref:hover{color:var(--hi-ink)}
   display:none;
 }
 .card.on{display:block}
-.card h4{font-family:var(--mono);font-size:var(--fs-small);margin:0 0 6px;letter-spacing:-.01em}
+/* A margin card names a concept or a section — read, not matched by shape. */
+.card h4{font-family:var(--display);font-weight:600;font-size:var(--fs-small);
+  margin:0 0 6px;letter-spacing:-.012em}
 .card p{margin:0 0 8px}
 .card p:last-child{margin:0}
 .card .src{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);
