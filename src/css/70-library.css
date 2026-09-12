@@ -11,7 +11,7 @@
   letter-spacing:-.035em;line-height:1.07;margin:0;flex:1 1 auto;min-width:0}
 .lplus{
   flex:0 0 auto;display:inline-flex;align-items:center;gap:.5em;
-  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.06em;text-transform:uppercase;
   background:none;border:1px solid var(--rule);color:var(--ink-2);
   border-radius:7px;padding:8px 13px;cursor:pointer;
 }
@@ -47,20 +47,20 @@
    and a control that only exists under a mouse does not exist on a phone. */
 .lops{position:relative;z-index:1;display:flex;gap:8px;padding-top:13px}
 .lop{
-  font-family:var(--mono);font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.07em;text-transform:uppercase;
   background:var(--surface-2);border:1px solid var(--rule);color:var(--ink-2);
   border-radius:5px;padding:5px 10px;cursor:pointer;
 }
 .lop:hover{border-color:var(--hi);color:var(--hi-ink)}
 .lop.warn:hover{border-color:var(--wn);color:var(--wn-ink)}
-.lcard .lc{font-family:var(--mono);font-size:.72rem;color:var(--hi-ink);letter-spacing:.05em}
+.lcard .lc{font-family:var(--mono);font-size:var(--fs-meta);color:var(--hi-ink);letter-spacing:.05em}
 /* The due count is a badge on the card, not a word in its text flow. It used
    to be `float:right` in the calibration sheet, which the card's column layout
    silently ignores — a float inside a flex container is not a float, it is a
    flex item on a line of its own. Pinned to the corner it shares the code's
    line again and cannot be pushed anywhere by what grows below it. */
 .lcard .ldue{position:absolute;top:16px;right:19px;
-  font-family:var(--mono);font-size:.64rem;color:var(--wn-ink)}
+  font-family:var(--mono);font-size:var(--fs-micro);color:var(--wn-ink)}
 .lcard h3{font-size:1.02rem;font-weight:660;margin:6px 0 7px;line-height:1.3;letter-spacing:-.01em}
 .lcard p{font-size:.82rem;color:var(--ink-3);margin:0 0 12px;line-height:1.5}
 /* The counts belong to the foot of the card with the buttons, not to the
@@ -68,7 +68,7 @@
    leaves above them, so every card's numbers and controls line up as one
    block. It used to sit on .lops, which left the counts floating against
    whatever length the description happened to be. */
-.lcard .lstat{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);
+.lcard .lstat{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);
   display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
 .lbar{height:3px;background:var(--rule-2);border-radius:2px;margin-top:11px;overflow:hidden}
 .lbar i{display:block;height:100%;background:var(--hi)}

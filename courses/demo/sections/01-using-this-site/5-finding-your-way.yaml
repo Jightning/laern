@@ -9,22 +9,50 @@ blocks:
     source: docs/code_truth.md T12
     term: Margin card
     label: References come to you
+    cat: navigation-surfaces
+    core: |-
+      A page that mentions an idea defined elsewhere puts a card in the margin beside that line, carrying enough of the definition to keep reading.
     h: |-
-      <p>When a page mentions an idea defined elsewhere, like <c k="non-redundancy">non-redundancy</c>, a card appears in the margin <em>beside that line</em>, carrying enough of the definition to keep reading. You are never sent to the end of the section to find out what a word meant, and following the link properly leaves a pill that takes you back to where you were.</p>
+      <p>You are never sent to the end of the section to find out what a word meant, and following the link properly leaves a pill that takes you back to where you were.</p>
 
   - t: list
     source: docs/architecture.md §4
+    core: |-
+      Six navigation surfaces, each answering a different question.
     h: |-
       The rest of the navigation, in one list:
     items:
       - <b>Core concepts</b> — every reused idea, where it is defined, and everywhere it appears
+      - <b>Categories</b> — every <i>kind</i> of thing the course sorts its material into, and what each one is not
       - <b>The dependency map</b> — which section needs which, with your mastery drawn onto the nodes
       - <b>Search</b> (<code>/</code>) — across the whole course, arrow keys to pick
+      - <b>Explore</b> — the same index with filters on it, down to the individual rule or table
       - <b>The sidebar</b> (<code>\</code> hides it) and <code>[</code> <code>]</code> to page between sections
+
+  - t: def
+    source: docs/material_truth.md M35
+    term: Category
+    label: The index that is not the table of contents
+    cat: navigation-surfaces
+    core: |-
+      A <b>category</b> is a set of things that are the same <i>kind</i> of thing, wherever in the course they happen to sit.
+    h: |-
+      <p>A section groups by position and a <c k="non-redundancy">concept</c> groups by mention; neither answers “what are all the X?”. A category does, and it carries a <b>boundary</b> — what falls outside it, and which neighbouring category those things belong to instead. That boundary is usually the thing you were actually trying to learn.</p>
+
+  - t: key
+    source: docs/architecture.md §3f
+    label: Two search surfaces, two questions
+    cat: navigation-surfaces
+    core: |-
+      <code>/</code> opens the overlay when you want to <i>go</i> somewhere; <b>Explore</b> is the page for when you want to <i>see everything</i> of some kind.
+    h: |-
+      <p>The overlay is one box and one list because a half-remembered word does not want a filter panel in front of it. Explore filters by kind, category and tag, holds its state in the URL, and will happily return a whole category with nothing typed at all. Both reach individual blocks, not just the page a block sits on.</p>
 
   - t: note
     source: docs/deploy.md
     label: Reading on a phone
+    core: |-
+      Add it to the Home Screen: iOS deletes a tab’s storage after seven days.
     h: |-
       <p>Add the site to your Home Screen. That is not a preference: on iOS, a browser tab's storage is deleted after seven days without a visit, and a review schedule routinely plans further ahead than that. A home-screen install is exempt, and it is also what lets the site open with no network.</p>
 
@@ -38,8 +66,10 @@ blocks:
     tier: depth
     source: docs/deploy.md
     label: The folder is the backup
+    core: |-
+      A course installed in a browser is one copy in one place, and browsers do evict storage.
     h: |-
-      <p>A course installed in a browser is one copy in one place, and browsers do evict storage. Keep the folder you imported from, or export the course back out from its card in the library. That round trip is also how you hand a course to a model for editing and take the changes back.</p>
+      <p>Keep the folder you imported from, or export the course back out from its card in the library. That round trip is also how you hand a course to a model for editing and take the changes back.</p>
 
 quiz:
   - type: Choose the navigation
@@ -52,6 +82,17 @@ quiz:
       <p>The reference is placed next to the mention rather than collected at the end because a definition you have to go looking for is one you read the paragraph without.</p>
     why_prompt: Why is the card beside the line rather than at the end of the section?
     verified: 2026-09-06
+
+  - type: Tell two indexes apart
+    concept: non-redundancy
+    q: |-
+      You remember reading a table of something, but not which section it was in. Core concepts or Categories — which one is built to answer that, and why is the other one not?
+    a: |-
+      Categories. A category groups things by what kind they are regardless of where they sit, so it does not need you to remember the position. Core concepts is an index of <em>mentions</em>: it answers "where else is this idea talked about", which still starts from knowing which idea you want.
+    why: |-
+      <p>"Search" is the tempting answer and it works only if you can recall a word that was actually in the table. The point of a category is that it is reachable when the thing you have retained is the <em>kind</em> rather than the wording or the place.</p>
+    why_prompt: Which of the two indexes needs you to already know where you read it?
+    verified: 2026-09-11
 
   - type: Protect your data
     concept: completeness

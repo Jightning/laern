@@ -5,12 +5,12 @@
   font-family:var(--mono);font-size:1.30rem;font-weight:700;
   letter-spacing:-.02em;display:block;
 }
-.brand .name{font-size:.80rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.4}
+.brand .name{font-size:var(--fs-small);color:var(--ink-3);display:block;margin-top:2px;line-height:1.4}
 /* Institution and textbook: proper nouns, and caps threw away the casing
    that identifies them — "Edwards, Penney & Calvis 6e" is information, and
    "EDWARDS, PENNEY & CALVIS 6E" is the same string with that stripped out. */
 .brand .meta{
-  font-family:var(--mono);font-size:.68rem;color:var(--ink-3);
+  font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);
   margin-top:9px;letter-spacing:.02em;
 }
 .rail{position:relative;padding:10px 16px 0 0}
@@ -32,7 +32,7 @@
    `.sec-btn:hover`, so the number only took its layout while hovered and every
    row below it jumped — motion that carried no information. */
 .sec-num{
-  font-family:var(--mono);font-size:.66rem;color:var(--ink-3);
+  font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);
   letter-spacing:.05em;line-height:1.35;
 }
 .sec.active .sec-num{color:var(--hi-ink)}
@@ -41,7 +41,7 @@
 .subs{display:none;margin:2px 0 8px;padding:0 0 0 var(--rail);list-style:none}
 .sec.open .subs{display:block}
 .subs a{
-  display:block;padding:4px 8px 4px 12px;font-size:.79rem;line-height:1.4;
+  display:block;padding:4px 8px 4px 12px;font-size:var(--fs-small);line-height:1.4;
   color:var(--ink-3);text-decoration:none;border-left:1px solid var(--rule-2);
 }
 .subs a:hover{color:var(--ink);background:var(--surface-2)}
@@ -53,9 +53,9 @@
 }
 .navtop a:hover{background:var(--surface-2);color:var(--ink)}
 .navtop a.cur{color:var(--hi-ink);font-weight:640}
-.navtop a .k{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);margin-right:7px}
+.navtop a .k{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);margin-right:7px}
 .backlib{
-  display:block;font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;
+  display:block;font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.09em;
   text-transform:uppercase;color:var(--ink-3);text-decoration:none;margin-bottom:9px;
 }
 .backlib::before{content:"← ";}

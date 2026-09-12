@@ -1,19 +1,19 @@
 /* 68-calibration — What actually happened, as numbers. */
 
-.cal-h{font-family:var(--mono);font-size:.72rem;font-weight:400;letter-spacing:.04em;
+.cal-h{font-family:var(--mono);font-size:var(--fs-meta);font-weight:400;letter-spacing:.04em;
   text-transform:uppercase;color:var(--ink-3);margin:var(--sp-3) 0 .5rem}
 .cal-t{width:100%;border-collapse:collapse;font-size:.82rem}
-.cal-t th{text-align:left;font-family:var(--mono);font-size:.7rem;font-weight:400;
+.cal-t th{text-align:left;font-family:var(--mono);font-size:var(--fs-meta);font-weight:400;
   color:var(--ink-2);padding:5px 10px 5px 0;white-space:nowrap}
 .cal-t td{padding:5px 10px 5px 0}
-.cal-c{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);width:3rem}
-.cal-v{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+.cal-c{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);width:3rem}
+.cal-v{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);white-space:nowrap}
 .cal-bar{display:block;height:7px;min-width:6rem;border-radius:4px;background:var(--rule-2)}
 .cal-bar i{display:block;height:100%;border-radius:4px;background:var(--hi)}
 .cal-empty{font-size:.82rem;color:var(--ink-3);margin:0}
 .cal-foot{margin-top:var(--sp-3);display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
   border-top:1px solid var(--rule);padding-top:1rem}
-.cal-cap{font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+.cal-cap{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3)}
 
 /* the state strip: the two loops side by side, on course home */
 .strip{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin:0 0 var(--sp-2);
@@ -22,20 +22,20 @@
 .strip-i b{font-family:var(--mono);font-size:.82rem;color:var(--ink);margin-right:.3rem}
 
 /* concept state, on the hub card and on the entry */
-.cphase{font-family:var(--mono);font-size:.64rem;color:var(--hi-ink);display:block;margin-top:3px}
+.cphase{font-family:var(--mono);font-size:var(--fs-micro);color:var(--hi-ink);display:block;margin-top:3px}
 .cstate{margin:var(--sp-3) 0}
 .cstate-box{display:flex;flex-wrap:wrap;align-items:baseline;gap:.6rem;
   border:1px solid var(--rule);border-left:2px solid var(--hi);border-radius:8px;
   background:var(--surface);padding:9px 13px;margin-bottom:.9rem;font-size:.86rem}
-.cstate-due{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.cstate-due{margin-left:auto;font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3)}
 .cstate-near{font-size:.84rem;color:var(--ink-2);margin:0 0 .8rem}
 .creasons{list-style:none;padding:0;margin:0;font-size:.84rem}
 .creasons li{border-left:2px solid var(--dc);padding:4px 0 4px 10px;margin-bottom:7px}
-.creason-m{display:block;font-family:var(--mono);font-size:.68rem;color:var(--ink-3);margin-top:2px}
+.creason-m{display:block;font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);margin-top:2px}
 
-.cal-sub{font-size:.8rem;color:var(--ink-3);max-width:64ch;margin:var(--sp-3) 0 0}
+.cal-sub{font-size:var(--fs-small);color:var(--ink-3);max-width:64ch;margin:var(--sp-3) 0 0}
 /* One word, and only after a prediction: no AI affordance precedes an attempt. */
-.qstuck{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);text-decoration:none;
+.qstuck{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);text-decoration:none;
   border-bottom:1px dashed var(--rule)}
 .qstuck:hover{color:var(--hi-ink);border-bottom-color:var(--hi)}
 

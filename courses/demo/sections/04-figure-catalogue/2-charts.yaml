@@ -8,10 +8,14 @@ blocks:
   - t: def
     source: docs/material_truth.md M17
     term: Figure coherence
+    cat: figure-kinds
+    core: |-
+      A figure must carry information the prose does not.
     h: |-
-      <p>A figure must carry information the prose does not. Removing decorative or restated detail improves learning at <m>g = 0.37</m> to <m>0.41</m>; a chart that only repeats a sentence costs attention and returns nothing.</p>
+      <p>Removing decorative or restated detail improves learning at <m>g = 0.37</m> to <m>0.41</m>; a chart that only repeats a sentence costs attention and returns nothing.</p>
 
   - t: figure
+    cat: figure-kinds
     id: decay
     kind: plot
     cap: "plot — one function series and one measured series (dashed), with explicit ranges and a legend"
@@ -26,6 +30,7 @@ blocks:
         - {label: "observed", dash: true, points: [[0, 0.98], [2, 0.72], [4, 0.55], [6, 0.44], [8, 0.30], [10, 0.22]]}
 
   - t: figure
+    cat: figure-kinds
     kind: bar
     cap: "bar — effect sizes, one bar accented, baseline at 0"
     spec:
@@ -40,6 +45,7 @@ blocks:
         - {label: "self-explain", value: 0.55}
 
   - t: figure
+    cat: figure-kinds
     tier: depth
     kind: scatter
     cap: "scatter — two series with least-squares trend lines"
@@ -55,6 +61,8 @@ blocks:
     tier: depth
     source: tools/validate.mjs
     label: Plot functions are compiled at build time
+    core: |-
+      A broken chart fails the build, never the page.
     h: |-
       <p>A <code>fn</code> series is JavaScript the reader's browser evaluates. The validator parses it, runs it at sample points, and fails the build if it throws or never returns a finite value. A broken chart is caught in the file, not on the page.</p>
 

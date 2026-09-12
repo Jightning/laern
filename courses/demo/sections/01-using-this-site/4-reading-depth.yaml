@@ -3,52 +3,97 @@ blocks:
   - t: p
     source: docs/code_truth.md §3d
     h: |-
-      At the top of every section is a control marked <b>Read</b>, with three settings. It decides how much of the page renders, and it is the single most useful thing to know about this site: the same page serves a first pass before an exam and a slow pass in week two, without you reading around material you did not want.
+      At the top of every section are two controls, <b>Read</b> and <b>Show</b>. Between them they decide how much of the page renders, and they are the single most useful thing to know about this site: the same page serves a first pass in week two and a check the night before an exam, without you reading around material you did not want.
 
   - t: def
     source: src/lib/tiers.js
     term: Tier
     label: The three kinds of block
+    cat: reading-controls
+    core: |-
+      A block's <b>tier</b> says what job it does in the argument, and the <b>Read</b> control keeps or removes whole blocks by it.
     h: |-
-      <p>Every block on every page declares one of three. <b>spine</b> is definition, rule, mechanism, one canonical instance; removing it breaks the argument. <b>depth</b> is why it is true and what happens at the edges; never examinable. <b>apply</b> is another instance of something the spine already said, there to build fluency.</p>
+      <p><b>spine</b> is definition, rule, mechanism, one canonical instance; removing it breaks the argument. <b>depth</b> is why it is true and what happens at the edges; never examinable. <b>apply</b> is another instance of something the spine already said, there to build fluency.</p>
 
   - t: key
     source: docs/material_truth.md M25
     label: The spine alone is a complete course
+    cat: reading-controls
+    core: |-
+      Nothing examinable is allowed to live in a collapsible tier.
     h: |-
-      <p>This is a promise, not a style: nothing examinable is allowed to live in a collapsible tier. A reader who stays in the <b>Spine</b> lane for an entire course has read a complete one. Depth and apply may lean on the spine, never the other way round.</p>
+      <p>This is a promise, not a style. A reader who stays in the <b>Spine</b> lane for an entire course has read a complete one. Depth and apply may lean on the spine, never the other way round.</p>
 
+  - t: def
+    source: src/lib/depth.js
+    term: Reading depth
+    label: The second control, and a different question
+    cat: reading-controls
+    core: |-
+      A block's <b>depth</b> says how much of that block is open, and the <b>Show</b> control closes prose without removing anything.
+    h: |-
+      <p><b>Full</b> is the block entire. <b>Notes</b> is its claim with the development closed. <b>Index</b> is its name with the claim closed too. Every closed block opens where it stands, so a depth is the same course at a lower resolution rather than a shorter course. Press <b>d</b> to step through them.</p>
+
+  - t: key
+    source: docs/architecture.md §3h
+    label: Why one control could not do both jobs
+    cat: reading-controls
+    core: |-
+      Tier and depth are different axes, and a course can have almost nothing for the tier to remove while still carrying four fifths of its text in prose the tier cannot touch.
+    h: |-
+      <p>Counted across this project's own courses, <b>Spine</b> hides 26% of the demo, 20% of the differential-equations course and <b>0.8%</b> of one written almost entirely in spine blocks. Since nothing examinable may sit in <code>depth</code>, no amount of re-authoring changes that. An overview had to come from somewhere else.</p>
+
+  # `notes: open` keeps this table whole when the rest of the page closes. A
+  # two-by-four matrix is already the compact form — it puts the two controls
+  # side by side, which is the one thing a list of claims cannot do, and it is
+  # the form the note-format research credits above an outline.
   - t: table
+    id: lanes-and-depths
+    notes: open
     mono: true
-    cap: The three lanes, and what each renders
-    head: [lane, key, renders, use it when]
+    cap: The two controls, and what each one does to a block
+    cat: reading-controls
+    head: [control, keys, acts on, settings]
     split: 2
     rows:
-      - [Spine, "1", spine only, revising something you have read before]
-      - [Spine + Apply, "2", spine and worked instances, a first read]
-      - [All, "3", everything, you want the reasons]
+      - [Read, "1 2 3", whole blocks, "Spine · Spine + Apply · All"]
+      - [Show, "d", prose inside a block, "Full · Notes · Index"]
+
+  - t: trap
+    source: docs/code_truth.md T42
+    label: Notes is not a way to read something the first time
+    cat: reading-controls
+    gist: |-
+      A provided outline improves what you remember and not what you understand, so <b>Notes</b> is for checking yourself, never for a first read.
+    h: |-
+      <p>It is tempting to treat <b>Notes</b> as a faster version of the page. Measured against reading the full text, a provided outline raises memory (g&nbsp;=&nbsp;0.61) and does not reliably raise comprehension (g&nbsp;=&nbsp;0.34, not significant). That is why <b>Full</b> is the default and nothing here nudges you off it: the compact views are for confirming what you already built, and for finding something again.</p>
 
   - t: p
     source: docs/architecture.md §3d
     h: |-
-      A collapsed run does not vanish silently. It leaves one line saying what it holds: "2 in depth · 1 more application". Clicking that line brings the blocks back in place, so a skipped passage stays visible as a skipped passage rather than as a hole you never knew about. This subsection is collapsible itself: switch to <b>Spine</b> and watch the note below disappear into a stub.
+      Neither control hides anything silently. A collapsed tier leaves one line saying what it holds — "2 in depth · 1 more application" — and a closed block leaves its name and, at <b>Notes</b>, its claim. Clicking either brings the prose back in place, so a skipped passage stays visible as a skipped passage rather than as a hole you never knew about.
 
   - t: note
     tier: depth
     source: docs/material_truth.md M23
     label: Where the vocabulary shows up
+    core: |-
+      The three tier words are everywhere; <b>drill</b> belongs to the other loop.
     h: |-
-      <p>These three words appear on the tier badge of a collapsed stub, in the lane control, and throughout the authoring guide. A fourth word, <b>drill</b>, belongs to the other loop entirely: it is scheduled retrieval on a concept rather than a slice of a page, and it is the subject of <a href="#s1-3">§1.3</a>.</p>
+      <p>The three tier words appear on the badge of a collapsed stub, in the lane control, and throughout the authoring guide. A fourth word, <b>drill</b>, belongs to the other loop entirely: it is scheduled retrieval on a concept rather than a slice of a page, and it is the subject of <a href="#s1-3">§1.3</a>.</p>
 
   - t: ex
     tier: apply
-    source: docs/create_course.md §7.3
-    title: One block, classified
+    source: docs/create_course.md §6.3
+    title: One block, classified on both axes
+    core: |-
+      A rule can be spine on the tier axis and closed on the depth axis at the same time.
     h: |-
       <ol>
         <li>A paragraph derives a result you are expected to be able to <em>use</em> but never to reproduce.</li>
-        <li>The result is examinable, so the statement of it is spine.</li>
+        <li>The result is examinable, so the statement of it is spine — the <b>Read</b> control never removes it.</li>
         <li>The derivation is not, so it is depth. A reader in the Spine lane loses nothing they could be tested on.</li>
+        <li>Independently of all that, the statement's own claim is its first sentence, so at <b>Notes</b> the block shows that sentence and closes the rest.</li>
       </ol>
 
 quiz:
@@ -73,3 +118,14 @@ quiz:
       <p>That is the whole basis on which collapsing is safe. If examinable material could sit in depth, the lane control would be a way to fail an exam quietly, and no reader could trust it.</p>
     why_prompt: What would the lane control become if depth blocks could be examinable?
     verified: 2026-09-06
+
+  - type: Separate the two axes
+    concept: tier
+    q: |-
+      A course is written entirely in spine blocks — no depth, no apply. Which control still shortens the page, and by roughly how much?
+    a: |-
+      The Read control does nothing at all, because there is nothing outside the spine to remove. Show still works, and takes the page to about a fifth of its words at Notes, because it closes prose inside blocks rather than removing blocks.
+    why: |-
+      <p>"Both stop working" is the tempting answer, and it is the reason the second axis exists: tier operates between blocks and depth operates inside one, so a course that defeats the first leaves the second untouched.</p>
+    why_prompt: Does the control act on whole blocks, or on the prose inside one?
+    verified: 2026-09-10

@@ -12,6 +12,22 @@
   --sans:"IBM Plex Serif",Georgia,"Times New Roman",serif;
   --rail:2.375rem;   /* the number gutter in the section rail */
 
+  /* Type scale for everything that is not body prose.
+     
+     The floor is the point. Before this the most-used size in the whole
+     stylesheet was .66rem — 10.6px — with roughly eighty declarations under
+     12px, against a 17px body: the chrome was consistently two thirds the size
+     of the thing it labelled, and on a closed page the chrome outnumbers the
+     content. A label nobody can read is not a quieter label, it is a louder
+     one, because the eye stops to decode it.
+     
+     --fs-micro is the absolute floor and is for counters and badges a reader
+     matches by shape rather than reads. Anything with words in it starts at
+     --fs-meta. */
+  --fs-micro:.75rem;    /* 12px — counts, badges, keycaps */
+  --fs-meta:.8125rem;   /* 13px — labels, chips, eyebrows, sources */
+  --fs-small:.875rem;   /* 14px — secondary prose, captions, note claims */
+
   /* Reading geometry, in rem so it tracks the reader's font-size setting.
      Column and type scale together, which keeps characters-per-line constant
      at any text size (T7/T8). 37.5rem = var(--measure) at a 16px root. */

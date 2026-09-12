@@ -23,6 +23,16 @@ audit:
   unverified: 0
   unprompted: 0
   unrouted: 0.17
+  # This course has been through a claims pass, so it declares what it reached
+  # and can never regress past it. `unclaimed: 0` means every def, key and trap
+  # states its claim in a field of its own; `repeat` is the fraction taking the
+  # `gist:` escape, which is one block out of 34 — the trap in §1.4, whose prose
+  # has to withhold its correction to work at all.
+  unclaimed: 0
+  repeat: 0.04
+  # Every block this course can show at Notes depth says something without
+  # being opened. Opening is for MORE detail, never for the first detail.
+  nameonly: 0
 
 # Cell values coloured in mono tables, keyed to classes defined in `styles`.
 valueStyles:

@@ -66,6 +66,17 @@ export function parseCourse(files) {
     meta);
   C.concepts = Object.assign({}, meta.concepts || {});
   C.drills = {};
+  C.cats = Object.assign({}, meta.cats || {});
+
+  /* Categories are declared, never inferred (the M31 shape): one file per
+     category, carrying the boundary that makes it a category rather than a
+     label. A `cat:` naming no file is caught by validate.mjs, and renders as
+     an undeclared membership rather than inventing a category at read time. */
+  for (const p of listing(files, "categories/")) {
+    const body = read(p);
+    if (!body || typeof body !== "object") { errors.push(`${p}: not a mapping`); continue; }
+    C.cats[body.key || stem(p)] = body;
+  }
 
   for (const p of listing(files, "concepts/")) {
     const body = read(p);

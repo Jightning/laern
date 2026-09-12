@@ -1,0 +1,9 @@
+name: Figure kinds
+short: FK
+boundary: |-
+  The declarative kinds a `figure` block can take — graph, plot, flow, grid,
+  timing, matrix, bar, scatter, and svg as the escape hatch. Every one of them
+  is a description of data that the engine draws, so it follows the theme and
+  is edited by changing numbers. Not an `image`, which is a supplied picture
+  the engine cannot reason about, and not the block kinds, which shape prose.
+siblings: [block-kinds]

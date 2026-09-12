@@ -16,10 +16,10 @@
   padding:13px 4px;border-bottom:1px solid var(--rule-2);text-decoration:none;color:inherit;
 }
 .toc a.tocrow:hover{background:var(--surface-2)}
-.toc .tn{font-family:var(--mono);font-size:.74rem;color:var(--hi-ink);letter-spacing:.04em}
+.toc .tn{font-family:var(--mono);font-size:var(--fs-small);color:var(--hi-ink);letter-spacing:.04em}
 .toc .tt2{font-weight:600;font-size:.97rem}
-.toc .tc{font-family:var(--mono);font-size:.70rem;color:var(--ink-3);white-space:nowrap}
-.toc .tsub{grid-column:2/4;color:var(--ink-3);font-size:.80rem;margin-top:3px;line-height:1.5}
+.toc .tc{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);white-space:nowrap}
+.toc .tsub{grid-column:2/4;color:var(--ink-3);font-size:var(--fs-small);margin-top:3px;line-height:1.5}
 .pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:var(--view-top) 0 0;
   border-top:1px solid var(--rule);padding-top:20px}
 .pager a{
@@ -27,7 +27,7 @@
   text-decoration:none;color:inherit;background:var(--surface);
 }
 .pager a:hover{border-color:var(--hi)}
-.pager .dir{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
+.pager .dir{font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:5px}
 .pager .pt{font-weight:600;font-size:.90rem;line-height:1.35}
 .pager .nx{text-align:right}
@@ -35,10 +35,10 @@
 .dash{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:24px 0 0}
 .dash-go{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 6px}
 .dstat{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--rule);
-  border-radius:8px;padding:7px 12px;font-size:.78rem;color:var(--ink-3);background:var(--surface)}
+  border-radius:8px;padding:7px 12px;font-size:var(--fs-small);color:var(--ink-3);background:var(--surface)}
 .dstat b{font-family:var(--mono);font-size:1.05rem;color:var(--ink);font-weight:700}
 .dstat.warn b{color:var(--dc-ink)}
-.dbtn{font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-decoration:none;
+.dbtn{font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.05em;text-decoration:none;
   border:1px solid var(--rule);border-radius:8px;padding:8px 14px;color:var(--ink-2);
   background:var(--surface);cursor:pointer}
 .dbtn:hover{border-color:var(--hi);color:var(--hi-ink)}

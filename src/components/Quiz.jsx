@@ -8,10 +8,19 @@ import WhyField from "./WhyField.jsx";
 import Drill from "./Drill.jsx";
 import { M } from "../lib/math.js";
 
-/** what the outcome means, in the reader's terms rather than the scheduler's */
+/* What the outcome means, in the reader's terms rather than the scheduler's.
+ *
+ * One word for three outcomes was one word too few. "flagged" was shown when a
+ * confident miss pulled a drill up, when a confident miss did nothing because
+ * the concept has no bank, and when a reader got something right after saying
+ * they were unsure. Those are three different events and only the first of them
+ * is the site doing anything.
+ *
+ * Short on purpose: the note sits at the end of a row of buttons, and a line
+ * that wraps there reads as an error message. */
 function outcomeNote(conf, got, iv) {
-  if (conf === 1 && !got) return "flagged";
-  if (conf === 0 && got) return "flagged";
+  if (conf === 1 && !got) return "worth another look";
+  if (conf === 0 && got) return "you knew it";
   return iv ? `next review in ${iv} day${iv === 1 ? "" : "s"}` : "will come back soon";
 }
 
@@ -75,7 +84,7 @@ function Question({ item, ctx, showWhere, forceOpen }) {
     if (was === 1 && !v && key && drills.byConcept[key]) {
       recruitConcept(cid, key);
       setRecruit(drills.pick(key, []));
-      setNote("flagged");
+      setNote("drilling it now");
       return;
     }
     setNote(outcomeNote(was, v, r.iv));
@@ -157,11 +166,29 @@ function Question({ item, ctx, showWhere, forceOpen }) {
 
 export { Question };
 
-export default function Quiz({ sub, num, ctx, expandAll }) {
+export default function Quiz({ sub, num, ctx, expandAll, depth = "full" }) {
   const { state } = ctx;
+  const [open, setOpen] = useState(false);
   const items = (sub.quiz || []).map(q => ({ id: qid(sub.id, q.type), q, subId: sub.id, num }));
   if (!items.length) return null;
   const st = state.on ? state.stats(items.map(i => i.id)) : null;
+
+  /* At a closed depth the quiz is a line, not a stack of cards.
+     A reader reviewing a section at Notes depth is not answering questions —
+     and unclosed, the quiz is most of the page: on this project's own courses
+     it is roughly three fifths of a subsection's words. It opens in place from
+     the same row, like everything else the depth closes. */
+  if (depth !== "full" && !expandAll && !open)
+    return (
+      <button class="quiz-line" onClick={() => setOpen(true)}>
+        <span class="quiz-line-n">{items.length}</span>
+        <span class="quiz-line-t">
+          {items.length === 1 ? "question" : "questions"}
+          {st && st.total ? ` · ${st.got}/${st.total} mastered` : ""}
+        </span>
+        <span class="quiz-line-x">{items.map(i => i.q.type).join(" · ")}</span>
+      </button>
+    );
 
   return (
     <div class="quiz">
@@ -174,12 +201,17 @@ export default function Quiz({ sub, num, ctx, expandAll }) {
           </span>
         )}
       </div>
-      <p class="quiz-note">
-        One question per distinct type this subsection can be examined on.{" "}
-        {state.on
-          ? "Predict before revealing — the gap between prediction and outcome is the useful signal."
-          : "No type repeats — learn all of these and the surface is covered."}
-      </p>
+      {/* The explanation of what a quiz is belongs where a reader meets their
+          first one, not above every quiz in the course. Fourteen copies of it
+          is the engine talking over the material. */}
+      {num.startsWith("1.1") && (
+        <p class="quiz-note">
+          One question per distinct type this subsection can be examined on.{" "}
+          {state.on
+            ? "Predict before revealing — the gap between prediction and outcome is the useful signal."
+            : "No type repeats — learn all of these and the surface is covered."}
+        </p>
+      )}
       {items.map(i => <Question key={i.id} item={i} ctx={ctx} forceOpen={expandAll} />)}
     </div>
   );

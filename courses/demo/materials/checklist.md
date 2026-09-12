@@ -17,7 +17,9 @@ drill bank, where a tick means durable rather than answered once.
 - [ ] Choose the right surface — [1.3](../index.html#s1-3)
 - [ ] Predict the lane behaviour — [1.4](../index.html#s1-4)
 - [ ] Apply the spine promise — [1.4](../index.html#s1-4)
+- [ ] Separate the two axes — [1.4](../index.html#s1-4)
 - [ ] Choose the navigation — [1.5](../index.html#s1-5)
+- [ ] Tell two indexes apart — [1.5](../index.html#s1-5)
 - [ ] Protect your data — [1.5](../index.html#s1-5)
 - [ ] Synthesis — [1.5](../index.html#s1-5)
 

@@ -2,18 +2,25 @@ title: How they coexist
 blocks:
   - t: attempt
     label: Try it first
+    core: |-
+      Write how both rules can hold at once before reading the answer.
     h: |-
       <p>The two rules contradict each other on their face: completeness says write every step, non-redundancy says write each thing once. Before reading on, write how both can hold in the same course at the same time.</p>
 
   - t: def
     source: docs/architecture.md §1
     term: The reference system
+    cat: navigation-surfaces
+    core: |-
+      The set of links that let a reader reach any definition from anywhere in the course.
     h: |-
-      <p>The set of links that let a reader reach any definition from anywhere: <code>&lt;a href="#s5-2"&gt;</code> to a subsection, <code>&lt;c k="key"&gt;</code> to a concept, <code>&lt;f k="id"/&gt;</code> to a figure. Because the definition is always one hop away, a subsection can be complete without carrying its own copy of every idea it uses.</p>
+      <p>There are three forms: <code>&lt;a href="#s5-2"&gt;</code> to a subsection, <code>&lt;c k="key"&gt;</code> to a concept, <code>&lt;f k="id"/&gt;</code> to a figure. Because the definition is always one hop away, a subsection can be complete without carrying its own copy of every idea it uses.</p>
 
   - t: ex
     source: docs/architecture.md
     title: One definition, two readers served
+    core: |-
+      One definition plus one link serves both subsections, and neither restates the other.
     h: |-
       <ol>
         <li><a href="#s1-4">§1.4</a> defines <c k="tier">tier</c> in full.</li>
@@ -23,6 +30,8 @@ blocks:
 
   - t: list
     source: docs/create_course.md §2.1
+    core: |-
+      One link does four jobs at once.
     h: |-
       One <code>&lt;c k="…"&gt;</code> mention produces, with no extra authoring:
     items:
@@ -34,6 +43,8 @@ blocks:
   - t: list
     ordered: true
     source: docs/material_truth.md M14
+    core: |-
+      A forward reference has only three honest resolutions.
     h: |-
       When a forward reference appears, the options in order are:
     items:

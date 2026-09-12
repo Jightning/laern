@@ -13,6 +13,8 @@ import "@fontsource/ibm-plex-mono/latin-400.css";
 import "@fontsource/ibm-plex-mono/latin-600.css";
 import "katex/dist/katex.min.css";
 
+import "./blocks/custom.js";
+
 import "./css/00-tokens.css";
 import "./css/02-scrollbars.css";
 import "./css/10-shell.css";
@@ -27,6 +29,7 @@ import "./css/45-figures.css";
 import "./css/47-math.css";
 import "./css/50-refs.css";
 import "./css/55-tiers.css";
+import "./css/56-depth.css";
 import "./css/60-quiz.css";
 import "./css/62-notes.css";
 import "./css/64-drill.css";

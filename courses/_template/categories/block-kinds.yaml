@@ -1,0 +1,19 @@
+# A category is declared, never inferred — the same shape M31 uses for the
+# review set, and for the same reason: an undeclared grouping is the author
+# guessing, unrecorded, and it cannot be checked or revised.
+#
+# What makes this a category rather than a label: a label names one block, and
+# this names a SET with members drawn from anywhere in the course. The boundary
+# is the part that earns the name — a category with no boundary is a label that
+# happens to have a page.
+name: Block kinds
+# Two or three characters, the same everywhere this category appears. It is
+# what makes the category recognisable in a scan; the name beside it is what
+# makes it sayable. No colour: the palette is one angle per course and a hue
+# per category would decorate what the text already says.
+short: BK
+boundary: |-
+  The callout shapes the engine renders — def, key, trap, ex, note. Not the
+  figure kinds (those describe data) and not the tiers (those describe a
+  block's role in the argument rather than its shape).
+siblings: [reference-tables]

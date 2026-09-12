@@ -1,0 +1,9 @@
+name: Block kinds
+short: BK
+boundary: |-
+  The shapes a piece of authored prose can take — def, key, trap, ex, note,
+  list, table, code, math. Each is a claim about what the content *is*, which
+  is why they are visually distinct. Not the figure kinds, which describe data
+  rather than prose, and not the tiers, which describe a block's role in the
+  argument rather than its shape.
+siblings: [figure-kinds]

@@ -198,6 +198,95 @@ figure only a collapsed tier declares.
 T33 is what makes T11's per-lane scoping safe. Without it, collapsing a tier
 silently removes part of the argument.
 
+**T42. The reader sets the resolution, and no resolution removes anything.**
+Depth (`full`, `notes`, `index`) decides how much of each block is open; it
+never decides which blocks exist. Every closed block opens in place, so every
+depth is the same course at a different resolution rather than a subset of it.
+
+Depth is orthogonal to tier and neither substitutes for the other. Tier asks
+*which blocks belong to the argument* and removes the rest; depth asks *how
+much of each surviving block is open*. Conflating them was measured and it
+fails: across this project's own courses 99% of blocks in one and 80% in
+another are `spine`, so the lane has almost nothing to remove and the prose it
+cannot touch is four fifths of the text.
+
+**A closed view is a lookup surface, not a reading one.** Instructor-provided
+outlining raises memory (g = 0.61) and does not reliably raise comprehension
+(g = 0.34, not significant; Ponce, Mayer & Méndez 2023, *Educational Research
+Review*); instructor-provided graphic organizers run g = 0.70 on memory and
+g = 0.53 on comprehension, with the authors reporting evidence of publication
+bias (Ponce, Mayer & Méndez 2025, *Educational Psychology Review*). So `full`
+is the default, nothing nudges a reader off it, and the closed views say in
+words how much they are holding back.
+
+Why the control belongs to the reader rather than to the author: the value of
+provided support reverses with expertise (see Trade-offs, Kalyuga 2007), so the
+right amount is a property of who is reading rather than of the material. An
+author fixing it once cannot be right for both readings.
+
+**T44. Chrome is subordinate to content, and that is a measurable claim.**
+No interface text sits below 12px, and anything with words in it starts at 13px
+against a 17px body. This is a rule because it was broken systematically rather
+than once: the most-used size in this stylesheet was 10.6px, ~80 declarations sat
+under 12px, and on a closed view the sub-12px chrome outnumbered the content
+elements by roughly four to one. A repeated micro-label is worse than no label,
+because the eye stops to decode it and gets back a word it did not need.
+
+Two corollaries, both of which were violations here. **A default label printed on
+every block is not signalling**, it is texture — signalling is a contrast effect
+and degrades with density (T13). And **a label the reader reads rather than scans
+is not a label** (T41); the renderer counts words, because a stylesheet cannot
+see the string.
+
+**T46. A claim may only stand in for what it can encompass.** At a closed depth
+a block shows its claim instead of its body only where the claim carries the
+content. Where it would carry a count or a topic — a list of four things behind
+"four things", a table behind its caption — the block stays whole, because a
+title presented as a note is worse than a title presented as a title: the reader
+believes they have read it.
+
+This is decided by the kind wherever the kind decides it. A block whose substance
+is an enumeration is declared `holds: structure`, and a claim on one of those
+opens it rather than replacing it. Where the kind cannot decide — prose with a
+list inside it — the gate warns and the author chooses.
+
+**T45. A disclosure that opens can close, from the same control.** Not merely
+somewhere — the thing you press to open is the thing you press to close. A
+separate close button puts the way out in a different place from the way in, so
+the reader has to go looking for the exit to a room they just entered; and it
+lands at the foot of a block whose top is where their eye already is. A
+page-level "reveal all" likewise returns to the state the reader's current depth
+defines, not to the full text. Otherwise closing is a different act from never
+having opened, and a reader who opened one block to check something has no route
+back to the view they were reading in.
+
+**A press that ends a drag is a selection, not a press.** Where the control is
+also text — a title, a term, a caption — it is the text most worth copying, and
+closing the block out from under a half-made selection loses the selection and
+the reader's place together. A collapsed selection is what separates the two,
+and the control stays selectable rather than being made inert to avoid the
+question.
+
+"What the depth defines" is the whole of it, which means closing everything also
+re-closes a tier stub the reader had opened by hand. The property to hold is
+idempotence — one reveal-and-close and two land in the same place — not a return
+to whatever happened to be on screen a moment earlier, because that is a
+different and unreachable state.
+
+**T43. Grouping by membership is a separate mechanism from grouping by
+position, role or mention.** Sections group by position, tiers by role in the
+argument, concepts by mention. A category groups by *what kind a thing is*, and
+its members may sit anywhere. It carries a boundary and named siblings, because
+a comparison against what a thing is *not* is the mechanism (d = 0.50 for case
+comparison against sequential or single cases; Alfieri, Nokes-Malach & Schunn
+2013, *Educational Psychologist*), and because interleaving pays only where the
+neighbours are genuinely confusable (T16).
+
+A category's visual key is text and position, never a hue of its own. The
+palette is one angle per course and the contrast sweep covers every view in
+three colour modes; a hue per category would multiply that sweep to decorate
+what the name already says (T26, T2).
+
 **T12. Spatial contiguity: a reference renders adjacent to the thing that needs
 it.** Never collected at the end of a section, never behind navigation that
 loses the reader's place. Requiring the reader to mentally bridge a gap is the
@@ -508,6 +597,8 @@ open question, and each belongs in `npm run check` or `npm run audit`.
 
 | Rule | What is missing | Where |
 |---|---|---|
+| M34 | The structural half is gated (`core:` and `gist:` are mutually exclusive; a `core:` may not reopen its own `h:`). The *fractions* — claims declaring neither, and claims taking the `gist:` escape — are measured by `npm run audit` against a per-course ceiling that every existing course leaves at the default of 1, so they are debt rather than a satisfied rule. | `courses/*/course.yaml` |
+| M36 | A block yielding no name is reported, not failed, because four courses predate the rule and every one of their `p` blocks would trip it. It becomes a gate when a course declares a ceiling. | the row above |
 | M25 | The citation graph is checked: a reviewed concept whose every `<c k>` mention sits outside the spine warns. Actual *coverage* is not, because a concept's definition site is prose (`src: Defined in §10.1`) and no field names it. Making the site a real id would turn the warning into a failure. | `validate.mjs`, `concepts/<key>.yaml` schema |
 | T34 | The audit ceiling exists and is per course, but only `demo` declares one. Five courses sit at the default of 1 — reported, ungated — so their fractions are debt rather than a satisfied rule. | `courses/*/course.yaml` |
 | M6, M22 | `why_prompt`, `verified:` and concept routing are measured, not failed, for the same reason: four courses predate all three. They become gates the moment those courses declare a ceiling. | the row above |

@@ -32,6 +32,14 @@ of it; it is a different reader activity on the same idea. Repetition for
 fluency lives in the drill bank, where M26 **requires** it. Without this clause
 a careful author deletes the exact repetition long-term retention needs.
 
+**A `core:` is not a second copy; a `gist:` is.** `core:` holds a block's
+opening claim in its own field and `h:` holds only what develops it — one
+paragraph split at a declared point, so the sentence exists once and there is
+nothing to drift. `gist:` is a summary *about* a block whose prose is left
+whole, and it is therefore a genuine second copy, permitted only under M34 and
+counted against a declared ceiling. The difference is not stylistic: one of
+them can fall out of agreement with the prose beside it and the other cannot.
+
 **M2. Nothing is assumed beyond the stated calibration.**
 Completeness is measured against a written record of what the reader already
 knows, not against the author's sense of what is obvious.
@@ -341,6 +349,82 @@ the other.
 
 ---
 
+## 10. Claims and categories
+
+**M34. A block states its claim once, and says which way it did it.**
+Every `def`, `key` and `trap` declares exactly one of two fields, never both:
+
+- **`core:`** — the block's own opening claim, stored apart from its
+  development. `h:` then carries only what develops it. Nothing is duplicated,
+  so this is the default and the one an author should reach for.
+- **`gist:`** — a summary about the block, rendered only when the block is
+  closed. `h:` stays whole. This *is* a second copy (M1), and it exists for
+  prose that must withhold its claim on the first read: a `trap` works because
+  the reader believed otherwise thirty words ago, and hoisting the correction
+  defuses it. Reading order matters on a first read, and a first read is the
+  full text — so a closed view showing the claim costs nothing.
+
+The field name is the declaration. A mode flag beside it would be a second
+record of one choice, which is the shape every rule in this file exists to
+prevent.
+
+**Why a claim has to be separable at all.** A provided outline of a text raises
+memory (g = 0.61) and does not reliably raise comprehension (g = 0.34, not
+significant; Ponce, Mayer & Méndez 2023, *Educational Research Review*, on
+instructor-provided outlining). So a closed view is a lookup and review
+surface, never a substitute for reading, and what it must contain is the claim
+itself rather than a topic or a heading. A row reading "The split trap" tells a
+reader nothing they can check themselves against; a row reading "random
+frame-level splits leak near-duplicates across train and validation" does.
+
+**`gist:` is ungated debt unless it is ceilinged.** Of the two it is the easier
+to write — a summary needs no prose discipline, while a `core:` obliges the
+block to open with its claim — so a course left to drift writes nothing else.
+`npm run audit` reports the fraction and a course declares its ceiling in
+`course.yaml`, exactly as it does for `unsourced`.
+
+**M35. A category is declared, never inferred, and carries a boundary.**
+This is M31's shape applied to classification, for M31's reason: an undeclared
+grouping is the author guessing, unrecorded, and it cannot be checked or
+revised.
+
+- **`cat:`** is the principal tag — one per block or concept, optional, and it
+  must name a `categories/<key>.yaml`.
+- **`tags:`** are secondary and plural, free-form, slugs.
+
+A **label names one block; a category names a set.** That is the whole
+distinction and it is why they are different fields rather than one. A category
+has an *extension* — members drawn from anywhere in the course, in any section
+— and a *boundary*, which is what falls outside it and which sibling it falls
+into instead. A category file with no `boundary:` is a label that has been
+given a page.
+
+The boundary is required because the contrast is the mechanism rather than the
+decoration. Comparing cases beats meeting them one at a time (d = 0.50 against
+sequential, single or non-analogous cases; Alfieri, Nokes-Malach & Schunn 2013,
+*Educational Psychologist*), and `siblings:` is what turns a list of members
+into a comparison. Siblings must name each other, for the reason
+`confusable_with` must: a contrast drawn one way is half a contrast.
+
+Scope is deliberately narrow. Categories attach to **blocks and concepts only**.
+A drill item's category is its concept's, derived rather than authored, because
+the item already names its concept (M27) and two records of one fact drift. A
+quiz item has no category at all: `type` is already its identity (M9), and a
+second one would compete with it.
+
+**M36. Every block can name itself.**
+A block with no `term:`, `label:`, `cap:`, `title:` or registered default has no
+row at the closed view and simply vanishes from the reader's index of the
+course. This is a structural requirement in the same sense as M8: it is what
+the index is *built from*, and a block that cannot be named cannot be found.
+
+The exception is `p`, and it is an exception by definition rather than by
+omission. **A `p` block carries no claim** — it sets up, bridges, or fades a
+concrete anchor — so it has nothing to name and is not in the index. A `p` that
+asserts something is the wrong block type; it is a `key`.
+
+---
+
 ## Trade-offs
 
 Legitimate variation. None of these is a truth, and changing them is editorial
@@ -433,6 +517,16 @@ Not all are optional, and two are no longer written by hand at all.
 
 A file that would restate what the site already says should not be written at
 all.
+
+### How much of a course is categorised
+
+M35 requires a category to be declared and bounded; it does not say how much of
+a course should carry one. Categorising everything makes the chip a decoration
+that stops signalling (T13 degrades with density), and categorising nothing
+gives up the one grouping that is neither positional nor argumentative.
+Categories may be as narrow as the author likes — a category of four things is
+useful if those four are genuinely a kind — and the defensible middle is the
+sets a reader would actually look up as a set.
 
 ### Tone and voice
 

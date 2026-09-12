@@ -28,6 +28,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { prune } from "./lib/prune.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const KEEP = Math.max(1, Number(process.env.KEEP) || 2);
@@ -69,17 +70,32 @@ let deployments = [];
 try { deployments = list(); }
 catch (e) { console.error("\ncould not list deployments; nothing pruned:", e.message); }
 
-const stale = deployments.slice(KEEP);
-if (stale.length) {
-  console.log(`\npruning ${stale.length} old deployment(s), keeping the newest ${KEEP}:`);
-  for (const d of stale) {
-    try {
-      run(["pages", "deployment", "delete", d.Id, "--project-name", project],
-        { stdio: ["ignore", "pipe", "pipe"] });
-      console.log(`  deleted ${d.Id.slice(0, 8)}  (${d.Status})`);
-    } catch (e) {
-      console.error(`  could not delete ${d.Id.slice(0, 8)}: ${e.message.split("\n")[0]}`);
-    }
+/* Wrangler writes both its refusals and its confirmations to stdout and exits
+   0 either way, so prune() is handed the output to read rather than a status
+   to trust. */
+const capture = args => {
+  try {
+    return run(args, { stdio: ["ignore", "pipe", "pipe"] });
+  } catch (e) {
+    return `${e.stdout || ""}${e.stderr || ""}`.trim() || e.message;
+  }
+};
+
+let unpruned = 0;
+const results = prune(project, deployments, KEEP, capture);
+if (results.length) {
+  console.log(`\npruning ${results.length} old deployment(s), keeping the newest ${KEEP}:`);
+  for (const r of results) {
+    if (r.ok) console.log(`  deleted ${r.id.slice(0, 8)}  (${r.status})`);
+    else console.error(`  ✗ still online ${r.id.slice(0, 8)}: ${r.error}`);
+  }
+  /* A deployment that survived the prune is still serving whatever was public
+     when it was made, so this is a failure and not a warning — reported at the
+     end, because the verify below is the more urgent check of the two. */
+  const left = results.filter(r => !r.ok);
+  if (left.length) {
+    console.error(`\n  ${left.length} deployment(s) could not be deleted; they are still online.`);
+    unpruned = left.length;
   }
 } else if (deployments.length) {
   console.log(`\n${deployments.length} deployment(s); nothing to prune (keeping ${KEEP}).`);
@@ -88,7 +104,7 @@ if (stale.length) {
 /* ------------------------------------------------------------- 4. verify ---*/
 const origin = (deployments[0] && deployments[0].Deployment || "")
   .replace(/^https:\/\/[0-9a-f]+\./, "https://");
-if (!origin) { console.log("\nno production URL to check."); process.exit(0); }
+if (!origin) { console.log("\nno production URL to check."); process.exit(unpruned ? 1 : 0); }
 
 const shipped = existsSync(join(ROOT, "dist", "courses"))
   ? readdirSync(join(ROOT, "dist", "courses")).map(f => f.replace(/\.json$/, ""))
@@ -137,3 +153,4 @@ if (inCache.length) {
 if (inDeploy.length) process.exit(1);
 if (!inCache.length) console.log(`  private: ${priv.length} course(s), none reachable ✓`);
 console.log(`\nlive at ${origin}`);
+process.exit(unpruned ? 1 : 0);

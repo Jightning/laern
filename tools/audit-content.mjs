@@ -30,6 +30,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCourse } from "./lib/load.mjs";
 import { conceptOf } from "../src/lib/index.js";
+import { present } from "../src/lib/gist.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const COURSES = join(ROOT, "courses");
@@ -51,7 +52,10 @@ const METRICS = [
   ["unsourced",  "claims name no source"],
   ["unverified", "answers carry no re-derivation date"],
   ["unprompted", "questions carry no why_prompt"],
-  ["unrouted",   "questions resolve to no concept"]
+  ["unrouted",   "questions resolve to no concept"],
+  ["unclaimed",  "claims declare neither core: nor gist:"],
+  ["repeat",     "claims restate themselves in a gist: rather than splitting a core:"],
+  ["nameonly",   "blocks say nothing at notes depth until they are opened"]
 ];
 
 const pct = x => `${Math.round(x * 100)}%`;
@@ -74,14 +78,43 @@ function detailsWithoutRecall(C) {
 function audit(id) {
   const { course: C } = loadCourse(join(COURSES, id));
   const n = { claims: 0, answers: 0, quiz: 0 };
-  const miss = { unsourced: 0, unverified: 0, unprompted: 0, unrouted: 0 };
+  const miss = { unsourced: 0, unverified: 0, unprompted: 0, unrouted: 0,
+                 unclaimed: 0, repeat: 0, nameonly: 0 };
+  let blocks = 0;
 
   for (const s of C.sections)
     for (const u of s.subs) {
       for (const b of u.blocks || []) {
+        /* A row that shows only its own label is a row the reader has to open
+           before it tells them anything, which is the one thing notes depth is
+           not for. Counted over every block the depth can show — a `p` is
+           excluded because it is hidden there by rule (M36).
+
+           A caption row is not counted, and that is a judgement the script
+           cannot make for itself: "mono table — centred cells, course
+           valueStyles applied" says what the table holds, and "What each
+           surface is for" names a topic and answers nothing. Both are captions.
+           Whether one earns its row is the author's call, which is why §6.7
+           asks for it rather than the gate. */
+        if (b.t !== "p") {
+          blocks++;
+          if (present(b, "notes").mode === "closed") miss.nameonly++;
+        }
         if (!CLAIM.has(b.t)) continue;
         n.claims++;
         if (!String(b.source || "").trim() || UNSOURCED.has(b.source)) miss.unsourced++;
+        /* A claim with neither field states nothing at `notes` depth and
+           closes to its own label, so the reader gets a name where a claim
+           was promised. Counted rather than failed, because a course written
+           before depth existed has every block in this state and must keep
+           rendering. */
+        if (!String(b.core || "").trim() && !String(b.gist || "").trim()) miss.unclaimed++;
+        /* `gist:` is a second copy, permitted where claim-first would spoil the
+           first read and nowhere else. Left ungated it becomes the default,
+           because it is the easier of the two to write: no prose discipline,
+           just a summary. So it is a declared fraction with a ceiling, like
+           every other piece of content debt here. */
+        else if (String(b.gist || "").trim()) miss.repeat++;
       }
       for (const q of u.quiz || []) {
         n.quiz++; n.answers++;
@@ -97,7 +130,8 @@ function audit(id) {
   for (const file of Object.values(C.drills))
     for (const it of file.items || []) { n.answers++; if (!it.verified) miss.unverified++; }
 
-  const of = { unsourced: n.claims, unverified: n.answers, unprompted: n.quiz, unrouted: n.quiz };
+  const of = { unsourced: n.claims, unverified: n.answers, unprompted: n.quiz, unrouted: n.quiz,
+               unclaimed: n.claims, repeat: n.claims, nameonly: blocks };
   const ceiling = C.audit || {};
   const rows = METRICS.map(([k, label]) => ({
     k, label, of: of[k],

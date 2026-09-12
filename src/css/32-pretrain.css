@@ -17,12 +17,12 @@
 .pretrain.open .pt-head{border-bottom-color:var(--rule-2)}
 .pt-head:hover .pt-toggle{color:var(--hi-ink)}
 .pt-eyebrow{
-  font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.14em;text-transform:uppercase;
   color:var(--hi-ink);flex:none;
 }
 .pt-title{font-size:.86rem;color:var(--ink-2);flex:1 1 13rem;min-width:0}
 .pt-toggle{
-  font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.08em;
   text-transform:uppercase;color:var(--ink-3);flex:none;margin-left:auto;
 }
 .pt-list{margin:0;padding:6px 16px 14px}
@@ -33,7 +33,7 @@
 .pt-list dt a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
 .pt-list dt a:hover{border-bottom-color:var(--hi);color:var(--hi-ink)}
 .pt-tag{
-  font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.1em;text-transform:uppercase;
   color:var(--hi-ink);border:1px solid color-mix(in srgb,var(--hi) 40%,transparent);
   border-radius:4px;padding:1px 5px;margin-left:7px;vertical-align:1px;
 }
@@ -45,7 +45,7 @@
 
 .pt-run{
   display:inline-block;margin:10px 16px 0;font-family:var(--mono);
-  font-size:.70rem;letter-spacing:.04em;color:var(--hi-ink);text-decoration:none;
+  font-size:var(--fs-meta);letter-spacing:.04em;color:var(--hi-ink);text-decoration:none;
   border-bottom:1px solid color-mix(in srgb,var(--hi) 40%,transparent);
 }
 .pt-run:hover{border-bottom-color:var(--hi)}

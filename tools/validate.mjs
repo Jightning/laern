@@ -38,6 +38,15 @@
  *  31. every primer prequestion asks something and answers it          (M29)
  *  32. no course is named `review` — the review route owns that id      (architecture §2)
  *  33. every figure spec key, enum value and format is one the engine reads (T30)
+ *  34. a block declares `core:` or `gist:`, never both                  (M34)
+ *  35. a `core:` is not repeated inside its own `h:`                    (M34, M1)
+ *  36. every `cat:` names a category the course declares                (M35)
+ *  37. every declared category owns a boundary and at least one member  (M35)
+ *  38. category `siblings:` resolve and name each other                 (M35, T16)
+ *  39. tags are slugs, so the tag index cannot fragment on case         (T25)
+ *  40. every block can yield a name for its index row (warning)         (T10)
+ *  41. a block's `notes:` names a depth behaviour the engine knows        (T42)
+ *  42. a claim does not close an enumeration inside its own body (warning)(T42)
  */
 import { readdirSync, existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -47,6 +56,7 @@ import { tex } from "./lib/math.mjs";
 import { INTERACTIVE } from "../src/blocks/interactive.js";
 import { checkFigure } from "./lib/figures.mjs";
 import { TIERS, tierOf } from "../src/lib/tiers.js";
+import { NOTES_MODES, present, leadOf } from "../src/lib/gist.js";
 import { textOf } from "../src/lib/util.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -203,6 +213,153 @@ function checkExaminableInSpine(C, warns) {
   }
 }
 
+/* M34: a block states its claim once.
+ *
+ * `core:` holds the claim and `h:` holds only what develops it — one paragraph
+ * split at a declared point, so nothing is written twice. `gist:` is a summary
+ * *about* the block and is a second copy on purpose, for prose that withholds
+ * its claim until the end. A block declaring both has recorded one decision in
+ * two places, which is the shape every other rule here exists to prevent; and a
+ * `core:` whose sentence still opens its own `h:` is the duplication sneaking
+ * back in under the field that was meant to remove it.
+ */
+const RESTATE = 8;   /* words of verbatim overlap that make a phrase a copy */
+
+function checkClaims(C, errs, warns) {
+  const norm = t => String(t).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+  for (const s of C.sections)
+    for (const u of s.subs)
+      for (const b of u.blocks || []) {
+        if (!b) continue;
+        const core = String(b.core || "").trim(), gist = String(b.gist || "").trim();
+        if (core && gist)
+          errs.push(`${u.id} ${b.t}: declares both core: and gist: — a block states its claim ` +
+            `one way. core: splits the prose, gist: summarises it; both is two records of one choice`);
+        if (!core) continue;
+        const c = norm(core), h = norm(b.h || "");
+        if (!c) { errs.push(`${u.id} ${b.t}: core: is empty`); continue; }
+        /* Failed on the opening of h rather than anywhere inside it: a claim
+           legitimately recurs in a later sentence that qualifies it, and only
+           the restatement at the head is unambiguously the duplication core:
+           removes. */
+        if (h && (h.startsWith(c) || c.startsWith(h.slice(0, Math.max(24, c.length)))))
+          errs.push(`${u.id} ${b.t}: core: repeats the opening of its own h: — ` +
+            `h: holds what develops the claim, not the claim again`);
+        /* Warned on a long verbatim run anywhere else in h, because the
+           opening check alone misses the case that actually happens: a claim
+           hoisted into core: while the sentence it was hoisted from stays put
+           further down. Eight words is long enough that a shared phrase is a
+           copy rather than a coincidence of vocabulary. */
+        else if (h) {
+          const w = c.split(" ").filter(Boolean);
+          for (let i = 0; i + RESTATE <= w.length; i++) {
+            const run = w.slice(i, i + RESTATE).join(" ");
+            if (h.includes(run)) {
+              warns.push(`${u.id} ${b.t}: h: still contains "${run}…" from its own core: — ` +
+                `hoisting a claim means moving it, not copying it`);
+              break;
+            }
+          }
+        }
+      }
+}
+
+/* A claim may only stand in for what it can actually encompass.
+ *
+ * `holds: structure` settles the block *kinds* whose items are their content —
+ * a list, a table, a listing. What it cannot settle is a prose block with an
+ * enumeration buried inside its own `h`: a `key` whose body is a three-item
+ * `<ul>` looks like prose to the engine and reads like a list to a reader, and
+ * its claim closes all three items behind one sentence.
+ *
+ * That is a judgement about whether the claim encompasses the block, so this
+ * warns rather than fails, and it names both fixes: keep the block whole at a
+ * closed depth with `notes: open`, or split the enumeration into a `list`
+ * block of its own, which is usually what it wanted to be.
+ *
+ * `ex` is exempt, and by definition rather than by convenience. M11 requires a
+ * worked example to be fully stepped, so its `<ol>` is the *working* and not
+ * the substance: the claim carries what the example shows, and the steps are
+ * what you open it for. That is the distinction the whole rule turns on — does
+ * the claim give you the content, or only a count of it. "Criterion met in
+ * four sessions across three days" is the content; "four places a course can
+ * take you" is a count.
+ */
+const ENUM = /<(ul|ol|table)[\s>]/i;
+
+function checkClaimFit(C, warns) {
+  for (const s of C.sections)
+    for (const u of s.subs)
+      for (const b of u.blocks || []) {
+        if (!b || !leadOf(b) || b.t === "ex") continue;
+        if (present(b, "notes").mode !== "lead") continue;
+        if (!ENUM.test(String(b.h || ""))) continue;
+        const at = String(b.label || b.term || b.title || "").slice(0, 40);
+        warns.push(`${u.id} ${b.t}${at ? ` "${at}"` : ""}: its claim closes a list inside its ` +
+          `own body. Either set notes: open, or move the list into a list block`);
+      }
+}
+
+/* M35: a category is declared, never inferred — the M31 shape.
+ *
+ * A category is not a label. A label names one block; a category has an
+ * extension (its members, from anywhere in the course) and a boundary (what
+ * falls outside it). The boundary is required because it is the whole of what
+ * distinguishes the two: without it a category file is a label with a page.
+ *
+ * Siblings must name each other for the reason confusable_with must: a
+ * comparison drawn one way is a half-built contrast, and the contrast is the
+ * mechanism (Alfieri et al. 2013) rather than the decoration.
+ */
+const TAG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function checkCats(C, errs, warns) {
+  const cats = C.cats || {};
+  const members = {};
+
+  const seen = (key, where) => {
+    if (!key) return;
+    if (!cats[key]) errs.push(`${where}: cat: "${key}" names no categories/${key}.yaml — ` +
+      `a category is declared, never inferred`);
+    else (members[key] ||= []).push(where);
+  };
+  const tags = (list, where) => {
+    for (const t of list || [])
+      if (!TAG.test(String(t)))
+        errs.push(`${where}: tag "${t}" is not a slug — lowercase, digits and single hyphens, ` +
+          `so the same tag cannot index twice under two spellings`);
+  };
+
+  for (const s of C.sections)
+    for (const u of s.subs)
+      (u.blocks || []).forEach((b, i) => {
+        if (!b) return;
+        seen(b.cat, `${u.id} block ${i + 1}`);
+        tags(b.tags, `${u.id} block ${i + 1}`);
+      });
+  for (const [k, c] of Object.entries(C.concepts || {})) {
+    seen(c.cat, `concepts/${k}`);
+    tags(c.tags, `concepts/${k}`);
+  }
+
+  for (const [k, d] of Object.entries(cats)) {
+    const at = `categories/${k}`;
+    if (!String(d.name || "").trim()) errs.push(`${at}: no name`);
+    if (!String(d.boundary || "").trim())
+      errs.push(`${at}: no boundary — a category without one is a label with a page. ` +
+        `Say what is in it and what is not`);
+    if (!(members[k] || []).length)
+      errs.push(`${at}: nothing declares cat: ${k} — a category with no members is a ` +
+        `heading, and the page renders empty`);
+    for (const sib of d.siblings || []) {
+      if (!cats[sib]) { errs.push(`${at}: siblings names "${sib}", which is not a category`); continue; }
+      if (!(cats[sib].siblings || []).includes(k))
+        errs.push(`${at} and categories/${sib}: siblings must name each other — ` +
+          `a contrast drawn one way is half a contrast`);
+    }
+  }
+}
+
 /* Interleaving pays on confusable pairs and costs on unrelated ones, so the
    pairing has to be declared — and a pair that only one side declares is a
    half-built cluster that mixes one way and not the other. */
@@ -308,6 +465,11 @@ for (const id of courses) {
         if (b.t === "figure") checkFigure(b, where, errs);
         if (b.tier && !TIERS.includes(b.tier))
           errs.push(`${where}: unknown tier "${b.tier}" — one of ${TIERS.join(", ")}`);
+        /* `notes:` overrides how this block behaves at a closed depth. A value
+           the engine does not know silently falls back to the default, which is
+           the failure shape every other enum here is checked for. */
+        if (b.notes && !NOTES_MODES.includes(b.notes))
+          errs.push(`${where}: unknown notes: "${b.notes}" — one of ${NOTES_MODES.join(", ")}`);
         /* An attempt is a deliberate failure that primes the definition, which
            only works before the definition. Anywhere else it is an exception
            met before its rule, which is what M10's ordering exists to stop. */
@@ -411,6 +573,9 @@ for (const id of courses) {
   }
 
   checkSpineStandsAlone(C, errs);
+  checkClaims(C, errs, warns);
+  checkClaimFit(C, warns);
+  checkCats(C, errs, warns);
   checkReviewSet(C, errs, warns);
   checkDrills(C, errs, warns);
   checkExaminableInSpine(C, warns);

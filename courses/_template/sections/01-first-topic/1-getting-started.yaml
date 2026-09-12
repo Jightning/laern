@@ -18,14 +18,23 @@ blocks:
   # Each callout labels itself — "Definition", "Key rule", "Common mistake",
   # "Worked example", "Note". Write `label:` only to override one, never to
   # repeat it.
+  # `core:` is the block's own opening claim, kept in its own field so that
+  # `notes` depth can show it and close everything under it. It is NOT a
+  # summary: `h:` below holds only what develops the claim, so the sentence
+  # appears exactly once and nothing can drift. Write the claim so it stands
+  # alone — a reader meeting it cold in week six gets only this line.
   - t: def
     term: A definition
     source: Textbook ch.1.2
+    cat: block-kinds
+    tags: [authoring]
+    core: |-
+      A definition, a key rule, a trap, a worked example and a note are the same
+      shape wearing different accents.
     h: |-
-      <p>Definitions, key rules, traps, worked examples and notes are all the
-      same shape with a different accent. Reference a
-      <c k="example-concept">core concept</c> inline and a card appears in the
-      margin beside this very block.</p>
+      <p>Which one you reach for is a claim about the content, not a choice of
+      colour. Reference a <c k="example-concept">core concept</c> inline and a
+      card appears in the margin beside this very block.</p>
 
   # `source:` is where the claim came from: a real, checkable origin, or
   # `unverified` (a human should look it up), or `generated` (a model wrote it
@@ -33,22 +42,38 @@ blocks:
   # against the unsourced fraction `npm run audit` reports.
   - t: key
     source: unverified
-    h: <p>The one thing to remember.</p>
+    cat: block-kinds
+    core: The one thing to remember, stated in a sentence that stands alone.
+    h: <p>And then whatever makes it usable — where it comes from, when it
+      applies, what it rules out.</p>
 
   # One or two per subsection. Five traps is zero traps — signaling is a
   # contrast effect and it degrades with density. For a procedural subsection
   # at least one names the specific slip: which sign, which index, which order.
   # "Be careful" is not a trap, it is a mood.
+  # `gist:` is the other form, and a block declares one or the other, never
+  # both. It is a summary ABOUT the block and renders only at `notes` depth,
+  # leaving `h:` whole — which is what a trap needs, because a trap works by
+  # letting the reader believe the wrong thing first. Leading with the
+  # correction would defuse it. Every `gist:` is a second copy on purpose, so
+  # the fraction is measured and ceilinged in `course.yaml`.
   - t: trap
     source: generated
-    h: <p>The error people actually make, and why it is tempting.</p>
+    cat: block-kinds
+    gist: The tempting wrong answer is X; it is really Y.
+    h: <p>The error people actually make, stated the way they would state it —
+      and only then why it is wrong.</p>
 
   - t: ex
     title: Worked example
     h: <ol><li>First step</li><li>Second step</li><li>Result</li></ol>
 
+  # A table is numbered and citable exactly as a figure is, so `<f k="…"/>`
+  # renders "Table 1.1" and prose never has to re-describe it in words.
   - t: table
+    id: a-table
     cap: A table
+    cat: reference-tables
     head: [Column, Meaning]
     rows:
       - [value, what it means]

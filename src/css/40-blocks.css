@@ -53,8 +53,15 @@
    caps go and the signal stays in the mono face, the spacing and the per-block
    accent — which is what T13 needs anyway. */
 .blabel{
-  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.04em;
   color:var(--ink-3);display:block;margin-bottom:7px;
+}
+/* A label the reader reads instead of scans takes the reading face, the
+   reading size and sentence spacing. It is still the block's name — it is just
+   no longer pretending to be a chip. */
+.blabel.is-line{
+  font-family:var(--sans);font-size:1rem;font-weight:600;letter-spacing:0;
+  color:var(--ink);line-height:1.45;margin-bottom:5px;
 }
 .def .blabel{color:var(--lo-ink)}
 .key .blabel{color:var(--hi-ink)}
@@ -69,7 +76,7 @@ code{font-family:var(--mono);font-size:.875em;background:var(--surface-2);
   padding:1px 5px;border-radius:4px;border:1px solid var(--rule-2)}
 .def code,.key code,.ex code,.trap code{background:var(--surface)}
 pre{
-  font-family:var(--mono);font-size:.815rem;line-height:1.6;margin:0 0 var(--sp-3);
+  font-family:var(--mono);font-size:var(--fs-small);line-height:1.6;margin:0 0 var(--sp-3);
   background:var(--surface);border:1px solid var(--rule);border-radius:8px;
   padding:14px 16px;overflow-x:auto;
 }
@@ -89,7 +96,7 @@ pre code{background:none;border:0;padding:0;font-size:inherit}
 .tok-n{color:var(--dc-ink)}
 .codewrap{position:relative;margin:0 0 var(--sp-3)}
 .codewrap .lang{
-  position:absolute;top:0;right:0;font-family:var(--mono);font-size:.62rem;
+  position:absolute;top:0;right:0;font-family:var(--mono);font-size:var(--fs-micro);
   letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
   padding:7px 12px;pointer-events:none;
 }
@@ -99,13 +106,13 @@ pre code{background:none;border:0;padding:0;font-size:inherit}
 table{border-collapse:collapse;width:100%;font-size:.85rem}
 /* Same as a figure caption: it describes the table in a sentence. */
 caption{
-  caption-side:top;text-align:left;font-family:var(--mono);font-size:.68rem;
+  caption-side:top;text-align:left;font-family:var(--mono);font-size:var(--fs-meta);
   letter-spacing:.02em;color:var(--ink-3);
   padding:11px 14px 9px;border-bottom:1px solid var(--rule-2);
 }
 th,td{padding:6px 13px;text-align:left;border-bottom:1px solid var(--rule-2)}
 thead th{
-  font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--ink-2);
+  font-family:var(--mono);font-size:var(--fs-meta);font-weight:600;color:var(--ink-2);
   letter-spacing:.03em;background:var(--surface-2);white-space:nowrap;
 }
 tbody tr:last-child td{border-bottom:0}
@@ -121,6 +128,6 @@ tbody tr:last-child td{border-bottom:0}
 /* Where a claim came from. Text, never colour alone: an unverified one says so
    in words and takes a dashed edge, so the marker survives a greyscale print
    and a colour-blind reader. */
-.bsrc{display:block;margin-top:.55rem;font-family:var(--mono);font-size:.66rem;
+.bsrc{display:block;margin-top:.55rem;font-family:var(--mono);font-size:var(--fs-micro);
   letter-spacing:.04em;color:var(--ink-3)}
 .bsrc.is-un{border-left:2px dashed var(--wn);padding-left:.5rem;color:var(--wn-ink)}

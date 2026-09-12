@@ -1,0 +1,352 @@
+/* 56-depth — closed blocks, category chips, the category pages and Explore.
+ *
+ * A closed block is one row and it opens in place. Everything here is text,
+ * rule and position: no colour carries meaning on its own (T26), and the
+ * monogram is what makes a category recognisable at a glance without spending
+ * a hue that the contrast sweep would then have to cover in three modes. */
+
+/* ---------------------------------------------------------------- the pair */
+/* Lane and depth sit on one line: they are two halves of one question about
+   how much material is on the page, and separating them read as two unrelated
+   toolbars stacked. */
+.lanes{display:flex;align-items:center;gap:.4rem 1.4rem;flex-wrap:wrap;margin:0 0 var(--sp-2)}
+.lanes .lane,.lanes .depth{margin:0}
+.depth{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+
+.depth-note{
+  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.02em;
+  color:var(--ink-3);margin:0 0 var(--sp-2);
+}
+.depth-note b{color:var(--ink-2);font-weight:600}
+
+/* ------------------------------------------------------------------- notes */
+/* Notes are a grouped outline, not a list of header-and-paragraph rows.
+ *
+ * A definition opens a topic and the rules and traps that follow sit under it,
+ * indented, against a hairline that runs the height of the group. That rule is
+ * the whole device: it is what makes a topic read as one thing at a glance,
+ * and proximity of related items is the mechanism the note-format evidence
+ * actually credits (Robinson & Kiewra 1995; Kiewra et al. 1999).
+ *
+ * The claim leads. Nothing is prefixed with the engine's word for the block —
+ * "def", "key", "trap" set in 9px capitals beside every row was 27 repetitions
+ * of a word the reader did not need and could not comfortably read. The kind
+ * survives as the colour of the marker, and the marker is also a shape. */
+
+.nbrow{--row-gap:var(--sp-3)}
+
+.ntopic{margin:0 0 var(--sp-3)}
+.ntopic:last-child{margin-bottom:0}
+
+/* the definition that opens a topic */
+.ntopic-h{margin-bottom:.35rem}
+.ntopic-b{
+  display:block;width:100%;text-align:left;background:none;border:0;padding:0;
+  cursor:pointer;color:inherit;
+}
+.ntopic-t{
+  font-family:var(--mono);font-size:.95rem;font-weight:650;letter-spacing:-.01em;
+  color:var(--ink);margin:0 0 .15rem;line-height:1.35;
+}
+.ntopic-b:hover .ntopic-t{color:var(--hi-ink)}
+.ntopic-m{margin:0 0 .2rem .15rem}
+
+/* the claims under it */
+.ntopic .nrow{
+  position:relative;
+  padding:.2rem 0 .2rem 1.1rem;
+  margin-left:.15rem;
+  border-left:1px solid var(--rule);
+}
+.ntopic-h + .nrow,.ntopic .nrow + .nrow{border-left-color:var(--rule)}
+.ntopic > .nrow:last-of-type{padding-bottom:.35rem}
+
+/* The marker: a shape as well as a colour, so the kind never rides on hue
+   alone (T26). A rule is a bar, a trap is a wedge, everything else a dot. */
+.nrow::before{
+  content:"";position:absolute;left:-3px;top:.72rem;
+  width:5px;height:5px;border-radius:50%;background:var(--rule-2);
+}
+.nrow.t-key::before{border-radius:1px;width:5px;height:11px;top:.6rem;background:var(--hi)}
+.nrow.t-trap::before{
+  border-radius:0;width:0;height:0;background:none;left:-4px;
+  border-left:4px solid transparent;border-right:4px solid transparent;
+  border-bottom:7px solid var(--wn);
+}
+.nrow.t-ex::before,.nrow.t-note::before{background:var(--ink-3);opacity:.5}
+
+/* A topic head with no definition to lead it needs no rule down its side. */
+.ntopic > .nrow:only-child{border-left:none;padding-left:0;margin-left:0}
+.ntopic > .nrow:only-child::before{display:none}
+
+.nrow-b{
+  display:block;width:100%;text-align:left;background:none;border:0;padding:0;
+  cursor:pointer;color:inherit;font:inherit;
+}
+.nclaim{
+  display:block;font-size:var(--fs-small);line-height:1.55;color:var(--ink-2);
+}
+/* A run-in label: the classic notes device, and the reason it is run-in rather
+   than stacked is that a heading per row rebuilds the very shape this view
+   replaced. */
+.nlab{font-family:var(--mono);font-weight:600;color:var(--ink);margin-right:.4rem}
+.npoints .nlab-li{padding-left:0;margin-bottom:.25rem}
+.npoints .nlab-li::before{display:none}
+.nrow-b:hover .nclaim,.nrow-b:hover .nname,.nrow-b:hover .npoints{color:var(--ink)}
+.nname{
+  display:block;font-family:var(--mono);font-size:var(--fs-meta);
+  color:var(--ink-2);line-height:1.5;
+}
+.nrow.is-caption .nname{font-style:italic}
+/* A row with nothing but a name has to be opened before it says anything, so
+   it wears the affordance rather than pretending to be a note. §6.7 asks
+   authors to leave as few of these as possible; this is what one looks like. */
+.nrow.is-closed .nname::after{content:" \2026";color:var(--ink-3)}
+
+/* A claim that is several parallel facts is several lines, because that is
+   what it is. Flattening a list into a sentence to fit a field would be the
+   field deforming the content. */
+.npoints{
+  margin:0;padding:0;list-style:none;
+  font-size:var(--fs-small);line-height:1.5;color:var(--ink-2);
+}
+.npoints li{position:relative;padding-left:.85rem;margin-bottom:.2rem}
+.npoints li:last-child{margin-bottom:0}
+.npoints li::before{
+  content:"";position:absolute;left:0;top:.62em;
+  width:4px;height:1px;background:var(--rule-2);
+}
+
+.nmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:.25rem}
+.nmeta:empty{display:none}
+/* Inside the reading flow a chip is an aside, not a button. The bordered pill
+   outweighed the claim it was attached to; here the monogram carries the
+   identity and the rest recedes. */
+.nmeta .cchip{border:0;background:none;padding:0;gap:.35rem}
+.nmeta .cchip:hover{background:none}
+.nmeta .cchip-n{color:var(--ink-3)}
+.nmeta .cchip:hover .cchip-n{color:var(--hi-ink)}
+
+/* A block the reader opened, and the way back out of it: its own title.
+ *
+ * Open and close are one gesture in one place. A separate close control put the
+ * way out somewhere other than the way in, which means looking for it — and it
+ * sat at the foot of a block whose top is where the reader's eye already is. */
+.nopen{
+  border-left:2px solid var(--hi);padding-left:var(--sp-2);
+  margin:var(--sp-2) 0 var(--sp-2) .15rem;
+}
+.nopen .brow{display:block}
+.nopen .bside{display:none}
+/* The title is printed once. The block below carries its own label, so the
+   header replaces it rather than repeating it. */
+.nopen > .brow .blabel{display:none}
+.nopen-h{
+  display:block;width:100%;text-align:left;background:none;border:0;
+  padding:0 0 .3rem;cursor:pointer;color:var(--ink);
+  font-family:var(--mono);font-size:var(--fs-meta);font-weight:600;
+  line-height:1.45;
+}
+/* Selectable, because the title is also the text most worth copying. The click
+   handler ignores a press that ended a drag, so selecting never closes. */
+.nopen-h,.ntopic-b,.nrow-b{user-select:text;-webkit-user-select:text}
+.nopen-h::after{
+  content:"\00d7";float:right;font-weight:400;color:var(--ink-3);
+  margin-left:.5rem;
+}
+.nopen-h:hover{color:var(--hi-ink)}
+.nopen-h:hover::after{color:var(--hi-ink)}
+
+/* An open definition keeps its heading in place and marks it as open. */
+.ntopic-h.is-open{margin-bottom:.2rem}
+.ntopic-h.is-open .ntopic-t{color:var(--hi-ink)}
+.ntopic-h.is-open .brow .blabel{display:none}
+.ntopic-h.is-open .brow{display:block}
+.ntopic-h.is-open .bside{display:none}
+
+/* `index` depth: names alone, tight, so a section reads as its own contents. */
+.depth-index .ntopic{margin-bottom:var(--sp-2)}
+.depth-index .nrow{padding-top:.1rem;padding-bottom:.1rem}
+.depth-index .ntopic-t{font-size:var(--fs-small)}
+
+/* A quiz at a closed depth is one line. Unclosed it is most of the page. */
+.quiz-line{
+  display:flex;align-items:baseline;gap:.55rem;width:100%;text-align:left;
+  background:none;border:0;border-top:1px solid var(--rule);
+  padding:.5rem 0 0;margin-top:var(--sp-2);cursor:pointer;color:var(--ink-3);
+}
+.quiz-line-n{
+  font-family:var(--mono);font-size:var(--fs-meta);font-weight:600;color:var(--hi-ink);
+}
+.quiz-line-t{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-2)}
+.quiz-line-x{
+  font-size:var(--fs-micro);color:var(--ink-3);flex:1 1 auto;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;
+}
+.quiz-line:hover{color:var(--ink)}
+.quiz-line:hover .quiz-line-t{color:var(--ink)}
+
+/* The claim a `core:` block renders at full depth. It is the block's opening
+   sentence, not a summary of it, so it takes no device at all — bolding it made
+   every callout in the course shout once, and made one paragraph split at a
+   declared point look like two kinds of content. */
+.bcore{margin-top:0}
+.bcore-l{margin:0 0 var(--sp-2);padding-left:18px}
+.bcore-l li{margin-bottom:5px}
+.bcore-l li:last-child{margin-bottom:0}
+
+/* ---------------------------- shared by the category page and Explore ------
+   Both list blocks out of their section, where there is no topic to group them
+   under and the kind is worth naming because the surrounding context is gone. */
+.gkind{
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.06em;
+  color:var(--ink-3);flex:none;
+}
+.gname{
+  font-family:var(--mono);font-size:var(--fs-meta);font-weight:600;
+  color:var(--ink);flex:1 1 auto;min-width:0;line-height:1.45;
+}
+.glead{font-size:var(--fs-small);line-height:1.55;color:var(--ink-2)}
+.glead p{margin:0}
+.glead p + p{margin-top:.4rem}
+.gmeta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:.25rem}
+.gmeta:empty{display:none}
+.gmore{
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.04em;
+  background:none;border:0;border-bottom:1px dashed var(--rule-2);
+  color:var(--ink-3);cursor:pointer;padding:0 0 1px;
+}
+.gmore:hover{color:var(--hi-ink);border-bottom-color:var(--hi)}
+
+/* ------------------------------------------------------------ category chip */
+.cchip{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.03em;
+  border:1px solid color-mix(in srgb,var(--hi) 30%,transparent);
+  background:color-mix(in srgb,var(--hi) 9%,transparent);
+  color:var(--hi-ink);border-radius:4px;padding:1px 5px 1px 2px;
+  text-decoration:none;
+}
+.cchip:hover{border-color:var(--hi);background:color-mix(in srgb,var(--hi) 16%,transparent)}
+/* The monogram is small text on a fill, so it takes `--hi-ink` rather than
+   `--hi`: the ink variants are the ones tuned to clear AA against the ground
+   at every hue the palette can rotate to, and contrast is symmetric, so ground
+   on ink clears it too. Built on the vivid accent it measured 3.02:1 at
+   12.5px, which is the large-text threshold applied to text that is not
+   large — exactly the failure T3 exists to prevent. */
+.cchip-m{
+  font-family:var(--mono);font-weight:600;font-size:var(--fs-micro);letter-spacing:.04em;
+  background:var(--hi-ink);color:var(--ground);border-radius:3px;
+  padding:1px 3px;flex:none;
+}
+.cchip-m.big{
+  font-size:var(--fs-small);padding:3px 6px;border-radius:4px;
+  margin-right:.5rem;vertical-align:middle;
+}
+.cchip-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:11rem}
+.cchip-c{color:var(--ink-3)}
+
+.gtag{
+  display:inline-flex;align-items:center;gap:.25rem;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.03em;
+  color:var(--ink-3);text-decoration:none;
+  border:1px solid var(--rule);border-radius:4px;padding:1px 5px;
+}
+.gtag:hover{color:var(--hi-ink);border-color:var(--hi)}
+.tagn{color:var(--ink-3);opacity:.75}
+
+/* ---------------------------------------------------------- category pages */
+.catcard{display:block}
+.catcard .cbound{
+  font-size:var(--fs-small);color:var(--ink-3);margin:.4rem 0 0;line-height:1.45;
+}
+.cathub .tagcloud{margin-top:var(--sp-4)}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--sp-1)}
+
+.catdet h1{display:flex;align-items:center;flex-wrap:wrap}
+.cbound-lg{max-width:34rem}
+
+.csibs{margin:var(--sp-3) 0}
+.csibs h4{
+  font-family:var(--mono);font-size:var(--fs-meta);font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--wn-ink);margin:0 0 .5rem;
+}
+.csib-row{display:flex;flex-wrap:wrap;gap:.6rem}
+.csib{
+  display:flex;flex-direction:column;gap:.2rem;flex:1 1 13rem;
+  border:1px solid var(--rule);border-left:2px solid var(--wn);
+  border-radius:5px;padding:.5rem .65rem;text-decoration:none;color:inherit;
+}
+.csib:hover{border-color:var(--wn)}
+.csib b{font-family:var(--mono);font-size:var(--fs-small)}
+.csib span{font-size:var(--fs-small);color:var(--ink-3);line-height:1.45}
+
+.catbar{
+  display:flex;align-items:center;gap:.5rem 1rem;flex-wrap:wrap;
+  padding:.5rem 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  margin:var(--sp-3) 0 var(--sp-2);
+}
+.catcount{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3)}
+.catpractice{margin-left:auto}
+
+.cmems{display:flex;flex-direction:column;gap:.55rem}
+.cmem{
+  border-left:2px solid var(--rule-2);padding:.35rem 0 .35rem .7rem;
+}
+.cmem.t-trap{border-left-color:var(--wn)}
+.cmem.t-def{border-left-color:var(--hi)}
+.cmem-h{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.cmem-at{
+  font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);
+  text-decoration:none;margin-left:auto;flex:none;
+}
+.cmem-at:hover{color:var(--hi-ink)}
+.cmem .glead,.cmem .bhtml{margin-left:0;margin-top:.25rem}
+.cmem.is-concept{display:flex;gap:.5rem;align-items:baseline;text-decoration:none;color:inherit}
+
+/* ------------------------------------------------------------------ explore */
+.explore{max-width:100%}
+.xbar{display:flex;gap:.5rem;align-items:center;margin:var(--sp-2) 0}
+.xq{
+  flex:1 1 auto;min-width:0;font:inherit;font-size:.95rem;
+  border:1px solid var(--rule);border-radius:6px;padding:.5rem .7rem;
+  background:var(--surface);color:var(--ink);
+}
+.xq:focus{outline:2px solid var(--hi);outline-offset:1px}
+
+.xfacets{display:flex;flex-direction:column;gap:.5rem;margin-bottom:var(--sp-2)}
+.xfacet{display:flex;align-items:flex-start;gap:.55rem;flex-wrap:wrap}
+.xfacet .lane-l{padding-top:.3rem;flex:none;width:4.6rem}
+.xwrap{flex-wrap:wrap;max-width:100%}
+.xfacet .lane-b{display:inline-flex;align-items:center;gap:.3rem}
+
+.xcat{
+  border:1px solid var(--rule);border-left:2px solid var(--hi);border-radius:5px;
+  padding:.6rem .8rem;margin:var(--sp-2) 0;
+}
+.xcat h2{font-family:var(--mono);font-size:.95rem;margin:0 0 .25rem}
+.xcat p{font-size:.85rem;color:var(--ink-2);margin:0 0 .4rem}
+
+.xcount{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);margin:var(--sp-2) 0 .5rem}
+.xres{display:flex;flex-direction:column;gap:.6rem}
+.xrow{border-top:1px solid var(--rule);padding:.55rem 0}
+.xrow-h{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.xnum{font-family:var(--mono);font-size:var(--fs-micro);color:var(--hi-ink);flex:none;min-width:2.2rem}
+.xname{
+  font-family:var(--mono);font-size:.85rem;font-weight:600;
+  color:var(--ink);text-decoration:none;flex:1 1 12rem;min-width:0;
+}
+.xname:hover{color:var(--hi-ink)}
+.xctx{font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);flex:none}
+.xsnip{font-size:.85rem;color:var(--ink-2);margin:.3rem 0 0;line-height:1.5}
+.xrow .glead,.xrow .bhtml{margin-left:0;margin-top:.3rem}
+.xrow .gmeta{margin-left:0;margin-top:.35rem}
+
+@media (max-width:52em){
+  .gkind{width:2.5rem}
+  .glead,.gmeta,.depth-index .gmeta{margin-left:0}
+  .xfacet{flex-direction:column;gap:.3rem}
+  .xfacet .lane-l{width:auto;padding-top:0}
+  .catpractice{margin-left:0}
+}

@@ -1,6 +1,6 @@
 /* 95-search — Search overlay. */
 
-.backlink{font-family:var(--mono);font-size:.72rem}
+.backlink{font-family:var(--mono);font-size:var(--fs-meta)}
 /* `inset:0` is the whole screen, notch and home indicator included, so the box
    inside it is padded off them. The 9vh top already clears the status bar on
    every phone this runs on, which is why only three sides take an inset. */
@@ -18,17 +18,17 @@
    this stylesheet. */
 #s-input::-webkit-search-cancel-button,
 #s-input::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
-.skey{font-family:var(--mono);font-size:.64rem;color:var(--ink-3);border:1px solid var(--rule);
+.skey{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);border:1px solid var(--rule);
   border-radius:4px;padding:2px 6px;flex:none}
 #s-res{overflow-y:auto;padding:6px}
 .sres{display:grid;grid-template-columns:46px 1fr;gap:10px;padding:9px 11px;border-radius:8px;
   text-decoration:none;color:inherit;align-items:baseline}
 .sres:hover{background:var(--surface-2)}
-.sn{font-family:var(--mono);font-size:.72rem;color:var(--hi-ink)}
+.sn{font-family:var(--mono);font-size:var(--fs-meta);color:var(--hi-ink)}
 .sb{min-width:0}
 .sb b{display:block;font-size:.88rem;font-weight:640;overflow-wrap:anywhere}
-.sc{display:block;font-size:.72rem;color:var(--ink-3);margin-top:1px}
-.sx{display:block;font-size:.75rem;color:var(--ink-2);margin-top:4px;overflow-wrap:anywhere}
+.sc{display:block;font-size:var(--fs-meta);color:var(--ink-3);margin-top:1px}
+.sx{display:block;font-size:var(--fs-small);color:var(--ink-2);margin-top:4px;overflow-wrap:anywhere}
 /* The matched words, in the title and in the passage. A background alone is a
    colour carrying meaning (T26), so the weight carries it too and the mark
    element says what it is to anything not reading the page by eye. */
@@ -36,10 +36,10 @@
   color:var(--ink);font-weight:640;border-radius:2px;padding:0 1px}
 /* How many times the query occurs in the body, beside what kind of entry it
    is — the two together are the whole of "is this the one I meant". */
-.smn{font-family:var(--mono);font-size:.66rem;color:var(--hi-ink);margin-left:8px}
+.smn{font-family:var(--mono);font-size:var(--fs-micro);color:var(--hi-ink);margin-left:8px}
 
 /* Keyboard selection. Hover and arrow keys drive the same state, so the two
    never disagree about which row is live. */
 .sres.on{background:var(--surface-2);box-shadow:inset 2px 0 0 var(--hi)}
-.skeys{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;
+.skeys{font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.08em;
   color:var(--ink-3);margin:0 0 4px;padding:0 11px}

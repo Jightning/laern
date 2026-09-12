@@ -1,0 +1,9 @@
+name: Navigation surfaces
+short: NS
+boundary: |-
+  Everything that moves you somewhere else in the course — the sidebar rail,
+  the search overlay, Explore, the dependency map, the concept hub, a margin
+  card, the return pill. Not the reading controls, which change how much of the
+  page you are already on renders and never move you, and not the retrieval
+  surfaces, which ask you a question instead of taking you to one.
+siblings: [reading-controls]

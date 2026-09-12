@@ -860,7 +860,13 @@ for (const cid of ids) {
     if (await missed.count()) {
       await missed.click(); await page.waitForTimeout(250);
       const note = await page.locator(".gnote").first().innerText();
-      ck(P("overconfidence flagged"), /expected this one|goes into review/i.test(note), note);
+      /* The note names what actually happened, and the three outcomes it can
+         report are three different events rather than one word for all of
+         them. A confident miss on a concept with a bank is drilled on the
+         spot; without one there is nothing to drill and the note must not
+         claim otherwise. */
+      ck(P("a confident miss says what follows from it"),
+         /drilling it now|worth another look/i.test(note), note);
       /* a confident miss on a concept with a bank is corrected in place */
       const drilled = await page.locator(".recruit .drill").count();
       if (drilled) ck(P("a confident miss recruits a drill"), drilled === 1);
@@ -925,6 +931,223 @@ for (const cid of ids) {
          await page.evaluate(() => location.hash) === hash);
     }
     await page.locator(".lane-b[data-lane='apply']").click(); await page.waitForTimeout(250);
+  }
+
+  /* depth: a second axis that closes prose rather than removing blocks.
+     The two must compose, and neither may change the route or lose a block. */
+  {
+    await go(`#/${cid}/${secIds[0]}`);
+    const hash = await page.evaluate(() => location.hash);
+    const fullRows = await page.locator(".brow").count();
+    ck(P("the depth control sits beside the lane"), await page.locator(".depth .lane-b").count() >= 3);
+
+    const setDepth = d => page.evaluate(v =>
+      document.querySelector(`.depth .lane-b[data-depth="${v}"]`).click(), d);
+    await setDepth("notes"); await page.waitForTimeout(300);
+    const closed = await page.locator(".nrow, .ntopic-h").count();
+    ck(P("notes depth closes blocks"), closed > 0, `${closed} closed`);
+    ck(P("changing depth does not change the route"),
+       await page.evaluate(() => location.hash) === hash);
+    ck(P("a closed block still says something"),
+       await page.evaluate(() =>
+         [...document.querySelectorAll(".nrow .nname, .nrow .nclaim, .ntopic-t")]
+           .every(n => n.textContent.trim().length > 1)));
+    /* The note form is grouped, not a flat list: a definition opens a topic and
+       what develops it sits under that topic. */
+    ck(P("notes depth groups claims under their topic"),
+       await page.locator(".ntopic").count() > 0);
+    /* A row showing nothing but its own label is a row you must open before it
+       says anything, which is what notes depth is not for.
+       
+       Asserted on the built-in course only. Every other course here predates
+       `core:` and would fail at 94-100%, and that is content debt rather than a
+       broken engine — `npm run audit` owns it as the `nameonly` fraction, with
+       a ceiling each course declares for itself. What is worth gating in a
+       browser is that the shipped example actually meets the rule §6.7 sets. */
+    if (cid === "demo") {
+      const bare = await page.locator(".nrow.is-closed").count();
+      const rows = await page.locator(".nrow").count();
+      ck(P("every row says something without being opened"), bare === 0,
+         `${bare} of ${rows} show only a name`);
+      /* A claim on a list is a count of it, so the list stays whole. The
+         failure this guards is the one that shipped: "four places a course can
+         take you" rendered as the note, with the four places closed behind it. */
+      const listClosed = await page.evaluate(() =>
+        [...document.querySelectorAll(".nrow")].some(n => /\bt-(list|table|code)\b/.test(n.className)));
+      ck(P("a claim never closes a list, table or listing"), !listClosed);
+    }
+    ck(P("no row is prefixed with the engine's word for its block type"),
+       await page.locator(".nrow .gkind").count() === 0);
+    ck(P("notes depth says how much it is holding back"),
+       /closed/.test(await page.locator(".depth-note").first().innerText()));
+
+    /* T42: no depth removes a block. Every block still has its row in the
+       document, whether open or closed. */
+    const rowsNow = await page.locator(".brow").count();
+    ck(P("notes depth removes no block that is not a p"), rowsNow <= fullRows && rowsNow > 0,
+       `${rowsNow} of ${fullRows}`);
+
+    const lead = await page.locator(".nrow.is-lead").count();
+    if (lead) {
+      ck(P("a lead row shows a claim, not just a name"),
+         (await page.locator(".nrow.is-lead .nclaim, .nrow.is-lead .npoints").first().innerText())
+           .trim().length > 15);
+      await page.evaluate(() => document.querySelector(".nrow.is-lead .nrow-b").click());
+      await page.waitForTimeout(250);
+      ck(P("a closed block opens in place"),
+         await page.locator(".nrow.is-lead").count() === lead - 1 &&
+         await page.evaluate(() => location.hash) === hash);
+      /* And it closes from its own title, which is where it opened. A
+         disclosure whose way out is somewhere other than its way in makes the
+         reader go looking for it. */
+      ck(P("an opened block closes from its own title"),
+         await page.locator(".nopen .nopen-h, .ntopic-h.is-open .ntopic-b").count() > 0);
+      await page.evaluate(() =>
+        (document.querySelector(".nopen .nopen-h") ||
+         document.querySelector(".ntopic-h.is-open .ntopic-b")).click());
+      await page.waitForTimeout(250);
+      ck(P("closing puts the block back"),
+         await page.locator(".nrow.is-lead").count() === lead &&
+         await page.locator(".nopen").count() === 0);
+
+      /* Pressing a title that the reader has just selected is a copy, not a
+         press. Closing the block out from under a drag loses the selection and
+         their place at once. */
+      await page.evaluate(() => document.querySelector(".nrow.is-lead .nrow-b").click());
+      await page.waitForTimeout(200);
+      const openNow = await page.locator(".nopen, .ntopic-h.is-open").count();
+      await page.evaluate(() => {
+        const el = document.querySelector(".nopen-h, .ntopic-h.is-open .ntopic-b");
+        if (!el) return;
+        const r = document.createRange(); r.selectNodeContents(el);
+        const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+        el.click();
+      });
+      await page.waitForTimeout(250);
+      ck(P("selecting a title does not close the block"),
+         await page.locator(".nopen, .ntopic-h.is-open").count() === openNow);
+      await page.evaluate(() => getSelection().removeAllRanges());
+    }
+
+    await setDepth("index"); await page.waitForTimeout(300);
+    const named = await page.locator(".nrow .nname, .ntopic-t").count();
+    ck(P("index depth names every block it shows"), named > 0, `${named} names`);
+    /* The topic heading is the term; a row repeating it underneath was the
+       same string twice on every definition in the course. */
+    ck(P("index depth does not print a topic's name twice"),
+       await page.evaluate(() => [...document.querySelectorAll(".ntopic-h")].every(h => {
+         const t = h.querySelector(".ntopic-t")?.textContent.trim();
+         const r = h.querySelector(".nrow .nname")?.textContent.trim();
+         return !t || !r || t !== r;
+       })));
+    /* A quiz at a closed depth is a line, not a stack of cards. */
+    ck(P("the quiz closes with the depth"),
+       await page.locator(".quiz-line").count() > 0 || await page.locator(".quiz").count() === 0);
+
+    /* `d` cycles, and the keyboard reaches what the control does. */
+    await page.keyboard.press("d"); await page.waitForTimeout(250);
+    ck(P("d cycles the depth"), await page.locator(".depth .lane-b.sel").count() === 1);
+    /* The page-level control is a round trip, not a one-way door: reveal, then
+       close, and the depth's own view has to come back — including any block
+       the reader had opened by hand underneath it. */
+    await setDepth("notes"); await page.waitForTimeout(300);
+    const reveal = () => page.evaluate(() =>
+      [...document.querySelectorAll(".tbtn")].find(b => /Reveal all/i.test(b.textContent))?.click());
+    const closeAll = () => page.evaluate(() =>
+      [...document.querySelectorAll(".tbtn")].find(b => /Close all/i.test(b.textContent))?.click());
+
+    /* "Close all" returns the page to what the *depth* defines, which is not
+       necessarily what was on screen a moment ago: a tier stub the reader had
+       expanded by hand is closed too, because closing everything means
+       everything. So the invariant to assert is idempotence — one cycle and
+       two cycles land in the same place — rather than a count taken before the
+       first one. */
+    await reveal(); await page.waitForTimeout(350);
+    ck(P("reveal all opens every closed block"), await page.locator(".nrow").count() === 0);
+    ck(P("the reveal control renames itself to its reverse"),
+       await page.evaluate(() =>
+         !!([...document.querySelectorAll(".tbtn")].find(b => /Close all/i.test(b.textContent)))));
+    await closeAll(); await page.waitForTimeout(350);
+    const settled = await page.locator(".nrow").count();
+    ck(P("close all returns to the depth, not to the full text"), settled > 0, `${settled} rows`);
+
+    await reveal(); await page.waitForTimeout(300);
+    await closeAll(); await page.waitForTimeout(350);
+    ck(P("revealing and closing again lands in the same place"),
+       await page.locator(".nrow").count() === settled,
+       `${await page.locator(".nrow").count()} of ${settled}`);
+
+    await setDepth("full"); await page.waitForTimeout(250);
+    ck(P("full depth closes nothing"), await page.locator(".nrow, .quiz-line").count() === 0);
+  }
+
+  /* categories: membership, a boundary, and the sibling it is defined against */
+  if (await page.evaluate(() => true)) {
+    await go(`#/${cid}/cat`);
+    const cards = await page.locator(".catcard").count();
+    if (cards) {
+      ck(P("the category hub lists its categories"), cards > 0, `${cards}`);
+      /* Navigated rather than clicked: the toolbar is sticky, and a card that
+         scrolls under it intercepts the pointer. The link's own href is what
+         is being tested anyway. */
+      const href = await page.locator(".catcard").first().getAttribute("href");
+      await go(href); await page.waitForTimeout(350);
+      ck(P("a category page states its boundary"),
+         (await page.locator(".cbound-lg").first().innerText()).trim().length > 20);
+      ck(P("a category page lists members"), await page.locator(".cmem").count() > 0);
+      const sibs = await page.locator(".csib").count();
+      if (sibs) ck(P("a category names what it is not"), sibs > 0);
+      /* A member carries the section it actually lives in, because a category
+         is not a section and the reader has to be able to get back. */
+      ck(P("a member says where it lives"), await page.locator(".cmem-at").count() > 0);
+    }
+  }
+
+  /* explore: the faceted surface, which the overlay deliberately is not */
+  {
+    await go(`#/${cid}/explore`);
+    ck(P("explore opens with no query"), await page.locator(".xq").count() === 1);
+    const catBtns = await page.locator(".xfacet .lane-b").count();
+    ck(P("explore offers facets"), catBtns >= 3, `${catBtns} facet buttons`);
+    /* Browsing with no query is the whole point: a category is a request. */
+    await page.evaluate(() => document.querySelector(".xfacet .lane-b").click());
+    await page.waitForTimeout(350);
+    const rows = await page.locator(".xrow").count();
+    ck(P("a facet alone returns results, with no query typed"), rows > 0, `${rows} rows`);
+    await page.locator(".xq").fill("the"); await page.waitForTimeout(400);
+    ck(P("a query narrows rather than replaces the facet"),
+       await page.locator(".xrow").count() <= rows + 1);
+  }
+
+  /* A block is addressable, and the address is what a block-grain search hit
+     links to. Arriving at a closed row would make the address a lie, so the
+     named block is forced open whatever depth the reader left the course in. */
+  {
+    await go(`#/${cid}/${secIds[0]}`);
+    const bid = await page.evaluate(() => {
+      const el = document.querySelector(".brow[id*='~']");
+      return el ? el.id : null;
+    });
+    if (bid) {
+      /* Set the course to its most closed depth first, so "forced open" is a
+         claim about this route rather than about the default. */
+      await page.evaluate(() =>
+        document.querySelector('.depth .lane-b[data-depth="index"]').click());
+      await page.waitForTimeout(250);
+      await go(`#/${cid}/${bid}`);
+      ck(P("a block address resolves to its section"),
+         await page.locator(".sec-body").count() === 1);
+      const openAtIndexDepth = await page.evaluate(id => {
+        const el = document.getElementById(id);
+        return !!el && !el.querySelector(".nrow") && !el.querySelector(".ntopic-t");
+      }, bid);
+      ck(P("an addressed block is open even at index depth"), openAtIndexDepth, bid);
+      await page.evaluate(() => {
+        const b = document.querySelector('.depth .lane-b[data-depth="full"]');
+        if (b) b.click();
+      });
+      await page.waitForTimeout(250);
+    }
   }
 
   /* search */

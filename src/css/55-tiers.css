@@ -4,31 +4,31 @@
 .tstub{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;width:100%}
 .tstub-b{
   display:inline-flex;align-items:center;gap:.4rem;flex:none;
-  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.06em;
   color:var(--ink-3);background:none;border:0;padding:2px 0;cursor:pointer;
 }
 .tstub-b::after{content:"";flex:1 1 2rem;min-width:2rem;border-top:1px dashed var(--rule);margin-left:.2rem}
 .tstub-b:hover{color:var(--hi-ink)}
 .tstub-b:hover::after{border-top-color:var(--hi)}
-.tstub-chev{font-size:.7rem;transform:translateY(-1px)}
+.tstub-chev{font-size:var(--fs-meta);transform:translateY(-1px)}
 .tstub::after{content:"";flex:1 1 1rem;border-top:1px dashed var(--rule)}
 .tstub-chips{display:inline-flex;flex-wrap:wrap;gap:5px;flex:none}
 /* A collapsed run is a break in the reading, so it takes the wider beat. */
 .brow:has(.tstub){--row-gap:var(--sp-3)}
 
 .lane{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:0 0 var(--sp-2)}
-.lane-l{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;
+.lane-l{font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.14em;
   text-transform:uppercase;color:var(--ink-3)}
 .lane-set{display:inline-flex;gap:4px}
 .lane-b{
-  font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.04em;
   border:1px solid var(--rule);background:var(--surface);color:var(--ink-2);
   border-radius:5px;padding:3px 9px;cursor:pointer;
 }
 .lane-b:hover{border-color:var(--hi);color:var(--hi-ink)}
 .lane-b.sel{border-color:var(--hi);color:var(--hi-ink);
   background:color-mix(in srgb,var(--hi) 12%,transparent)}
-.lane-k{font-family:var(--mono);font-size:.62rem;color:var(--ink-3);opacity:.7}
+.lane-k{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);opacity:.7}
 /* the narrow-width form is rendered too, and the stylesheet picks */
 .lane-cycle{display:none}
 
@@ -43,4 +43,4 @@
 }
 .attempt-in:focus{outline:2px solid var(--hi);outline-offset:1px}
 .attempt .dbtn{margin-top:10px}
-.attempt-done{font-size:.79rem;color:var(--ink-3);margin:10px 0 0}
+.attempt-done{font-size:var(--fs-small);color:var(--ink-3);margin:10px 0 0}

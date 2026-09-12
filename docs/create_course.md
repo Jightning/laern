@@ -172,6 +172,7 @@ re-derives them.
 courses/<id>/
   course.yaml              identity, theme, state, retention, audit, highlighting
   concepts/<key>.yaml      one file per recurring idea (M13; no cap)
+  categories/<key>.yaml    one file per declared category (M35; optional)
   drills/<key>.yaml        one file per *reviewed* concept (M31)
   sections/
     01-<slug>/
@@ -197,6 +198,13 @@ whole feature surface: if you want a reader-facing behaviour, it is here.
 | A file inside it | A subsection with its own heading and quiz |
 | `blocks:` entries | The content, one reading row each, filtered by tier |
 | `tier: depth` / `tier: apply` | A collapsed stub with a count, expandable in place |
+| `core:` on a block | Its **claim**, shown at Notes depth with the rest closed — and the opening line of the block at Full depth |
+| `gist:` on a block | Its claim at Notes depth only; the prose stays whole and untouched at Full depth |
+| `cat:` on a block or concept | A **chip** at Notes depth, a row on that **category's page**, and a facet in **Explore** |
+| `tags:` on a block or concept | A facet in **Explore** and a chip that links to everything sharing the tag |
+| `categories/<key>.yaml` | A page at **`#/<id>/cat/<key>`** listing every member wherever it sits, with the boundary and its siblings |
+| `siblings:` in a category | A "not to be confused with" comparison strip on both pages |
+| `id:` on a `table` | An auto-numbered, citable **"Table 3.1"**, reachable by `<f k="…"/>` exactly as a figure is |
 | A `def` block with `term:` | An entry in the **"Before you start"** panel |
 | `<a href="#s4-2">§4.2</a>` | A **margin card**, a **return pill**, a **"Builds on" chip**, a **dependency-map edge**, and a **"used later in"** card on §4.2 |
 | `<c k="key">phrase</c>` | A **margin card**, a **concept hub** entry, a line in that concept's **"appears in"** list |
@@ -242,10 +250,25 @@ the semester `review: true`.
 *Stop: every idea you would re-explain in three sections has a concept file, and
 the review set matches its declared basis.*
 
+**Phase 3a — Taxonomy.** Write `categories/<key>.yaml` for the kinds of thing
+this course will sort its material into (§5a). It comes before the spine, not
+after, because a block can only tag into a taxonomy that already exists — and a
+taxonomy derived after the fact fragments, with `invoke-labels` invented beside
+an existing `invocation-labels`. A textbook's own structure is usually most of
+the answer.
+*Stop: every category has a boundary naming what falls outside it, siblings name
+each other, and you can say for each one which blocks will join it. Skip the
+phase entirely if the material has no such kinds — an empty taxonomy is a
+correct answer and an invented one is not.*
+
 **Phase 4 — Spine.** Write spine blocks only, across every subsection. That
-means writing no `tier:` at all, since spine is the default.
+means writing no `tier:` at all, since spine is the default. Every `def`, `key`
+and `trap` declares its claim as `core:` (or, where the prose must withhold it,
+`gist:` — §6.6), and joins a category where it belongs to one.
 *Stop: the spine alone teaches the whole course. If a spine block needs
-something you have not written, that thing is spine, not depth.*
+something you have not written, that thing is spine, not depth. Reading only the
+`core:` lines of a section, in order, gives a correct — if terse — account of
+it.*
 
 **Phase 5 — Quizzes.** One item per distinct question type per subsection (§7),
 plus the section's synthesis item where §7.1 requires one.
@@ -375,6 +398,66 @@ sides (D2).
 
 ---
 
+## 5a. Categories — `categories/<key>.yaml`
+
+A category is the answer to *what kind of thing is this, and what is it not*.
+It is the only grouping in the system that is neither positional (a section),
+argumentative (a tier) nor referential (a concept mention), and it is the one a
+reader still has after they have forgotten where they read something.
+
+```yaml
+name: Invoke labels
+short: IL                    # 2-3 chars, the recognisable key. Optional.
+boundary: |-
+  The labels a dispatcher attaches to an inbound call. Not response labels,
+  which are attached on the way out, and not lifecycle labels, which describe
+  the request rather than its routing.
+siblings: [response-labels]  # must name each other
+note: |-                     # optional; HTML, rendered above the members
+  <p>All eleven are assigned by the router, never by the caller.</p>
+```
+
+Membership is declared on the thing, not in the category file:
+
+```yaml
+- t: table
+  id: dispatch-paths
+  cap: The four dispatch paths
+  cat: invoke-labels          # the principal tag: one, and it must be declared
+  tags: [routing, dispatch]   # secondary, plural, slugs
+```
+
+**A label is not a category, and neither replaces the other.** A `label:` names
+*one block* — cardinality one to one, local, and it answers "what is this?". A
+`cat:` names *a set* — cardinality one to many, course-wide, and it answers
+"what are all the X, and which are not?". If a category would only ever have
+one member, it is a label and should stay one.
+
+**`cat:` versus `tags:`.** The category is the principal tag: the single kind a
+thing most is. Tags are every other shelf it could sit on. The category gets a
+page, a boundary and siblings; tags get a facet in Explore and nothing else,
+because discovery wants many routes in and categorisation wants one answer.
+
+**`boundary:` is required and is the point.** Without it a category file is a
+label that has been given a page. Say what is in, and name what is nearby and
+out — that sentence is what a reader is actually learning when they learn a
+category.
+
+**Rules.**
+- Every `cat:` must name a `categories/` file. The build fails otherwise; a
+  category is declared, never inferred (M35).
+- Every category needs at least one member. An empty one renders an empty page.
+- `siblings:` must name each other. A contrast drawn one way is half a contrast.
+- Tags are slugs — lowercase, digits, single hyphens — so one tag cannot index
+  twice under two spellings.
+- Categories go on **blocks and concepts only**. A drill item inherits its
+  concept's category; a quiz item has none, because `type` is already its
+  identity (M9).
+- Do not categorise everything. A chip on every block is a chip that signals
+  nothing (T13).
+
+---
+
 ## 6. Sections and subsections
 
 `_section.yaml`:
@@ -425,8 +508,9 @@ numbering is what keeps ids stable and unique.
 | `image` | A photograph, scan or supplied diagram | `src`, `alt`, `cap`, `credit`, `width`, `id` |
 | `attempt` | A problem the reader cannot yet solve, **first block only** | `h`, `label` |
 
-Every block also takes `tier:` and `label:`; `def`, `key` and `trap` take
-`source:`.
+Every block also takes `tier:`, `label:`, `cat:`, `tags:` and `notes:` (§6.6);
+`def`, `key` and `trap` take `source:` and one of `core:`/`gist:` (§6.6). `table` and `image`
+take `id:`, which makes them citable and numbered exactly as a `figure` is.
 
 On `table`: `mono: true` gives fixed-width centred cells and applies the
 course's `valueStyles`, so a truth table needs no special block type. `map:`
@@ -436,7 +520,13 @@ a rule after column N, separating inputs from outputs.
 **A `label:` names the block; it does not explain it.** A word, or a short
 phrase where the phrase is the name of the thing — "Common slip", "The cut
 property". If it runs to a sentence, that sentence is the block's first line and
-belongs in `h`.
+belongs in `h` — or, now, in `core:`.
+
+The engine counts: past four words a label is set in the reading face at reading
+size rather than as a small mono chip, because T41's test ("if you would read it
+aloud as a sentence, it is not a label") is mechanical once you are willing to
+count words. That is a fallback, not a licence — a five-word label still reads
+better as a name.
 
 **An `ex` block's `title:` names what is worked, not how you worked it.** A noun
 phrase for the thing itself: "Overflow in a 4-bit sum", "The screening numbers
@@ -616,6 +706,221 @@ read, and the quiz is already a retrieval surface with a reveal gate, a `why`, a
 The correct procedure appears in an `ex` block earlier in the same subsection.
 One error-spotting item per procedural subsection. It is a desirable
 difficulty, and those work in small numbers.
+
+---
+
+### 6.6 The claim: `core:` and `gist:`
+
+Every `def`, `key` and `trap` declares one of these, never both. They decide
+what the reader sees when the block is closed, and the field name *is* the
+declaration — there is no mode flag.
+
+**`core:` — the block's own opening claim, in its own field.**
+
+```yaml
+- t: key
+  label: The split trap
+  core: |-
+    Random frame-level splits leak near-duplicate frames across train and
+    validation.
+  h: |-
+    <p>The camera captures frames continuously, so consecutive frames from one
+    feeding event are near-identical. The model then partly succeeds on
+    validation by having memorised that scene. Split at a coarser grain: hold
+    out a whole pen or a contiguous time block.</p>
+```
+
+`h:` holds **only what develops the claim** — never the claim again. The two
+render as one paragraph at Full depth and the `core:` alone at Notes depth, so
+the sentence exists exactly once and there is nothing that can drift. The build
+fails a `core:` whose text reopens its own `h:`.
+
+**A `core:` may be a list.** A claim that is several parallel facts is several
+lines, because that is what it is — flattening three tests into one sentence to
+fit a field is the field deforming the content.
+
+```yaml
+- t: key
+  label: Three tests that decide every block
+  core:
+    - Removing it breaks the argument → <b>spine</b>.
+    - It answers "why" or "what if", and nothing examinable rides on it → <b>depth</b>.
+    - It teaches nothing new and only builds fluency → <b>apply</b>.
+  h: |-
+    <p>Ambiguous between spine and depth → choose depth.</p>
+```
+
+This is still the claim stated once, not a summary in another form. Notes depth
+renders the points as points; full depth renders the same list above the
+development.
+
+**Write the `core:` so it stands alone.** A reader meeting it cold in week six
+gets that line and nothing else. No "the following", no "as above", no forward
+reference to the example underneath it.
+
+This is prose discipline, not extra writing: the claim goes first and the
+development follows. Real expository writing already does it much of the time.
+From SICP §1.1.1, [sarabander.github.io](https://sarabander.github.io/sicp/html/1_002e1.xhtml):
+
+> "The leftmost element in the list is called the operator, and the other
+> elements are called operands."
+
+That is a `core:` as written — claim first, complete, standing alone. Two
+paragraphs earlier the same page does the opposite:
+
+> "Expressions such as these, formed by delimiting a list of expressions within
+> parentheses in order to denote procedure application, are called
+> combinations."
+
+The term arrives last, after a clause the reader has to hold. Hoisted, its
+`core:` is *"A combination is a list of expressions inside parentheses,
+denoting procedure application."* and the original sentence's machinery moves
+into `h:`.
+
+**`gist:` — a summary about the block, when the prose must not lead with its
+claim.**
+
+```yaml
+- t: trap
+  label: The leading bit is a weight
+  gist: In two's complement the leading bit is worth −8, not a sign flag.
+  h: |-
+    <p>People read the leading 1 of <code>1010</code> as a minus sign and the
+    rest as a magnitude, giving −2. The leading bit is a <i>weight</i>, −8, so
+    <code>1010</code> is −8 + 2 = −6.</p>
+```
+
+`h:` is untouched and the `gist:` renders only when the block is closed. Use it
+where stating the claim first would spoil the first read — which is nearly
+always a `trap`, whose whole mechanism is letting the reader believe the wrong
+thing for a sentence. Showing the claim in a closed view costs nothing, because
+order matters on a first read and a first read is the full text.
+
+**`gist:` is a second copy and is counted.** It is the easier of the two to
+write, so left alone it becomes the default and the duplication comes back.
+`npm run audit` reports the fraction; a course declares its ceiling in
+`course.yaml` under `audit.repeat`. Reach for `core:` unless the order is doing
+pedagogical work.
+
+**What the other kinds do when closed**, so you do not have to write anything
+for them:
+
+| Kind | Closed view | From |
+|---|---|---|
+| `def` `key` `trap` | the claim | `core:` / `gist:` |
+| `figure` `math` | rendered in full — already the compact form | — |
+| `table` `image` | its caption line | `cap:` |
+| `ex` | its title | `title:` |
+| `note` `code` `list` | a one-line stub | `label:` |
+| `p` | **not shown at all** | — |
+
+That last row is a rule, not an omission. **A `p` block carries no claim**: it
+sets up, bridges, or fades a concrete anchor. A `p` that asserts something is
+the wrong block type and wants to be a `key` (M36).
+
+**`notes:` overrides any of it, per block.** The table above is what a kind does
+*by default*; the author knows the cases where it is wrong.
+
+```yaml
+- t: table
+  notes: open        # open | lead | caption | closed | hidden
+  cap: The two controls, and what each one does to a block
+```
+
+Use `notes: open` on a table that is a genuine compare-and-contrast matrix. A
+matrix is already the compact form — it puts the things being compared side by
+side, which a list of claims cannot do, and displays that position related items
+close together beat both the running text and the outline on relational learning
+(Robinson & Kiewra 1995; Kiewra et al. 1999). Collapsing one to its caption
+throws away the only thing it was for.
+
+Use `notes: closed` on a block whose claim is real but not worth a line when you
+are scanning. Use `hidden` almost never: it is the one value that takes a block
+off the page at that depth, and the reader has no way to know it was there.
+
+### 6.7 Writing for Notes depth
+
+**The rule: a reader at Notes depth must never have to open a block to find out
+what it says.** Opening is for *more* detail, not for the *first* detail. A row
+that shows only its own label — "Where your courses live", "A concept's first
+week" — is a row that has told the reader nothing and is asking them to click to
+find out whether it matters. `npm run audit` counts those as the `nameonly`
+fraction, and a course declares its ceiling like any other.
+
+**A claim may only stand in for what it can encompass.** This is the rule the
+whole section turns on, and the test is one question:
+
+> Does the claim give the reader the *content*, or only a *count* or a *topic*
+> of it?
+
+*"Criterion met in four sessions across three days"* is the content of a worked
+example. *"Four places a course can take you"* is a count of a list — it tells
+you how many and not which, so closing the list behind it hands the reader a
+title and calls it a note. If your claim is a count or a topic, then either the
+claim is wrong or the block is, and §6.7's last paragraph says which.
+
+**The engine settles the kinds where this is never a judgement.** A block whose
+substance is an enumeration — `list`, `table`, `code`, `math`, `figure`,
+`image` — is marked `holds: structure` in the registry. A claim on one of those
+can only ever be a caption, so writing a `core:` on it does not close it: it
+renders the claim **and** the structure. You cannot accidentally hide a table
+behind a sentence about the table.
+
+Three ways to satisfy the rule, in order of preference:
+
+1. **Write a `core:`.** Works on *any* block, not only `def`/`key`/`trap`. On a
+   prose block it buys `lead`: the claim shows and the argument closes. On a
+   structure block it buys `open`: the claim shows and the structure stays.
+2. **Set `notes: open`.** For the judgement calls the engine cannot make — a
+   `key` whose body is really three parallel rules, an `ex` whose steps you want
+   in front of you while revising.
+3. **Accept the label** only where the label genuinely is the whole content —
+   which is rarer than it looks.
+
+**The one case the engine warns about rather than decides.** A prose block with
+a list buried inside its own `h` looks like prose to the engine and reads like a
+list to a reader, and its claim closes every item behind one sentence.
+`npm run check` warns and names both fixes: `notes: open`, or move the
+enumeration into a `list` block of its own, which is usually what it wanted to
+be. A worked example is exempt, because M11 requires it fully stepped — its
+`<ol>` is the *working*, which is what you open an example for, not the
+substance, which its claim already carries.
+
+**Write claims telegraphically.** The Cornell note-taking system's first
+instruction is exactly this:
+
+> "Record: During the lecture, use the note-taking column to record the lecture
+> using **telegraphic sentences**."
+> — Cornell Learning Strategies Center, adapted from Walter Pauk,
+> *How to Study in College* 7/e (2001),
+> [lsc.cornell.edu](https://lsc.cornell.edu/how-to-study/taking-notes/cornell-note-taking-system/)
+
+A telegraphic sentence drops what the reader can supply — articles, hedges,
+throat-clearing — and keeps the assertion. Target one line. Two is a paragraph
+wearing a bullet.
+
+| Instead of | Write |
+|---|---|
+| "It is worth noting that a course you install exists only in this browser and nowhere else." | "Nothing is uploaded: a course lives in this browser and nowhere else." |
+| "This example walks through what happens when you answer one question confidently and get it wrong." | "One confident miss records a failed type, enrols the concept, and drills it." |
+| "Some notes about the other layouts a graph block will accept." | "A graph also takes `row` and `manual`; layered is the default past five nodes." |
+
+The left column names the block. The right column *is* the note.
+
+**A `label:` still shows, as a run-in.** Where a block has both a label and a
+claim, Notes depth sets the label in the mono face and runs the claim on after
+it — the classic notes form, and the reason it runs in rather than sitting above
+is that a heading per row rebuilds the stack of header-and-paragraph this view
+exists to replace.
+
+```
+▌ The split trap. Random frame-level splits leak near-duplicate
+  frames across train and validation.
+```
+
+So write the label as the *takeaway* and the `core:` as the *rule*, and they
+carry different information. If the two would say the same thing, write only the
+claim.
 
 ---
 
@@ -1015,6 +1320,14 @@ skipped.
 - [ ] Spine-only reading resolves every reference (M23, T33)
 - [ ] `npm run audit` is inside every ceiling `course.yaml` declares
 
+**The claim and the taxonomy (§5a, §6.6).**
+
+- [ ] No block declares both `core:` and `gist:`.
+- [ ] No `core:` reopens its own `h:` — `h:` develops the claim, never restates it.
+- [ ] Every `cat:` names a `categories/` file, every category has a `boundary:`
+      and at least one member, and `siblings:` name each other.
+- [ ] Every tag is a slug: lowercase, digits, single hyphens.
+
 ### 12b. Author judgement — ungated
 
 No script decides any of these. Skip this list and nothing else catches it.
@@ -1057,6 +1370,13 @@ npm run audit      # read the four fractions and the M33 warnings
 npm run shots      # look at it: did figures draw, is the primer right,
                    # is any section a wall of undifferentiated p blocks
 ```
+
+**Read the section at Notes depth before you call it done.** Every `core:` line
+in order, and nothing else. Three things show up there and nowhere else: a claim
+that turns out to be a topic rather than an assertion, two blocks whose claims
+are the same claim, and a `def` that announces what the blocks below it will
+cover instead of defining its term. All three are invisible in the full text,
+because the prose around them fills the gap.
 
 ### Quality bar
 

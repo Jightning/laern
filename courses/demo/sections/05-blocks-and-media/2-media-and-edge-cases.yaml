@@ -8,8 +8,10 @@ blocks:
   - t: def
     source: docs/material_truth.md M28
     term: Grounded claim
+    core: |-
+      Every explanatory block names where it came from in its <code>source</code> field: a real origin, or the literal <code>unverified</code>, or <code>generated</code>.
     h: |-
-      <p>Every explanatory block names where it came from in its <code>source</code> field: a real origin, or the literal <code>unverified</code>, or <code>generated</code>. The audit counts anything that is not a real origin and fails a course over threshold.</p>
+      <p>The audit counts anything that is not a real origin and fails a course over threshold.</p>
 
   - t: image
     src: assets/gallery.svg
@@ -32,21 +34,27 @@ blocks:
   - t: key
     source: unverified
     label: A claim with no source
+    core: |-
+      This block asserts something with no checkable origin, so its <code>source</code> is <code>unverified</code> and it renders a badge saying exactly that.
     h: |-
-      <p>This block asserts something with no checkable origin, so its <code>source</code> is <code>unverified</code>, and it renders a badge saying exactly that. The reader is told, in words, not to trust this line the way they trust the rest of the page.</p>
+      <p>The reader is told, in words, not to trust this line the way they trust the rest of the page.</p>
 
   - t: def
     tier: depth
     source: generated
     term: Generated content
+    core: |-
+      A <code>def</code>, <code>key</code> or <code>trap</code> a model drafted without a source in front of it carries <code>source: generated</code>.
     h: |-
-      <p>A <code>def</code>, <code>key</code> or <code>trap</code> a model drafted without a source in front of it carries <code>source: generated</code>. It counts against the unverified fraction exactly as <code>unverified</code> does; the difference is who to ask. <code>unverified</code> means look it up; <code>generated</code> means check whether it is even true.</p>
+      <p>It counts against the unverified fraction exactly as <code>unverified</code> does; the difference is who to ask. <code>unverified</code> means look it up; <code>generated</code> means check whether it is even true.</p>
 
   - t: trap
     source: docs/create_course.md §0.3
     label: A gap you filled from memory is a defect nobody will find
+    core: |-
+      Writing a plausible source on a block you actually guessed is the one thing the audit cannot catch.
     h: |-
-      <p>Writing a plausible source on a block you actually guessed is the one thing the audit cannot catch. A flagged gap is a task; a confidently mislabelled one ships.</p>
+      <p>A flagged gap is a task; a confidently mislabelled one ships.</p>
 
 quiz:
   - type: Choose the source value

@@ -1,7 +1,7 @@
 /* 30-typography — Section and subsection headings and rhythm. */
 
 .eyebrow{
-  font-family:var(--mono);font-size:.70rem;letter-spacing:.15em;text-transform:uppercase;
+  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.15em;text-transform:uppercase;
   color:var(--hi-ink);display:block;margin-bottom:9px;
 }
 .sub{padding:var(--sp-4) 0 0;scroll-margin-top:var(--scroll-clear)}
@@ -15,7 +15,7 @@
   padding:10px 0 9px;margin:0 0 10px;
   box-shadow:0 1px 0 var(--rule-2);
 }
-.sub h3 .sid{font-family:var(--mono);font-size:.76rem;color:var(--ink-3);font-weight:500}
+.sub h3 .sid{font-family:var(--mono);font-size:var(--fs-small);color:var(--ink-3);font-weight:500}
 .sub p{margin:0 0 var(--sp-2)}
 .sub>*:last-child{margin-bottom:0}
 .sub p,.def p,.key p,.trap p,.ex p,.note p{max-width:var(--measure)}
@@ -33,7 +33,7 @@ section.sec-body{padding:var(--view-top) 0 0;scroll-margin-top:var(--scroll-clea
 /* a quiet way out to the dependency map, asked from where the question arises */
 .sec-where{
   display:inline-block;margin-top:var(--sp-2);
-  font-family:var(--mono);font-size:.70rem;letter-spacing:.04em;
+  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.04em;
   color:var(--ink-3);text-decoration:none;
   border-bottom:1px solid var(--rule);
 }

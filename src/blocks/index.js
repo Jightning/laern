@@ -27,6 +27,9 @@ export const setBlockConfig = course => { CFG = course || {}; };
 
 /* The two `source:` values that are a confession rather than an origin. Both
    count as unverified in the audit; the badge names which kind. */
+/* Above this many words a label is being read rather than scanned. */
+const LABEL_WORDS = 4;
+
 const UNSOURCED = {
   unverified: "unverified — not grounded in a named source",
   generated: "generated — drafted by a model, not yet checked"
@@ -43,8 +46,24 @@ const UNSOURCED = {
  * renders it as text, not markup. */
 export const U = {
   esc, strip, clip,
-  box: (cls, label, inner) =>
-    `<div class="${cls}"><span class="blabel">${label}</span>${inner}</div>`,
+  /* An empty label renders no label row. A callout whose kind is already
+     legible from its accent, its term and its claim does not also need the
+     engine's word for it printed above — and the same default repeated on
+     every block of a course is exactly the density at which signalling stops
+     signalling (T13).
+
+     A long label is set as a line of text rather than as a label. T41's test is
+     "if you would read it aloud as a sentence, it is not a label", and that
+     test is mechanical once you are willing to count: "Common mistake" is a
+     label and "Nothing due does not mean nothing to do" is a sentence wearing
+     a label's mono, letterspacing and 13px. The renderer is the only place
+     that can tell them apart, because a stylesheet cannot see the string. */
+  box: (cls, label, inner) => {
+    const long = String(label || "").trim().split(/\s+/).length > LABEL_WORDS;
+    return `<div class="${cls}">` +
+      (label ? `<span class="blabel${long ? " is-line" : ""}">${label}</span>` : "") +
+      `${inner}</div>`;
+  },
   cell: (v, map) => {
     const s = String(v).trim();
     return map && map[s] ? `<span class="${map[s]}">${esc(s)}</span>` : esc(s);
@@ -65,10 +84,31 @@ export const U = {
     ? `<span class="bsrc is-un">${UNSOURCED[b.source]}</span>`
     : `<span class="bsrc">${esc(b.source)}</span>`,
   /* "Figure 3.2 — what it shows". The number is the citable half, so it is
-     rendered even when the author wrote no caption. */
-  caption: (num, text) =>
-    (num ? `<b class="fnum">Figure ${esc(num)}</b>` : "") +
-    (num && text ? " — " : "") + (text || "")
+     rendered even when the author wrote no caption. `kind` is the noun, since
+     tables are numbered on the same rule as figures: a caption that cannot be
+     cited is a caption the prose has to describe in words instead. */
+  caption: (num, text, kind = "Figure") =>
+    (num ? `<b class="fnum">${esc(kind)} ${esc(num)}</b>` : "") +
+    (num && text ? " — " : "") + (text || ""),
+
+  /* The block's prose, claim first.
+   *
+   * `core:` holds the block's opening claim and `h:` holds only what develops
+   * it, so the two are one paragraph split at a declared point rather than a
+   * statement and a copy of it. Composing them here is what lets `notes` depth
+   * show the claim alone without the renderer knowing depth exists.
+   *
+   * `gist:` is deliberately absent from this path. It is a summary *about* the
+   * block, for a block whose prose withholds its claim on purpose, and showing
+   * it above that prose would give away exactly what the prose is withholding. */
+  body: b => {
+    const c = b.core;
+    if (!c) return b.h || "";
+    const lead = Array.isArray(c)
+      ? `<ul class="bcore bcore-l">${c.map(x => `<li>${x}</li>`).join("")}</ul>`
+      : `<p class="bcore">${c}</p>`;
+    return lead + (b.h || "");
+  }
 };
 
 const R = Blocks.register;
@@ -89,30 +129,81 @@ const R = Blocks.register;
  * -------------------------------------------------------------------------*/
 export const isApart = t => !!(Blocks.get(t) || {}).apart;
 
-/* ---------- prose and callouts ---------- */
-R("p",    { render: b => `<p>${b.h}</p>` });
-R("def",  { apart: true, render: b => U.box("def", b.label || "Definition",
-              (b.term ? `<dt>${esc(b.term)}</dt>` : "") + b.h + U.src(b)) });
-R("key",  { render: b => U.box("key",  b.label || "Key rule",       b.h + U.src(b)) });
-R("trap", { render: b => U.box("trap", b.label || "Common mistake", b.h + U.src(b)) });
-R("note", { render: b => U.box("note", b.label || "Note",           b.h) });
-R("ex",   { apart: true, render: b => U.box("ex", b.label || "Worked example",
-              (b.title ? `<p><b>${b.title}</b></p>` : "") + b.h) });
+/* ---------- what a block is made of ----------------------------------------
+ * `holds` says whether a block's substance is prose or a structure.
+ *
+ *   prose      a claim and the argument that develops it. The claim can stand
+ *              in for the block, because what is closed is support.
+ *   structure  an enumeration whose items ARE the content — a list, a table,
+ *              a listing, an equation, a drawing. A claim about one of these
+ *              is a caption, not a substitute: "four places a course can take
+ *              you" tells you how many and not which, so closing the list to
+ *              it hands the reader a title and calls it a note.
+ *
+ * The distinction decides what an authored claim buys. On prose it buys `lead`
+ * — claim shown, development closed. On structure it buys `open` — the claim
+ * renders as the block's lead line and the structure stays whole, because
+ * there is nothing the claim could stand in for.
+ * -------------------------------------------------------------------------*/
+export const holdsOf = t => ((Blocks.get(t) || {}).holds === "structure" ? "structure" : "prose");
 
-R("list", { render: b => {
+/* ---------- how a block behaves at reading depth --------------------------
+ * `notes` says what `notes` depth does with this kind, and `name` says what
+ * its `index` row reads. Both live in the registry rather than in lib/gist.js
+ * so that a course's own blocks.js can declare them for a renderer this file
+ * has never heard of — the same reason `apart` lives here.
+ *
+ *   open     render it whole; it is already the compact form (an equation, a
+ *            declarative figure — a plot IS the note, and flattening it to a
+ *            caption would be the one summary that loses information)
+ *   lead     show the claim, close the development                (def/key/trap)
+ *   caption  show its caption line alone                          (table/image)
+ *   closed   a one-line stub carrying its name                    (ex/note/code)
+ *   hidden   not in the document at this depth                    (p)
+ *
+ * `p` is hidden because a `p` carries no claim: it sets up, bridges, or fades
+ * an anchor. A `p` that asserts something is the wrong block type and wants to
+ * be a `key`. That is the one registry entry named after an HTML tag rather
+ * than a role, and this is where the role gets declared.
+ * -------------------------------------------------------------------------*/
+
+/* ---------- prose and callouts ---------- */
+R("p",    { notes: "hidden", render: b => `<p>${b.h}</p>` });
+R("def",  { apart: true, notes: "lead", defaultLabel: "Definition",
+            name: b => b.term,
+            render: b => U.box("def", b.label || (b.term ? "" : "Definition"),
+              (b.term ? `<dt>${esc(b.term)}</dt>` : "") + U.body(b) + U.src(b)) });
+R("key",  { notes: "lead", defaultLabel: "Key rule",
+            render: b => U.box("key",  b.label || (b.core || b.gist ? "" : "Key rule"),
+                                                                    U.body(b) + U.src(b)) });
+R("trap", { notes: "lead", defaultLabel: "Common mistake",
+            render: b => U.box("trap", b.label || "Common mistake", U.body(b) + U.src(b)) });
+R("note", { notes: "closed", defaultLabel: "Note",
+            render: b => U.box("note", b.label || "Note",           U.body(b)) });
+R("ex",   { apart: true, notes: "closed", defaultLabel: "Worked example",
+            name: b => b.title || b.label,
+            render: b => U.box("ex", b.label || "Worked example",
+              (b.title ? `<p><b>${b.title}</b></p>` : "") + U.body(b)) });
+
+R("list", { holds: "structure", notes: "closed", defaultLabel: "List", render: b => {
   const tag = b.ordered ? "ol" : "ul";
-  return `<div class="blk"><${tag}>${(b.items || []).map(i => `<li>${i}</li>`).join("")}</${tag}></div>`;
+  return `<div class="blk">${b.label ? `<span class="blabel">${b.label}</span>` : ""}` +
+    U.body(b) +
+    `<${tag}>${(b.items || []).map(i => `<li>${i}</li>`).join("")}</${tag}></div>`;
 } });
 
 /* ---------- table ----------------------------------------------------------
  * `mono` gives fixed-width centred cells and applies the course's valueStyles,
  * so a truth table is a table, not a special block type.
  * -------------------------------------------------------------------------*/
-R("table", { apart: true, render: b => {
+R("table", { holds: "structure", apart: true, notes: "caption", defaultLabel: "Table",
+             name: b => b.cap || b.label,
+             render: (b, _u, env) => {
   const vmap = b.map || (b.mono ? CFG.valueStyles : null);
   const sep = i => (b.split != null && i === b.split - 1 ? ' class="sep"' : "");
-  let h = `<div class="tscroll"><table class="tbl${b.mono ? " tmono" : ""}">`;
-  if (b.cap) h += `<caption>${b.cap}</caption>`;
+  let h = U.body(b) + `<div class="tscroll"><table class="tbl${b.mono ? " tmono" : ""}">`;
+  const cap = U.caption(env.fignum, b.cap, "Table");
+  if (cap) h += `<caption>${cap}</caption>`;
   h += "<thead><tr>" + (b.head || []).map((c, i) => `<th${sep(i)}>${c}</th>`).join("") +
        "</tr></thead><tbody>";
   h += (b.rows || []).map(r =>
@@ -179,7 +270,9 @@ function highlight(src, syn) {
   }
   return out + esc(src.slice(last));
 }
-R("code", { apart: true, render: b =>
+R("code", { holds: "structure", apart: true, notes: "closed", defaultLabel: "Listing",
+            name: b => b.label || b.lang, render: b =>
+  U.body(b) +
   `<div class="codewrap"><span class="lang">${esc(b.lang || "code")}</span>` +
   `<pre><code>${CFG.syntax ? highlight(b.src, CFG.syntax) : esc(b.src)}</code></pre></div>` });
 
@@ -191,7 +284,9 @@ R("code", { apart: true, render: b =>
  * A formula that will not parse renders as KaTeX's own error text rather than
  * blanking the page — tools/lib/check.mjs is what keeps it out of a course.
  * -------------------------------------------------------------------------*/
-R("math", { apart: true, render: b =>
+R("math", { holds: "structure", apart: true, notes: "open", defaultLabel: "Equation",
+            name: b => b.label, render: b =>
+  U.body(b) +
   `<div class="mathblk">` +
   (b.label ? `<span class="blabel">${b.label}</span>` : "") +
   (b.tex ? displayTex(b.tex) : `<p class="fx-miss">a math block has no tex</p>`) +
@@ -199,19 +294,21 @@ R("math", { apart: true, render: b =>
   `</div>` });
 
 /* ---------- figure ---------- */
-R("figure", { apart: true, render: (b, _u, env) => {
+R("figure", { holds: "structure", apart: true, notes: "open", defaultLabel: "Figure",
+              name: b => b.cap, render: (b, _u, env) => {
   const fn = Figures[b.kind];
   const body = fn ? fn(b.spec || {}) : `<p class="fx-miss">unknown figure kind: ${esc(b.kind)}</p>`;
   const cap = U.caption(env.fignum, b.cap);
   return `<div class="figure">${cap ? `<span class="fcap">${cap}</span>` : ""}${body}</div>`;
 } });
 
-/* ---------- optional per-course renderers ---------------------------------
- * A course may still ship blocks.js for something the built-ins cannot express.
- * None currently does; the build reports "no code" when a subject is pure data.
- * -------------------------------------------------------------------------*/
-const custom = import.meta.glob("../../courses/*/blocks.js", { eager: true });
-Object.values(custom).forEach(m => { if (typeof m.default === "function") m.default(Blocks, U); });
+/* Per-course renderers are registered by ./custom.js, which main.jsx imports.
+ * They live there rather than here because `import.meta.glob` is a bundler
+ * feature and this module is also read by the Node tools — validate.mjs and
+ * audit-content.mjs both reach it through src/lib/index.js, and a glob in the
+ * import graph makes the whole chain unloadable outside Vite. Keeping the
+ * registry and the built-ins pure is what lets one file describe a block for
+ * both the page and the gates. */
 
 /** render one block, never throwing into the tree.
  *  `env` carries what a renderer cannot know from its own data — currently the
@@ -233,7 +330,8 @@ export function renderBlock(b, env) {
  * `src` is relative to the course folder and is inlined at build time.
  * `alt` is required: a figure nobody can read is not a learning aid.
  * -------------------------------------------------------------------------*/
-R("image", { apart: true, render: (b, _u, env) => {
+R("image", { holds: "structure", apart: true, notes: "caption", defaultLabel: "Image",
+             name: b => b.cap || b.alt, render: (b, _u, env) => {
   const w = b.width ? ` style="max-width:${parseInt(b.width, 10)}px"` : "";
   const cap = U.caption(env.fignum, b.cap);
   return `<figure class="imgblock"${w}>` +

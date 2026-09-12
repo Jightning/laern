@@ -76,7 +76,7 @@
 .note-fold{
   display:flex;align-items:center;gap:6px;width:100%;
   background:none;border:0;padding:0;cursor:pointer;text-align:left;
-  font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.11em;
   text-transform:uppercase;
   /* More than .mn-k's own 4px: this label sits over the reader's prose rather
      than over a title, and at 4px the two ran together. */
@@ -93,7 +93,7 @@
 
 /* The reader's own prose, rendered from Markdown by lib/md.js. Sized like the
    card's own body text, so a note and a reference read at one weight. */
-.note-body{color:var(--ink-2);font-size:.765rem;line-height:1.55}
+.note-body{color:var(--ink-2);font-size:var(--fs-small);line-height:1.55}
 .note-body p{margin:0 0 6px}
 .note-body>:last-child{margin-bottom:0}
 .note-body ul,.note-body ol{margin:0 0 6px;padding-left:18px}
@@ -103,13 +103,13 @@
 
 .note-edit{
   margin-top:6px;background:none;border:0;padding:0;cursor:pointer;
-  font-family:var(--mono);font-size:.68rem;
+  font-family:var(--mono);font-size:var(--fs-meta);
   border-bottom:1px solid transparent;
 }
 .note-edit:hover{border-bottom-color:currentColor}
 
 .note-area{
-  width:100%;font:inherit;font-size:.78rem;line-height:1.5;color:var(--ink);
+  width:100%;font:inherit;font-size:var(--fs-small);line-height:1.5;color:var(--ink);
   background:var(--surface);border:1px solid var(--rule);border-radius:6px;
   padding:7px 9px;resize:vertical;
 }

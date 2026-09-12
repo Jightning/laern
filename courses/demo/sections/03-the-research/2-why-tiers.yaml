@@ -9,14 +9,21 @@ blocks:
     source: docs/code_truth.md Trade-offs
     term: The coherence principle
     label: The finding tiers are built on
+    core: |-
+      Removing interesting-but-nonessential material from a lesson improves what a learner takes from it.
     h: |-
-      <p>Removing interesting-but-nonessential material from a lesson improves what a learner takes from it. That is the effect that says a page should carry less. Tiers are an attempt to have it both ways: the nonessential material is removed from the default read and kept one click away, rather than deleted.</p>
+      <p>That is the effect that says a page should carry less. Tiers are an attempt to have it both ways: the nonessential material is removed from the default read and kept one click away, rather than deleted.</p>
 
   - t: key
     source: docs/material_truth.md M23–M25
     label: Three tests that decide every block
+    cat: reading-controls
+    core:
+      - Removing it breaks the argument → <b>spine</b>.
+      - It answers "why" or "what if", and nothing examinable rides on it → <b>depth</b>.
+      - It teaches nothing new and only builds fluency → <b>apply</b>.
     h: |-
-      <p>Removing it breaks the argument → <b>spine</b>. It answers "why" or "what if" and nothing examinable rides on it → <b>depth</b>. It teaches nothing new, only builds fluency → <b>apply</b>. Ambiguous between spine and depth → choose depth.</p>
+      <p>Ambiguous between spine and depth → choose depth. Read speed ranks last, so available-but-collapsed beats deleted.</p>
 
   - t: table
     mono: true
@@ -31,6 +38,8 @@ blocks:
   - t: ex
     source: docs/create_course.md §7.3
     title: Classifying one block
+    core: |-
+      The result is examinable and the derivation is not, so they take different tiers.
     h: |-
       <ol>
         <li>A paragraph derives the integrating factor from <m>\rho' = P\rho</m>.</li>
@@ -42,6 +51,8 @@ blocks:
     tier: depth
     source: docs/code_truth.md Trade-offs
     label: The evidence, and its limit
+    core: |-
+      Coherence was measured on material the learner cannot avoid, so opt-in depth is untested.
     h: |-
       <p>The coherence principle, which says removing nonessential detail helps learning at <m>g = 0.37</m> to <m>0.41</m>, is measured on material the learner cannot avoid. Opt-in collapsed detail has not been tested against a single-density alternative, so tiering is a defensible default, not a proven one.</p>
 
@@ -55,6 +66,8 @@ blocks:
     tier: apply
     source: docs/create_course.md §7.3
     title: A second classification, for fluency
+    core: |-
+      Three worked variations of a rule the spine already states are apply, by definition.
     h: |-
       <ol>
         <li>A block lists three worked variations of a substitution already defined in the spine.</li>

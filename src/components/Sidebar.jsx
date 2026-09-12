@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "preact/hooks";
-import { IconStart, IconConcept, IconPractice, IconMap, IconTuck } from "./Icon.jsx";
+import { IconStart, IconConcept, IconPractice, IconMap, IconTuck, IconCat, IconExplore } from "./Icon.jsx";
 import CourseActions from "./CourseActions.jsx";
 
 /* State is carried by the number itself — weight, colour and an edge marker.
@@ -52,11 +52,16 @@ export default function Sidebar({ course, cid, rest, here, open, onNavigate, onT
   const activeSec = target && target.startsWith("s") ? target.split("-")[0] : null;
   const curNum = activeSec ? Number(activeSec.slice(1)) : 0;
 
+  /* Categories sits beside concepts because the two are the course's other
+     two indexes — one by mention, one by membership — and Explore sits last
+     because it is where you go when neither index had the shape you wanted. */
   const top = [
     ["", "Overview", IconStart, !rest],
     ["concepts", "Core concepts", IconConcept, rest === "concepts" || rest.startsWith("c/")],
-    ["practice", "Mixed practice", IconPractice, rest === "practice"],
-    ["map", "Dependency map", IconMap, rest === "map"]
+    ["cat", "Categories", IconCat, rest === "cat" || rest.startsWith("cat/")],
+    ["practice", "Mixed practice", IconPractice, rest === "practice" || rest.startsWith("practice/")],
+    ["map", "Dependency map", IconMap, rest === "map" || rest.startsWith("map/")],
+    ["explore", "Explore", IconExplore, rest === "explore" || rest.startsWith("explore/")]
   ];
 
   return (

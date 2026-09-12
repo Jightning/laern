@@ -62,6 +62,14 @@ const PHASES = [
     cc: ["0", "1*", "2*", "3"], mt: ["4*"],
     pick: d => [{ id: "2:course", target: "sections/", written: d.subs.length > 0 }] },
 
+  /* Phase 9 sits third in the run order. The number is historical, as the
+     truth files' numbering is: a phase id is a ledger key, and renumbering the
+     five phases below it would orphan every `.author/<id>.json` mid-course. */
+  { n: 9, key: "taxonomy", what: "categories/<key>.yaml",
+    cc: ["0", "1*", "2*", "5a"], mt: ["10*"],
+    pick: d => [{ id: "9:course", target: "categories/",
+                  written: d.cats.length > 0 }] },
+
   { n: 3, key: "concepts", what: "concepts/<key>.yaml",
     cc: ["0", "1*", "5*"], mt: ["4*"],
     pick: d => d.concepts.map(c => ({ id: `3:${c.key}`,
@@ -70,7 +78,8 @@ const PHASES = [
   /* 13* rides along because this is the phase that writes prose. Without it the
      voice rules are a document nothing reads at the moment they apply. */
   { n: 4, key: "spine", what: "spine blocks",
-    cc: ["0", "1*", "6", "6.1", "6.2", "6.4", "10*", "13*"], mt: ["2*", "3*", "5*"],
+    cc: ["0", "1*", "6", "6.1", "6.2", "6.4", "6.6", "5a", "10*", "13*"],
+    mt: ["2*", "3*", "5*", "10*"],
     pick: d => d.subs.map(u => ({ ...sub(4, u), written: u.blocks > 0 })) },
 
   { n: 5, key: "quizzes", what: "quiz items",

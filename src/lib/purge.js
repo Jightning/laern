@@ -19,6 +19,7 @@
  *   notes               notes.dropNotes   note:<cid>:*
  *   stated reasons      why.dropWhy       why:<cid>:*
  *   reading lane        tiers.dropLane    lane:<cid>
+ *   reading depth       depth.dropDepth   depth:<cid>
  *   replay checkpoint   replay.invalidate ckpt:<cid>
  *   outcome rows        log.dropCourse    the log itself
  *
@@ -30,6 +31,7 @@ import { drop as dropStudy } from "./state.js";
 import { reset as resetRetention } from "./retention.js";
 import { dropNotes } from "./notes.js";
 import { dropWhy } from "./why.js";
+import { dropDepth } from "./depth.js";
 import { dropLane } from "./tiers.js";
 import { invalidate } from "./replay.js";
 import { dropCourse } from "./log.js";
@@ -48,6 +50,7 @@ export function purge(cid, code) {
   dropNotes(cid);
   dropWhy(cid);
   dropLane(cid);
+  dropDepth(cid);
   invalidate(cid);
   return dropCourse(cid);
 }

@@ -83,6 +83,16 @@ export function loadCourse(dir) {
   );
   C.concepts = Object.assign({}, meta.concepts || {});
   C.drills = {};
+  C.cats = Object.assign({}, meta.cats || {});
+
+  /* ---- categories: one file per category, key from the filename ---- */
+  const catdir = join(dir, "categories");
+  for (const f of dataFiles(catdir)) {
+    const key = basename(f, extname(f));
+    const body = parseFile(join(catdir, f));
+    if (!body || typeof body !== "object") { errors.push(`categories/${f}: not a mapping`); continue; }
+    C.cats[body.key || key] = body;
+  }
 
   /* ---- concepts: one file per concept, key from the filename ---- */
   const cdir = join(dir, "concepts");

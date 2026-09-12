@@ -9,25 +9,31 @@ blocks:
     source: docs/architecture.md §3
     term: Section and subsection
     label: How a course is laid out
+    core: |-
+      A course is a list of <b>sections</b>, each of which is a list of <b>subsections</b>.
     h: |-
-      <p>A course is a list of <b>sections</b>; each section is a list of <b>subsections</b>. A subsection is one sitting: a few blocks of material and a quiz on exactly that material. Only one section is ever on the page, so what you are reading is never mixed with what you are not.</p>
+      <p>A subsection is one sitting: a few blocks of material and a quiz on exactly that material. Only one section is ever on the page, so what you are reading is never mixed with what you are not.</p>
 
   - t: key
     source: docs/material_truth.md M4
     label: Every subsection ends in a question
+    core: |-
+      There is no subsection you can finish by reading alone.
     h: |-
-      <p>There is no subsection you can finish by reading alone. The quiz is not a checkpoint the author added if they felt like it. The build refuses a subsection without one. Reading something and being able to produce it are different states, and only one of them survives the week.</p>
+      <p>The quiz is not a checkpoint the author added if they felt like it: the build refuses a subsection without one. Reading something and being able to produce it are different states, and only one of them survives the week.</p>
 
   - t: note
     source: docs/deploy.md
     label: Where your courses live
+    core: |-
+      Nothing is uploaded: a course lives in this browser and nowhere else.
     h: |-
-      <p>Nothing is uploaded. A course you install exists in this browser and nowhere else, which is exactly why it can be private: the site cannot share what it never receives. The library page installs one from a folder or a <code>.zip</code>, and installing a course you already have replaces it while keeping your answer history.</p>
+      <p>That is exactly why it can be private: the site cannot share what it never receives. The library page installs one from a folder or a <code>.zip</code>, and installing a course you already have replaces it while keeping your answer history.</p>
 
   - t: list
     source: docs/architecture.md §2
-    h: |-
-      The four places a course can take you, all reachable from the sidebar:
+    core: |-
+      Four places a course can take you, all from the sidebar.
     items:
       - the <b>sections</b> themselves, in order
       - <b>core concepts</b> — the ideas the course reuses, each with its own entry

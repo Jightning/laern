@@ -8,6 +8,10 @@ A course is this specific thing you want to learn/study (like a class, or certai
 
 Each course will be split into sections with quizzes after each section. The section quizzes will be unique, with repetition practice as something separate.
 
+A course is split by sections, then sub-sections, then cards. Each card has it's own
+type of view depending on the **SHOW** mode. Textbook is the most verbose, showing the
+full extent of all the cards. Notes is better for review and overviews.
+
 ## Writing a course
 
 To start working on a course:

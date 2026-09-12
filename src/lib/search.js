@@ -248,10 +248,15 @@ function snippet(text, terms, re) {
  * query actually occurs in the body, which is the number that distinguishes a
  * passing reference from where the subject is discussed.
  */
-export function searchRun(SEARCH, qs) {
+export function searchRun(SEARCH, qs, opts = {}) {
   const E = engineFor(SEARCH);
   const terms = [...new Set((String(qs).toLowerCase().match(TOKEN) || []))];
   if (!terms.length) return [];
+  /* A facet narrows which entries may rank, and it is applied here rather than
+     to the array handed in: the index is cached against that array's identity,
+     so filtering it first would rebuild the whole index on every keystroke. */
+  const ok = typeof opts.filter === "function" ? d => opts.filter(E.entries[d]) : null;
+  const limit = opts.limit || LIMIT;
 
   const score = new Map(), cover = new Map();
   terms.forEach(w => {
@@ -278,10 +283,15 @@ export function searchRun(SEARCH, qs) {
      each of them once, which is the wrong answer to a multi-word query. When
      nothing matches all of them the best available coverage is shown rather
      than nothing at all. */
-  const best = Math.max(...cover.values());
-  const rows = [...score.keys()].filter(d => cover.get(d) === best)
+  const allowed = [...score.keys()].filter(d => !ok || ok(d));
+  if (!allowed.length) return [];
+  /* Coverage is judged among the entries the facets allow, not among all of
+     them: "every query word" should mean every word inside the slice the
+     reader asked to look in. */
+  const best = Math.max(...allowed.map(d => cover.get(d)));
+  const rows = allowed.filter(d => cover.get(d) === best)
     .sort((a, b) => score.get(b) - score.get(a))
-    .slice(0, LIMIT);
+    .slice(0, limit);
 
   const re = marker(terms);
   return rows.map(d => {

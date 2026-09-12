@@ -2,31 +2,43 @@ title: Answering a question
 blocks:
   - t: attempt
     label: Before you read this
+    core: |-
+      Predicting and explaining both cost time, and neither is graded.
     h: |-
       <p>The quiz below this text asks how confident you are before it shows you anything, and then asks you to type why. Both cost you time, and neither is graded.</p>
 
   - t: def
+    cat: retrieval-surfaces
     source: docs/code_truth.md T18
     term: Confidence
     label: The step before the answer
+    core: |-
+      Every question asks you to predict, in one tap, whether you will get it right — before the answer is reachable.
     h: |-
-      <p>Every question asks you to predict, in one tap, whether you will get it right, before the answer is reachable. The prediction is never graded. It is stored beside the outcome so the two can be compared, and the comparison is the point: <b>a wrong answer you were sure about</b> is a different problem from one you knew you were guessing at.</p>
+      <p>The prediction is never graded. It is stored beside the outcome so the two can be compared, and the comparison is the point: <b>a wrong answer you were sure about</b> is a different problem from one you knew you were guessing at.</p>
 
   - t: key
     source: docs/code_truth.md T32
     label: Then you say why
+    cat: retrieval-surfaces
+    core: |-
+      The reveal is gated behind a reason in your own words.
     h: |-
-      <p>The reveal is gated behind a reason in your own words. Typing it is retrieval: you produce the idea instead of recognising it. Recognition is what makes re-reading feel like learning when it is not. The text stays on this device. Nothing reads it but you.</p>
+      <p>Typing it is retrieval: you produce the idea instead of recognising it, and recognition is what makes re-reading feel like learning when it is not. The text stays on this device. Nothing reads it but you.</p>
 
   - t: trap
     source: docs/code_truth.md T15
     label: Peeking costs the whole exercise
+    core: |-
+      The answer is hidden not to be strict, but because seeing it first replaces the one event that builds memory.
     h: |-
-      <p>The answer is hidden not to be strict but because seeing it first replaces the one event that builds memory. If you genuinely cannot produce anything, say so with a low-confidence answer and let the miss route the concept into review. That beats a revealed answer you nodded along to.</p>
+      <p>If you genuinely cannot produce anything, say so with a low-confidence answer and let the miss route the concept into review. That beats a revealed answer you nodded along to.</p>
 
   - t: ex
     source: docs/architecture.md §3e
     title: What one answer sets in motion
+    core: |-
+      One confident miss records a failed type, enrols the concept, drills it, and adds to your overconfident count.
     h: |-
       <ol>
         <li>You mark <b>high confidence</b> and answer.</li>
@@ -45,6 +57,8 @@ blocks:
     tier: depth
     source: docs/code_truth.md T18
     label: Why the prediction is worth a tap
+    core: |-
+      Only the disagreement between confidence and correctness is diagnostic.
     h: |-
       <p>Confidence and correctness are different quantities, and only their <em>disagreement</em> is diagnostic. A reader who is right and knew it needs nothing; a reader who is wrong and knew it needs practice; a reader who is wrong and sure needs to be interrupted. Without the prediction, the third case is invisible and looks exactly like the second.</p>
 

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "preact/hooks";
 import { INDEX, ORDER, get as getCourse, peek, refresh as refreshLibrary } from "./lib/library.js";
 
-import { buildIndex, labelOf } from "./lib/index.js";
+import { buildIndex, labelOf, parseBlockId } from "./lib/index.js";
 import { stateFor } from "./lib/state.js";
 import { indexDrills } from "./lib/drills.js";
 import { dueCount } from "./lib/queue.js";
 import { laneFor, setLane, LANES } from "./lib/tiers.js";
+import { depthFor, setDepth, nextDepth } from "./lib/depth.js";
 import { reset as resetRetention } from "./lib/retention.js";
 import { rebuild } from "./lib/replay.js";
 import { useHashRoute, useNav, useReading } from "./lib/nav.js";
@@ -24,6 +25,8 @@ import Library from "./components/Library.jsx";
 import CourseHome from "./components/CourseHome.jsx";
 import Section from "./components/Section.jsx";
 import { ConceptHub, ConceptDetail } from "./components/Concepts.jsx";
+import { CatHub, CatDetail } from "./components/Categories.jsx";
+import Explore from "./components/Explore.jsx";
 import Practice from "./components/Practice.jsx";
 import Primer from "./components/Primer.jsx";
 import DepMap from "./components/DepMap.jsx";
@@ -70,6 +73,7 @@ export default function App() {
   const [, forceRender] = useState(0);
   const [zoom, setZoom] = useState(readZoom);
   const [lane, setLaneFor] = useState("apply");
+  const [depth, setDepthFor] = useState("full");
   const contentRef = useRef(null);
 
   /* Watch the reading position: hold it across a change of width, and write it
@@ -141,8 +145,13 @@ export default function App() {
      also where a reader installs their own courses, and the public deployment
      ships exactly one. Skipping it made the install control unreachable. */
 
-  useEffect(() => { if (cid) setLaneFor(laneFor(cid)); }, [cid]);
+  useEffect(() => { if (cid) { setLaneFor(laneFor(cid)); setDepthFor(depthFor(cid)); } }, [cid]);
   const onLane = l => { setLane(cid, l); setLaneFor(l); };
+  /* Depth is per course and persists, like the lane: a reader who reviews one
+     course at `notes` is usually reading another at `full`, and carrying one
+     course's setting into the next would be answering a question about this
+     course with an answer about a different one. */
+  const onDepth = d => { setDepth(cid, d); setDepthFor(d); };
 
   const idx = useMemo(() => (course ? buildIndex(course) : null), [course]);
   /* The inverted index is built once per course and costs a course-sized pass
@@ -196,8 +205,14 @@ export default function App() {
     [course, cid, idx, state, drills]
   );
 
+  /* A block address — "s57-1~3" — resolves to its subsection, and the block
+     it names is forced open whatever the depth is. A link to a thing has to
+     land on the thing; arriving at a closed row would make the address a lie. */
+  const blockRef = idx ? parseBlockId(rest) : null;
+  const openBlock = blockRef && idx.SUBS[blockRef.subId] ? blockRef : null;
+
   /* which section is on screen, and the subsection to scroll to */
-  const subId = idx && idx.SUBS[rest] ? rest : null;
+  const subId = idx && idx.SUBS[rest] ? rest : (openBlock ? openBlock.subId : null);
   const secId = subId ? idx.SUBS[subId].sec.id : rest;
   const section = course ? course.sections.find(s => s.id === secId) : null;
 
@@ -221,7 +236,8 @@ export default function App() {
        one it was closed on before rendering, and this is where that route's
        own offset is put back — once, and only for the route it belongs to. */
     if (!home && resume(location.hash || "#/")) return;
-    const el = subId ? document.getElementById(subId) : null;
+    const el = (openBlock && document.getElementById(rest)) ||
+               (subId ? document.getElementById(subId) : null);
     if (home && home.into != null && el) {
       /* Capped at the subsection's height so a layout that shrank while the
          reader was away — a tier stub they expanded, collapsed again on
@@ -258,6 +274,9 @@ export default function App() {
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === "r" && due != null) { location.hash = "#/review"; return; }
       if (course && "123".includes(e.key)) { onLane(LANES[+e.key - 1].id); return; }
+      /* `d` rather than a fourth number: 1-3 belong to the lane, and depth is
+         usually stepped one way along rather than jumped to. */
+      if (course && e.key === "d") { onDepth(nextDepth(depth)); return; }
       if (!course || !section) return;
       const i = course.sections.indexOf(section);
       if (e.key === "[" && course.sections[i - 1]) location.hash = `#/${cid}/${course.sections[i - 1].id}`;
@@ -265,7 +284,7 @@ export default function App() {
     };
     addEventListener("keydown", onKey);
     return () => removeEventListener("keydown", onKey);
-  }, [course, section, cid, zoom, due]);
+  }, [course, section, cid, zoom, due, depth]);
 
   /* Links inside injected course HTML cannot carry component handlers, so the
      content container intercepts them — this is the only delegation left. */
@@ -295,7 +314,11 @@ export default function App() {
     ? "<b>Courses</b>"
     : !rest ? `<b>${course.code}</b>  ·  contents`
     : rest === "concepts" ? "<b>Core concepts</b>"
-    : rest === "practice" ? "<b>Mixed practice</b>"
+    : rest === "practice" || rest.startsWith("practice/") ? "<b>Mixed practice</b>"
+    : rest === "explore" || rest.startsWith("explore/") ? "<b>Explore</b>"
+    : rest === "cat" ? "<b>Categories</b>"
+    : rest.startsWith("cat/")
+      ? `<b>Categories</b>  ›  ${((course.cats || {})[rest.slice(4)] || {}).name || rest.slice(4)}`
     : rest === "calibration" ? "<b>Calibration</b>"
     : rest === "map" || rest.startsWith("map/") ? "<b>Dependency map</b>"
     : rest.startsWith("primer/") ? "<b>Before you start</b>"
@@ -318,6 +341,15 @@ export default function App() {
   else if (!rest) view = <CourseHome ctx={ctx} />;
   else if (rest === "concepts") view = <ConceptHub ctx={ctx} />;
   else if (rest === "practice") view = <Practice ctx={ctx} />;
+  else if (rest.startsWith("practice/"))
+    view = <Practice ctx={ctx} cat={rest.slice(9)} />;
+  else if (rest === "cat") view = <CatHub ctx={ctx} />;
+  else if (rest.startsWith("cat/")) view = <CatDetail ctx={ctx} k={rest.slice(4)} drills={drills} />;
+  else if (rest === "explore") view = <Explore ctx={ctx} seed={null} />;
+  else if (rest.startsWith("explore/tag/"))
+    view = <Explore ctx={ctx} seed={{ tag: decodeURIComponent(rest.slice(12)) }} />;
+  else if (rest.startsWith("explore/cat/"))
+    view = <Explore ctx={ctx} seed={{ cat: decodeURIComponent(rest.slice(12)) }} />;
   else if (rest === "calibration") view = <Calibration ctx={ctx} drills={drills} />;
   else if (rest === "map" || rest.startsWith("map/"))
     view = <DepMap ctx={ctx} focus={rest.slice(4)}
@@ -328,7 +360,8 @@ export default function App() {
     view = target ? <Primer section={target} ctx={ctx} /> : <CourseHome ctx={ctx} />;
   }
   else if (section) view = <Section section={section} ctx={ctx} expandAll={expandAll}
-                                    lane={lane} onLane={onLane} />;
+                                    lane={lane} onLane={onLane}
+                                    depth={depth} onDepth={onDepth} openBlock={openBlock} />;
   else view = <CourseHome ctx={ctx} />;
 
   /* T6: a keyboard reader should not traverse the whole rail to reach the

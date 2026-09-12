@@ -8,10 +8,14 @@ blocks:
   - t: def
     source: docs/material_truth.md M18
     term: Declarative figure
+    cat: figure-kinds
+    core: |-
+      A figure written as a spec of nodes, steps or signals, and drawn by the engine rather than supplied as a picture.
     h: |-
-      <p>A figure written as a <code>spec</code> of nodes, steps or signals, and rendered by the engine. It follows the theme, stays sharp at any size, and is edited by changing data. Preferred over a supplied image wherever the content can be described as data.</p>
+      <p>It follows the theme, stays sharp at any size, and is edited by changing data. Preferred over a supplied image wherever the content can be described as data.</p>
 
   - t: figure
+    cat: figure-kinds
     id: loop-machine
     kind: graph
     cap: "graph, circle layout — a concept's retention state, with one node ringed as \"here\""
@@ -30,6 +34,7 @@ blocks:
         - {from: criterion, to: criterion, self: true, label: review}
 
   - t: figure
+    cat: figure-kinds
     tier: depth
     kind: graph
     cap: "graph, layered layout — ten nodes, so it keeps an intrinsic width and the figure frame scrolls rather than shrinking; long labels wrap and the node grows to fit them"
@@ -61,6 +66,7 @@ blocks:
         - {from: contrast, to: page}
 
   - t: figure
+    cat: figure-kinds
     kind: flow
     cap: "flow, row direction — the authoring procedure, each step with a note"
     spec:
@@ -73,6 +79,7 @@ blocks:
         - {label: Verify, note: re-derive every answer}
 
   - t: figure
+    cat: figure-kinds
     tier: depth
     kind: flow
     cap: "flow, column direction — the same phases stacked"
@@ -84,6 +91,7 @@ blocks:
         - {label: Phase 7–8, note: "depth and apply, then verify"}
 
   - t: figure
+    cat: figure-kinds
     kind: timing
     cap: "timing — a clock, an enable, and the gated output"
     spec:
@@ -97,6 +105,8 @@ blocks:
     tier: depth
     source: src/figures/graph.js
     label: The other graph layouts
+    core: |-
+      A graph also takes <code>row</code> and <code>manual</code>; layered is the default past five nodes.
     h: |-
       <p>Besides <code>circle</code> and <code>layered</code>, a graph accepts <code>row</code> (evenly spaced on one line) and <code>manual</code> (each node carries its own <code>x</code>, <code>y</code>). Layered is the default past five nodes; it barycentre-sorts each column to cut edge crossings.</p>
 

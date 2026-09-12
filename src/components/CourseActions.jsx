@@ -22,9 +22,15 @@ export default function CourseActions({ inCourse, stateOn, expanded, onExpand, o
 
   return (
     <>
+      {/* One control, two directions. "Close all" puts the page back the way
+          the depth had it rather than to the full text — otherwise closing is a
+          different act from never having opened, and the reader who opened one
+          block to check something can never get their view back. */}
       {inCourse && (
-        <button class="tbtn" onClick={onExpand} title="Reveal every answer on this page">
-          {expanded ? "Collapse all" : "Reveal all"}
+        <button class="tbtn" onClick={onExpand}
+                title={expanded ? "Put the page back the way this depth had it"
+                                : "Open every block and reveal every answer"}>
+          {expanded ? "Close all" : "Reveal all"}
         </button>
       )}
       <button class="tbtn" onClick={toggleTheme} aria-label="Toggle colour theme">Theme</button>

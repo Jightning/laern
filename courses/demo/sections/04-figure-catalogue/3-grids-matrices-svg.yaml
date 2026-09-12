@@ -8,10 +8,14 @@ blocks:
   - t: def
     source: docs/create_course.md §11.1
     term: The svg escape hatch
+    cat: figure-kinds
+    core: |-
+      The <code>svg</code> kind takes a raw body and a <code>viewBox</code> and draws exactly that.
     h: |-
-      <p>The <code>svg</code> kind takes a raw <code>body</code> and a <code>viewBox</code> and draws exactly that. It is the admission that the declarative kinds are finite; reach for it only after checking that <code>grid</code>, <code>graph</code> or a <code>table</code> genuinely cannot express the shape.</p>
+      <p>It is the admission that the declarative kinds are finite; reach for it only after checking that <code>grid</code>, <code>graph</code> or a <code>table</code> genuinely cannot express the shape.</p>
 
   - t: figure
+    cat: figure-kinds
     kind: grid
     cap: "grid — Gray-coded labels, a binary index per cell, two highlighted groups, cell values coloured by the course's valueStyles"
     spec:
@@ -30,6 +34,7 @@ blocks:
         - {label: "centre", cells: [[1, 1], [1, 2]]}
 
   - t: figure
+    cat: figure-kinds
     kind: matrix
     cap: "matrix — a 2×2 identity, with a label"
     spec:
@@ -39,6 +44,7 @@ blocks:
         - ["0", "1"]
 
   - t: figure
+    cat: figure-kinds
     tier: depth
     kind: svg
     cap: "svg — a hand-drawn seam between the two loops; the escape hatch draws exactly the body given, so it also carries its own arrowhead and font sizes"
@@ -56,8 +62,10 @@ blocks:
   - t: trap
     source: docs/create_course.md §16
     label: The escape hatch is not the first move
+    core: |-
+      Reaching for <code>svg</code> or a custom <code>blocks.js</code> before checking the built-ins is how a study aid turns into a drawing project.
     h: |-
-      <p>Reaching for <code>svg</code> or a custom <code>blocks.js</code> before checking the built-ins is how a study aid turns into a drawing project. Six of the seven real courses use no custom code at all.</p>
+      <p>Six of the seven real courses use no custom code at all.</p>
 
 quiz:
   - type: Justify a figure choice

@@ -4,7 +4,7 @@
 .fx-node{cursor:pointer}
 .fx-node:hover .fx-n{stroke-width:2.6}
 .maplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
-.maplist a{text-decoration:none;color:var(--ink-2);font-size:.81rem;padding:6px 9px;
+.maplist a{text-decoration:none;color:var(--ink-2);font-size:var(--fs-small);padding:6px 9px;
   border-radius:6px;border:1px solid transparent;overflow-wrap:anywhere}
 .maplist a:hover{border-color:var(--rule);color:var(--ink)}
 .maplist b{font-family:var(--mono);color:var(--hi-ink);margin-right:7px}
@@ -15,7 +15,7 @@
 /* The section you arrived from, ringed so "where this sits" answers itself. */
 .fx-here{fill:none;stroke:var(--hi);stroke-width:2}
 .fx-node.is-here .fx-nl{font-weight:700}
-.maphere{font-family:var(--mono);font-size:.72rem;color:var(--hi-ink);
+.maphere{font-family:var(--mono);font-size:var(--fs-meta);color:var(--hi-ink);
   margin:0 0 var(--sp-2)}
 .maplist a.is-here{border-color:var(--hi);color:var(--ink)}
 

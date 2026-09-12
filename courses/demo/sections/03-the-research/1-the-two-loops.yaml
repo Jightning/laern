@@ -8,14 +8,19 @@ blocks:
   - t: def
     source: docs/code_truth.md §3c
     term: The two loops
+    cat: retrieval-surfaces
+    core: |-
+      Two retrieval loops run over the same material and never mix: the subsection quiz, keyed by question type, and the drill bank, keyed by concept.
     h: |-
-      <p><b>Loop A</b> is the subsection quiz, keyed by question <em>type</em>. One item per type: can you derive this on the spot? <b>Loop B</b> is the drill bank, keyed by <em>concept</em>. Many items, spaced: do you still hold it?</p>
+      <p>One item per type: can you derive this on the spot? <b>Loop B</b> is the drill bank, keyed by <em>concept</em>. Many items, spaced: do you still hold it?</p>
 
   - t: key
     source: docs/create_course.md §8
     label: The seam runs one way
+    core: |-
+      A confident miss in Loop A pulls that concept into Loop B; a Loop B success never marks a Loop A type as covered.
     h: |-
-      <p>A confident miss in Loop A pulls that concept into Loop B. A Loop B success never marks a Loop A type as covered. <c k="retrieval-practice">Retrieval practice</c> is the shared mechanism of <c k="two-loops">the two loops</c>; the one-way direction is what keeps coverage and retention from being confused for each other.</p>
+      <p><c k="retrieval-practice">Retrieval practice</c> is the shared mechanism of <c k="two-loops">the two loops</c>; the one-way direction is what keeps coverage and retention from being confused for each other.</p>
 
   - t: math
     label: What Loop B schedules against
@@ -25,6 +30,8 @@ blocks:
   - t: ex
     source: docs/create_course.md §8
     title: A confident miss, routed
+    core: |-
+      High confidence is what fires the seam; the same miss while unsure would not.
     h: |-
       <ol>
         <li>A reader answers a "separate the variables" quiz item, marks high confidence, and gets the sign wrong.</li>
@@ -35,16 +42,20 @@ blocks:
   - t: trap
     source: docs/material_truth.md M5
     label: Volume belongs in one loop only
+    core: |-
+      A second question of a type already covered is wrong in the quiz and right in the drill bank.
     h: |-
-      <p>Adding a fifth "solve a linear IVP" question to a subsection quiz is a repeated type, and the validator rejects it. The place for a fifth instance is the concept's drill file, which carries no type-uniqueness rule and is scheduled rather than read.</p>
+      <p>A fifth “solve a linear IVP” question in a subsection quiz is a repeated type and the validator rejects it. Its place is the concept's drill file, which carries no type-uniqueness rule and is scheduled rather than read.</p>
 
   - t: metric
+    notes: open
     tier: depth
     value: <m>g = 0.51</m>
     label: practice testing vs. restudy (Adesope et al. 2017, 272 effects)
     source: docs/code_truth.md §17
 
   - t: metric
+    notes: open
     tier: depth
     value: <m>g = 0.74</m>
     label: spaced retrieval vs. massed (Latimier et al. 2021)

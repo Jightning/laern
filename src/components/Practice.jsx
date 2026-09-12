@@ -10,9 +10,16 @@ const Stat = ({ n, label, warn }) => (
 
 /* Interleaving topics is harder than practising one section at a time, and
  * that difficulty is what makes it transfer to an exam that mixes them. */
-export default function Practice({ ctx }) {
+export default function Practice({ ctx, cat }) {
   const { C, cid, idx, state, drills } = ctx;
-  const [source, setSource] = useState(drills.has ? "drills" : "types");
+  /* A category scopes the drill pool by narrowing the key list handed to the
+     queue — buildQueue reads `keys`, `pick` and `cluster` and nothing else, so
+     no second code path is needed. The category's concepts are derived from
+     its membership, never authored on the items (M27). */
+  const catKeys = cat ? (idx.CAT.drillsOf(cat) || []) : null;
+  const bank = catKeys ? { ...drills, keys: catKeys, has: catKeys.length > 0 } : drills;
+  const catName = cat ? ((idx.CAT.cats[cat] || {}).name || cat) : null;
+  const [source, setSource] = useState(bank.has ? "drills" : "types");
   const [scope, setScope] = useState("all");
   /* Scope belongs to the quiz pool: a drill queue is assembled from what is due
      across concepts, which no section filter can narrow. The control is
@@ -39,10 +46,10 @@ export default function Practice({ ctx }) {
   };
 
   const start = () => {
-    const isDrills = source === "drills" && drills.has;
+    const isDrills = source === "drills" && bank.has;
     setRun({
       items: isDrills
-        ? buildQueue([{ cid, C, drills }], { limit: n || 200 })
+        ? buildQueue([{ cid, C, drills: bank }], { limit: n || 200 })
         : quizPool(),
       i: 0, started: Date.now(), drills: isDrills
     });
@@ -51,9 +58,15 @@ export default function Practice({ ctx }) {
   return (
     <div class="chub">
       <h1>Mixed practice</h1>
+      {catName && (
+        <p class="lede">
+          Scoped to <a href={`#/${cid}/cat/${cat}`}>{catName}</a> — {catKeys.length}{" "}
+          {catKeys.length === 1 ? "concept" : "concepts"} in this category carry a drill bank.
+        </p>
+      )}
 
       <div class="pcfg">
-        {drills.has && (
+        {bank.has && (
           <label>Draw from{" "}
             <select id="p-source" value={source} onChange={e => pickSource(e.currentTarget.value)}>
               <option value="drills">Drills</option>
@@ -61,8 +74,8 @@ export default function Practice({ ctx }) {
             </select>
           </label>
         )}
-        <label class={source === "drills" && drills.has ? "off" : ""}>Scope{" "}
-          <select id="p-scope" disabled={source === "drills" && drills.has}
+        <label class={source === "drills" && bank.has ? "off" : ""}>Scope{" "}
+          <select id="p-scope" disabled={source === "drills" && bank.has}
                   value={scope} onChange={e => setScope(e.currentTarget.value)}>
             <option value="all">All sections</option>
             {state.on && <option value="due">Due for review</option>}

@@ -56,10 +56,13 @@ export const decorate = (html, cid, figs) =>
     .replace(/<c\s+k="([^"]+)"\s*>([\s\S]*?)<\/c>/g,
       (_, k, text) =>
         `<a class="cref" data-xr="c:${k}" href="#/${cid}/c/${k}">${text}</a>`)
+    /* A citation names the kind it resolves to, so "Table 3.1" and
+       "Figure 3.1" read as what they are. The author writes the key either
+       way and the engine supplies the noun. */
     .replace(/<f\s+k="([^"]+)"\s*\/?>/g, (_, k) => {
       const f = figs && figs[k];
       if (!f) return `<span class="xr-miss">figure “${k}”?</span>`;
-      return `<a class="xr" data-xr="${f.subId}" href="#/${cid}/${f.subId}">Figure ${f.num}</a>`;
+      return `<a class="xr" data-xr="${f.subId}" href="#/${cid}/${f.subId}">${f.kind || "Figure"} ${f.num}</a>`;
     });
 
 /** dependency edges between sections, for the map */

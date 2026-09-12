@@ -1,0 +1,9 @@
+name: Retrieval surfaces
+short: RS
+boundary: |-
+  Every place the site asks you to produce something before it shows you an
+  answer — the subsection quiz, a drill, mixed practice, the cross-course
+  review queue, a primer prequestion. Not the reading controls, which change
+  what is on the page and never ask for anything, and not the calibration
+  report, which shows you results you have already produced.
+siblings: [reading-controls]

@@ -9,27 +9,35 @@ blocks:
     source: docs/material_truth.md M2
     term: Completeness
     label: Rule 1
+    core: |-
+      Assume no prior knowledge beyond the written calibration in <code>expectations.md</code>.
     h: |-
-      <p>Assume no prior knowledge beyond the written calibration in <code>expectations.md</code>. Do not skip a step because it seems obvious. Obviousness is measured against the reader on record, not against the author.</p>
+      <p>Do not skip a step because it seems obvious. Obviousness is measured against the reader on record, not against the author.</p>
 
   - t: def
     source: docs/material_truth.md M1
     term: Non-redundancy
     label: Rule 2
+    core: |-
+      Every piece of explanation appears exactly once.
     h: |-
-      <p>Every piece of <em>explanation</em> appears exactly once. Two subsections that need one idea: one defines it, the other links. Three or more: it becomes a concept.</p>
+      <p>Two subsections that need one idea: one defines it, the other links. Three or more: it becomes a concept.</p>
 
   - t: key
     source: docs/material_truth.md §1
     label: Why they need each other
+    core: |-
+      <c k="completeness">Completeness</c> and <c k="non-redundancy">non-redundancy</c> pull in opposite directions, and the reference system is what dissolves the conflict.
     h: |-
-      <p><c k="completeness">Completeness</c> and <c k="non-redundancy">non-redundancy</c> pull in opposite directions. One wants every step written, the other wants nothing written twice. The reference system dissolves the conflict: a reader can always reach a definition from wherever they stand, so a course is complete <em>without</em> repeating itself.</p>
+      <p>One wants every step written, the other wants nothing written twice. A reader can always reach a definition from wherever they stand, so a course is complete <em>without</em> repeating itself.</p>
 
   - t: trap
     source: docs/material_truth.md M1
     label: A second application is not a second copy
+    core: |-
+      Non-redundancy governs explanation, not practice.
     h: |-
-      <p>Non-redundancy governs explanation, not practice. Deleting the drill bank's repeated worked instances "to avoid redundancy" removes exactly the repetition long-term retention needs. The rule forbids restating the <em>definition</em>, nothing else.</p>
+      <p>Deleting the drill bank's repeated worked instances "to avoid redundancy" removes exactly the repetition long-term retention needs. The rule forbids restating the <em>definition</em>, nothing else.</p>
 
   - t: p
     source: docs/architecture.md
@@ -40,6 +48,8 @@ blocks:
     tier: depth
     source: docs/code_truth.md
     label: What the rules replaced
+    core: |-
+      Repetition "for emphasis" leaves two copies that drift, and no way to tell which is current.
     h: |-
       <p>Before this, explanatory text was allowed to recur "for emphasis". Two copies of one idea drift out of agreement, and the reader cannot tell which is current. The single-source rule is the fix, and the reference system is what makes it survivable.</p>
 

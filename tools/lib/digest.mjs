@@ -43,10 +43,27 @@ function subLine(u, id) {
   if (keys.length) parts.push(`states: ${keys.join("; ")}`);
   const c = cited(blocks);
   if (c.length) parts.push(`cites: ${c.join(",")}`);
+  /* Which categories this subsection has already joined. Without it a later
+     unit invents "invoke-labels" beside an existing "invocation-labels" and the
+     taxonomy fragments — the same failure non-redundancy has, one level up. */
+  const cats = [...new Set(blocks.map(b => b.cat).filter(Boolean))];
+  if (cats.length) parts.push(`cat: ${cats.join(",")}`);
   if (types.length) parts.push(`quiz: ${types.join(",")}`);
+  /* Claim coverage, so a later pass can see which blocks still state nothing
+     at notes depth without reading their prose back. */
+  const claims = blocks.filter(b => CLAIMY.has(b.t));
+  if (claims.length) {
+    const withCore = claims.filter(b => b.core).length;
+    const withGist = claims.filter(b => b.gist).length;
+    if (withCore + withGist < claims.length)
+      parts.push(`unclaimed: ${claims.length - withCore - withGist}/${claims.length}`);
+  }
   if (!blocks.length) parts.push("EMPTY");
   return parts.join(" | ");
 }
+
+/* The three block kinds that assert something, and therefore owe a claim. */
+const CLAIMY = new Set(["def", "key", "trap"]);
 
 /**
  * Walk a course folder, however far along it is.
@@ -94,13 +111,22 @@ export function digest(dir) {
     };
   });
 
+  /* The declared taxonomy, so a unit tags into it rather than beside it. */
+  const cats = dataFiles(join(dir, "categories")).map(f => {
+    const c = read(join(dir, "categories", f));
+    return { key: stem(f), name: c.name || stem(f), boundary: c.boundary || "",
+             siblings: c.siblings || [] };
+  });
+
   const subs = sections.flatMap(s => s.subs);
   const text = [
     sections.length ? "SECTIONS AND SUBSECTIONS (id, title, coverage)" : "",
     ...sections.map(s => [`${s.id} ${s.title}`, ...s.subs.map(u => "  " + u.line)].join("\n")),
     concepts.length ? "\nCONCEPTS (key, term, review, drill items)" : "",
-    ...concepts.map(c => `  ${c.key} — ${c.term}${c.review ? " [review]" : ""} — ${c.drills} drills`)
+    ...concepts.map(c => `  ${c.key} — ${c.term}${c.review ? " [review]" : ""} — ${c.drills} drills`),
+    cats.length ? "\nCATEGORIES (key — name — boundary) — tag into these, never beside them" : "",
+    ...cats.map(c => `  ${c.key} — ${c.name} — ${c.boundary.replace(/\s+/g, " ").trim()}`)
   ].filter(Boolean).join("\n");
 
-  return { sections, subs, concepts, text };
+  return { sections, subs, concepts, cats, text };
 }

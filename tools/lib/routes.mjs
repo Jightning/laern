@@ -17,11 +17,18 @@ function spread(sections) {
 export function routesFor(course) {
   const secs = spread(course.sections || []);
   const concept = Object.keys(course.concepts || {})[0];
+  /* A category's own page carries chips, monograms and the sibling strip, none
+     of which appear anywhere else — so a course that declares one contributes
+     two more palettes to sweep. `explore` renders the facet buttons and the
+     result rows, which are likewise nowhere else. */
+  const cat = Object.keys(course.cats || {})[0];
   return [
     "",
     ...secs.map(id => "/" + id),
     "/concepts",
     ...(concept ? ["/c/" + concept] : []),
+    ...(cat ? ["/cat", "/cat/" + cat] : []),
+    "/explore",
     "/practice",
     "/calibration",
     "/map",
