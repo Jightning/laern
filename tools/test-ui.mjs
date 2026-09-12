@@ -1137,9 +1137,13 @@ for (const cid of ids) {
       await go(`#/${cid}/${bid}`);
       ck(P("a block address resolves to its section"),
          await page.locator(".sec-body").count() === 1);
+      /* "Open" means the block's own content is rendered, not that nothing
+         else is. A definition keeps its heading in place while open — the
+         heading is the control that closes it again — so the test is for the
+         rendered body, not for the absence of a title. */
       const openAtIndexDepth = await page.evaluate(id => {
         const el = document.getElementById(id);
-        return !!el && !el.querySelector(".nrow") && !el.querySelector(".ntopic-t");
+        return !!el && !el.querySelector(".nrow") && !!el.querySelector(".bhtml");
       }, bid);
       ck(P("an addressed block is open even at index depth"), openAtIndexDepth, bid);
       await page.evaluate(() => {
