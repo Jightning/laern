@@ -7,18 +7,10 @@
  * — definitions and concept references — so it costs the author nothing.
  */
 import { strip, clip } from "./util.js";
-import { M } from "./math.js";
 
-/** first sentence of a definition body, which is the definition proper
- *
- * The math is rendered before it is stripped. `strip` knows how to flatten a
- * KaTeX span down to its glyphs, but a block body arrives holding TeX *source*
- * in `<m>…</m>`, and removing the tag leaves the source behind: the panel
- * printed "Let \beta be births per individual" on the first screen of every
- * section. Rendering first costs nothing new — math.js caches on the source and
- * the section is about to render the same formulas anyway. */
+/** first sentence of a definition body, which is the definition proper */
 function firstSentence(html) {
-  const t = strip(M(html || ""));
+  const t = strip(html || "");
   const m = t.match(/^(.{20,160}?[.;:])\s/);
   return clip(m ? m[1] : t, 150);
 }

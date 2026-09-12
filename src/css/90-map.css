@@ -25,18 +25,3 @@
 .fx-node.is-not-started .fx-n{stroke-dasharray:3 3}
 .fx-node.is-started .fx-n{stroke-dasharray:none}
 .fx-node.is-mastered .fx-n{stroke-dasharray:none;stroke-width:2.6}
-
-/* Pointing at one half of a pair lights the other. The map and its list are
-   two views of one set, and showing the correspondence is what stops the list
-   being a decoder ring the reader has to consult (T12). */
-.maplist a.is-hot{border-color:var(--hi);color:var(--hi-ink);background:var(--surface)}
-.mapwrap [data-node].is-hot circle,
-.mapwrap [data-node].is-hot ellipse{stroke-width:3}
-.mapwrap [data-node].is-hot text{font-weight:600}
-
-/* A section title is a sentence, so it reads in the reading face. `.fx-t` is
-   mono because most figure text is data — axis ticks, matrix cells, signal
-   names — where a fixed advance is the point; these nodes are the exception,
-   and the exception belongs in the map's own stylesheet rather than loosening
-   the rule for every figure. */
-.mapwrap .fx-t{font-family:var(--sans)}

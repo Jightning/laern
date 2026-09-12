@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "preact/hooks";
 import { IconStart, IconConcept, IconPractice, IconMap, IconTuck, IconCat, IconExplore } from "./Icon.jsx";
 import CourseActions from "./CourseActions.jsx";
-import LaneSelect from "./LaneSelect.jsx";
-import DepthSelect from "./DepthSelect.jsx";
 
 /* State is carried by the number itself — weight, colour and an edge marker.
    The previous 26x18px pulse was too small to read as a signal and landed as a
@@ -19,8 +17,7 @@ function Cycle({ n, active, visited }) {
    against an edge and read as clipped. */
 const EDGE = 28;
 
-export default function Sidebar({ course, cid, rest, here, open, onNavigate, onTuck, actions,
-                                  lane, onLane, depth, onDepth }) {
+export default function Sidebar({ course, cid, rest, here, open, onNavigate, onTuck, actions }) {
   const H = r => `#/${cid}${r ? "/" + r : ""}`;
   const rail = useRef(null);
 
@@ -101,7 +98,8 @@ export default function Sidebar({ course, cid, rest, here, open, onNavigate, onT
           them permanently. Hidden above the breakpoint, where the toolbar
           shows them instead. */}
       <div class="side-actions">
-        <CourseActions inCourse expanded={actions.expanded} onExpand={actions.onExpand} />
+        <CourseActions inCourse stateOn={actions.stateOn} expanded={actions.expanded}
+                       onExpand={actions.onExpand} onReset={actions.onReset} />
       </div>
 
       <nav class="rail" aria-label="Course sections">
@@ -128,32 +126,6 @@ export default function Sidebar({ course, cid, rest, here, open, onNavigate, onT
           );
         })}
       </nav>
-
-      {/* The two axes the mode switch presets, for a reader who wants them
-          directly.
-       *
-       * They used to sit between a section's blurb and its first paragraph —
-       * nine combinations and two unexplained taxonomies in front of the
-       * material. They are not removed, because a course whose blocks are
-       * almost all spine still needs both, and because the value of provided
-       * support reverses with expertise: the right amount is a property of who
-       * is reading, so the reader has to be able to reach it.
-       *
-       * Here, at the foot of the navigation, is as far from the reading column
-       * as it gets while still being on the page the reader is reading. It is
-       * a <details>, closed by default, so it costs one line until it is
-       * wanted; the keys keep working whether or not it is open. */}
-      {onLane && (
-        <details class="axes">
-          <summary>Reading options</summary>
-          <LaneSelect lane={lane} onLane={onLane} />
-          <DepthSelect depth={depth} onDepth={onDepth} />
-          <p class="axes-k">
-            <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> set how much is shown,
-            <kbd>d</kbd> steps the detail.
-          </p>
-        </details>
-      )}
     </aside>
   );
 }

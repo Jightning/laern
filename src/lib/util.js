@@ -35,30 +35,13 @@ const flattenMath = h => {
   }
 };
 
-/* Entities are decoded last, after the tags are gone.
- *
- * Everything strip() feeds renders as *text* — a Preact child, a search token,
- * a JSON-LD description — so a surviving entity is escaped a second time on the
- * way out and the reader sees the source: "x=c is stable ... for all t&gt;0".
- * Decoding before tag removal would be wrong in the other direction, since an
- * encoded "&lt;div&gt;" in authored prose would become a tag and be stripped. */
-const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
-const entities = t => t.replace(/&(#x?[0-9a-fA-F]+|[a-z]+);/g, (m, e) => {
-  if (e[0] === "#") {
-    const n = e[1] === "x" || e[1] === "X"
-      ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
-    return Number.isFinite(n) && n > 0 && n <= 0x10FFFF ? String.fromCodePoint(n) : m;
-  }
-  return e in ENT ? ENT[e] : m;
-});
-
-export const strip = h => entities(flattenMath(String(h)
+export const strip = h => flattenMath(String(h)
     .replace(/<span class="katex-mathml">[\s\S]*?<\/math><\/span>/g, ""))
   .replace(/<[^>]+>/g, " ")
   .replace(/\s+/g, " ")
   .replace(/\s+([.;:,)])/g, "$1")   /* tag removal orphans punctuation */
   .replace(/\(\s+/g, "(")
-  .trim());
+  .trim();
 export const clip = (t, n = 168) => (t.length > n ? t.slice(0, n - 2) + "…" : t);
 export const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 

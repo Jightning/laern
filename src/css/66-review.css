@@ -14,9 +14,8 @@
   display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
   padding:.4rem 0 .9rem;border-bottom:1px solid var(--rule);margin-bottom:1.2rem;
 }
-/* One word naming the screen, beside a count. The word takes the UI face; the
-   count keeps the mono, which is the split the whole type recast runs on. */
-.review-t{font-family:var(--ui);font-size:var(--fs-small);font-weight:500;color:var(--ink-2)}
+.review-t{font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-2)}
 /* Dots alone are shape and colour with no words, so the count repeats as text. */
 .review-dots{display:inline-flex;gap:4px}
 .review-dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--rule)}

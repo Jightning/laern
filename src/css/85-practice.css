@@ -1,40 +1,12 @@
 /* 85-practice — Mixed practice. */
 
-/* Start, then what it will draw. The page used to open as a form; the one
-   activity the evidence is unambiguous about should not be four decisions
-   away when all four already had the right default. */
-.pgo{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:22px 0 4px}
-.dbtn.primary{
-  font-family:var(--ui);font-size:var(--fs-small);font-weight:500;
-  background:var(--ink);color:var(--surface);border-color:var(--ink);
-  padding:10px 18px;
-}
-.dbtn.primary:hover{background:var(--ink-2);border-color:var(--ink-2);color:var(--surface)}
-.pgo-w{font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-3);flex:1 1 14rem}
-
-/* The controls, one disclosure away. Closed it is a single quiet line, which
-   is the right weight for something whose defaults are already correct. */
-.pcfg{margin:6px 0 8px}
-.pcfg>summary{
-  font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-3);
-  cursor:pointer;list-style:none;padding:6px 0;display:inline-block;
-}
-.pcfg>summary::-webkit-details-marker{display:none}
-.pcfg>summary::before{
-  content:"›";display:inline-block;width:1em;transition:transform .15s ease;
-}
-.pcfg[open]>summary::before{transform:rotate(90deg)}
-.pcfg>summary:hover{color:var(--hi-ink)}
-.pcfg-row{
-  display:flex;flex-wrap:wrap;gap:12px;align-items:center;
-  border:1px solid var(--rule);border-radius:6px;padding:14px 16px;
-  background:var(--surface);margin-top:4px;
-}
+.pcfg{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:22px 0 8px;
+  border:1px solid var(--rule);border-radius:10px;padding:14px 16px;background:var(--surface)}
 .pcfg label{font-size:var(--fs-small);color:var(--ink-3);display:inline-flex;align-items:center;gap:7px}
 .pcfg select{font:inherit;font-size:var(--fs-small);padding:5px 8px;border:1px solid var(--rule);
-  border-radius:5px;background:var(--surface-2);color:var(--ink);max-width:230px}
+  border-radius:6px;background:var(--surface-2);color:var(--ink);max-width:230px}
+.pchk{gap:6px}
 .pinfo{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);margin-left:auto}
-@media (prefers-reduced-motion:reduce){.pcfg>summary::before{transition:none}}
 .pbar{height:3px;background:var(--rule-2);border-radius:2px;overflow:hidden;margin:26px 0 12px}
 .pbar i{display:block;height:100%;background:var(--hi);transition:width .2s ease}
 .pmeta{display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:var(--fs-meta);

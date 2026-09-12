@@ -124,33 +124,10 @@ export function capture() {
   const hash = location.hash || "#/";
   const el = subAt();
   return el
-    ? { hash, id: el.id, into: Math.round(-el.getBoundingClientRect().top),
-        /* How far through the subsection, as well as how far into it. The
-           offset is what `land` needs and the fraction is what anything
-           *describing* the position needs — the Desk says "about 6 min left",
-           and it has no rendered element to measure when it says so. Recorded
-           here because this is the one moment both numbers are in hand. */
-        frac: el.offsetHeight
-          ? Math.min(1, Math.max(0, -el.getBoundingClientRect().top / el.offsetHeight))
-          : 0,
-        ts: Date.now() }
+    ? { hash, id: el.id, into: Math.round(-el.getBoundingClientRect().top), ts: Date.now() }
     /* No section on screen: the library and the hubs are a screen of chrome,
        not a document that reflows, so the raw offset is the honest answer. */
     : { hash, id: null, into: Math.round(scrollY), ts: Date.now() };
-}
-
-/**
- * The stored position, without adopting it.
- *
- * `restore` consumes the record to answer a relaunch; this only reads it, so
- * the Desk can say where reading stopped without that reading counting as a
- * navigation. Returns null when there is nothing, or nothing recent enough.
- */
-export function peek() {
-  let p = null;
-  try { p = JSON.parse(getItem(KEY)); } catch { return null; }
-  if (!p || !p.hash || !p.ts || Date.now() - p.ts > MAX_AGE) return null;
-  return p;
 }
 
 /** Put the reader back where `p` says, once the layout has settled. */

@@ -107,38 +107,21 @@ if (single) {
 
   /* Removal acts on the card it belongs to, and only on courses this device
      installed — the built-in one ships with the site and cannot be dropped. */
-  /* Management moved behind each card's overflow, so "can be taken off the
-     shelf" is now a claim about *reachability* rather than about a button
-     existing in the markup. Each card's menu is therefore actually opened —
-     which is the only way to assert the reader can get there, and the failure
-     the shallower check would have missed is a control that renders but never
-     mounts. */
-  const ops = await page.evaluate(() => ({
-    cards: document.querySelectorAll(".lcard").length,
-    hit: document.querySelectorAll(".lcard .lhit").length
-  }));
+  const ops = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll(".lcard")];
+    return { cards: cards.length,
+             gone: cards.filter(c => c.querySelector(".lop.warn")).length,
+             exports: cards.filter(c => c.querySelector(".lop:not(.warn)")).length,
+             hit: document.querySelectorAll(".lcard .lhit").length };
+  });
   ck("every card opens its course", ops.hit === ops.cards, `${ops.hit}/${ops.cards}`);
-
-  let gone = 0, exports = 0;
-  for (let i = 0; i < ops.cards; i++) {
-    const card = page.locator(".lcard").nth(i);
-    await card.locator(".lmore").click();
-    await page.waitForTimeout(90);
-    if (await card.locator(".lop.warn").count()) gone++;
-    if (await card.locator(".lop:not(.warn):not(.lmore)").count()) exports++;
-  }
-  /* Close the last one, so the state the following checks see is the resting
-     one rather than whatever this loop left open. */
-  await page.locator(".lcard").nth(ops.cards - 1).locator(".lmore").click();
-  await page.waitForTimeout(90);
-
   /* Every course can leave the shelf — a bundled one is hidden rather than
      deleted, since the next load would bring it back either way. Only a course
      this device holds the bytes for can be exported. */
-  ck("every card can be taken off the shelf", gone === ops.cards,
-     `${gone} of ${ops.cards}`);
-  ck("only imported courses offer export", exports === ops.cards - 1 || exports === ops.cards,
-     `${exports} of ${ops.cards} exportable`);
+  ck("every card can be taken off the shelf", ops.gone === ops.cards,
+     `${ops.gone} of ${ops.cards}`);
+  ck("only imported courses offer export", ops.exports === ops.cards - 1 || ops.exports === ops.cards,
+     `${ops.exports} of ${ops.cards} exportable`);
 
   const before = ops.cards;
 
@@ -146,41 +129,13 @@ if (single) {
      them (lib/purge.js), Hide keeps them because it is reversible — so the two
      dialogs have to say opposite things. A confirmation that promised the wrong
      one would be the most expensive sentence in the product. */
-  /* Management is behind the card's overflow now, so reaching Remove or Hide is
-     two presses: open one card's menu, then read what its warn button says.
-     The menu is exclusive — pressing another card's control closes this one —
-     so the cards can simply be walked in order.
-     
-     It is a loop with awaits rather than one page.evaluate because the menu is
-     component state: the button does not exist in the DOM until Preact has
-     re-rendered, which a synchronous evaluate cannot wait for. */
-  const openConfirm = async word => {
-    const n = await page.locator(".lcard").count();
-    for (let i = 0; i < n; i++) {
-      const card = page.locator(".lcard").nth(i);
-      const more = card.locator(".lmore");
-      if (!(await more.count())) continue;
-      await more.click();
-      await page.waitForTimeout(90);
-      const warn = card.locator(".lop.warn");
-      if (!(await warn.count())) continue;
-      if ((await warn.innerText()).trim() === word) { await warn.click(); return true; }
-    }
-    return false;
-  };
-
-  /* Opening a course is the only thing on the card that should compete for the
-     reader. Export and Remove used to sit on the face at the weight of the
-     title — two admin controls, one destructive, on the object you are trying
-     to open. */
-  ck("the card face carries no management controls",
-     await page.locator(".lcard .lop:not(.lmore)").count() === 0);
-  ck("management is behind one control per card",
-     await page.locator(".lcard .lmore").count() === await page.locator(".lcard").count());
-  /* And the card reports on the reading rather than on the box: an inventory
-     until there is history, the history once there is. */
-  ck("an untouched card says how big the course is",
-     /\d+ sections/.test(await page.locator(".lcard .lstat").first().innerText()));
+  const openConfirm = word => page.evaluate(w => {
+    const card = [...document.querySelectorAll(".lcard")]
+      .find(c => c.querySelector(".lop.warn").textContent.trim() === w);
+    if (!card) return false;
+    card.querySelector(".lop.warn").click();
+    return true;
+  }, word);
 
   await openConfirm("Remove"); await page.waitForTimeout(220);
   ck("removal asks first", await page.locator(".modal.danger").count() === 1);
@@ -310,7 +265,7 @@ if (single) {
        link and an id collision honest. */
     await go("#/demo");
     ck("a hidden course still opens from a link",
-       await page.locator(".desk h1").count() === 1);
+       await page.locator(".start h1").count() === 1);
     await go();
     ck("hiding survives a reload", await page.locator(".lcard").count() === before - 1);
     await page.locator("#lib-add").click(); await page.waitForTimeout(250);
@@ -359,45 +314,13 @@ if (single) {
 for (const cid of ids) {
   const P = n => `${cid}: ${n}`;
   await go(`#/${cid}`);
-  ck(P("course home renders"), await page.locator(".desk h1").isVisible());
-  const nSections = await page.locator(".spine .srow").count();
-  ck(P("the spine lists sections"), nSections > 0, nSections + " sections");
-
-  /* The Desk's whole claim is that it answers "what now" before it reports
-     anything. A course with no history has to open on an action that goes
-     somewhere real, and it has to carry the reason — a bare button is the
-     dashboard again with one fewer number. */
-  const lead = await page.evaluate(() => {
-    const a = document.querySelector(".desk .now");
-    if (!a) return null;
-    const spine = document.querySelector(".spine");
-    return {
-      href: a.getAttribute("href"),
-      title: (a.querySelector(".now-h") || {}).textContent || "",
-      why: (a.querySelector(".now-w") || {}).textContent || "",
-      /* above the fold in the sense that matters: before the contents */
-      first: !!spine && a.compareDocumentPosition(spine) & Node.DOCUMENT_POSITION_FOLLOWING
-    };
-  });
-  ck(P("the course opens on one recommendation"), !!lead && !!lead.href,
-     JSON.stringify(lead));
-  ck(P("the recommendation says why"), !!lead && lead.why.length > 10,
-     lead ? lead.why : "");
-  ck(P("the recommendation comes before the contents"), !!lead && !!lead.first);
-  /* It must resolve. A recommendation pointing at a route that renders nothing
-     is worse than no recommendation, and it is exactly what a stale reading
-     position or an off-by-one over the sections would produce. */
-  if (lead && lead.href) {
-    await go(lead.href);            /* go() takes the hash, # included */
-    const landed = await page.evaluate(() =>
-      !!document.querySelector("section.sec-body, .review, .practice, .desk"));
-    ck(P("the recommendation resolves to a view"), landed, lead.href);
-    await go(`#/${cid}`);
-  }
+  ck(P("course home renders"), await page.locator(".start h1").isVisible());
+  const nSections = await page.locator(".toc .tocrow").count();
+  ck(P("contents lists sections"), nSections > 0, nSections + " sections");
   await shot(cid + "-home");
 
   const secIds = await page.evaluate(() =>
-    [...document.querySelectorAll(".spine .srow")].map(a => a.getAttribute("href").split("/").pop()));
+    [...document.querySelectorAll(".toc .tocrow")].map(a => a.getAttribute("href").split("/").pop()));
   const last = secIds[secIds.length - 1];
 
   await go(`#/${cid}/${last}`);
@@ -990,16 +913,10 @@ for (const cid of ids) {
     await go(`#/${cid}/${secIds[0]}`);
     const all = await page.locator(".brow").count();
     const hash = await page.evaluate(() => location.hash);
-    /* The axes moved out of the content flow into a disclosure at the foot of
-       the navigation, so reaching them is a step the reader takes rather than
-       one they are made to take. Opening it is part of the contract now. */
-    ck(P("the axes are not in the reading column"),
-       await page.locator(".wrap .lane, .wrap .depth").count() === 0);
-    const axes = page.locator(".axes");
-    ck(P("the axes are reachable from the navigation"), await axes.count() === 1);
-    await axes.locator("summary").click(); await page.waitForTimeout(200);
     await page.locator(".lane-b[data-lane='spine']").click(); await page.waitForTimeout(300);
     const spine = await page.locator(".brow").count();
+    ck(P("the lane selector is at the head of the material"),
+       await page.locator(".sec-head ~ .lane, .lane").count() >= 1);
     ck(P("the spine lane never shows more than every lane"), spine <= all, `${spine} of ${all} rows`);
     ck(P("changing lane does not change the route"), await page.evaluate(() => location.hash) === hash);
     const stubs = await page.locator(".tstub").count();
@@ -1420,24 +1337,6 @@ for (const cid of ids) {
   }
 
   await go(`#/${cid}/practice`);
-
-  /* The page opens on its action, not on its settings.
-   *
-   * It used to open as a form — three dropdowns and a dead checkbox — in front
-   * of the activity with the largest effect on the site, when all four controls
-   * already had the right default. Start is now primary and says in words what
-   * it will draw; the controls are one disclosure away. */
-  ck(P("practice opens on Start, not on a form"),
-     await page.locator("#p-start").isVisible());
-  ck(P("and says what it will draw"),
-     (await page.locator(".pgo-w").innerText()).trim().length > 12);
-  ck(P("the controls are not in the way"),
-     await page.locator(".pcfg-row").isVisible() === false);
-  /* A control nothing reads is a promise the page does not keep. */
-  ck(P("no dead controls remain"), await page.locator("#p-timed").count() === 0);
-
-  const pcfg = page.locator(".pcfg > summary");
-  if (await pcfg.count()) { await pcfg.click(); await page.waitForTimeout(200); }
   const drillMode = await page.locator("#p-source").count() > 0;
 
   /* A scope the reader cannot see is a scope they cannot change: the control is
@@ -1501,27 +1400,8 @@ for (const cid of ids) {
 
   /* calibration reports on the log rather than on the literature */
   await go(`#/${cid}/calibration`);
-  /* The page's one finding, in words.
-   *
-   * This used to assert "at least four stat chips", which was a proxy for the
-   * intent the comment above states rather than the intent itself — and the
-   * chips were seven zeros on a course nobody had answered in. What has to hold
-   * is that the page opens on something derived from the log and says it in a
-   * sentence a reader can act on. */
-  const lede = await page.locator(".cal-lede").first();
-  ck(P("calibration leads with a finding from the log"), await lede.count() === 1);
-  const ledeText = (await lede.innerText()).trim();
-  ck(P("and states it in words, not in counts"), ledeText.split(/\s+/).length >= 8, ledeText);
-  /* On a course with no history it must say so rather than say it in zeros. */
-  ck(P("an empty log is named, not counted"),
-     /nothing to calibrate/i.test(ledeText) || /\d/.test(ledeText), ledeText);
-  ck(P("the zero dashboard is gone"), await page.locator(".cal .dash .dstat").count() === 0);
-
-  /* The one control that can lose work lives here, beside the log it erases and
-     below the row that offers to export that log first — not in the toolbar a
-     thumb-width from Search. */
-  ck(P("reset is not in the toolbar"),
-     await page.evaluate(() => !/reset/i.test(document.querySelector(".topbar").innerText)));
+  ck(P("calibration leads with figures from the log"),
+     await page.locator(".cal .dash .dstat").count() >= 4);
   ck(P("confidence is reported against correctness"),
      await page.locator(".cal-t").first().locator("tr").count() > 0);
   ck(P("the model's prediction is reported against the outcome"),

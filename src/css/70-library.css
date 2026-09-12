@@ -7,7 +7,7 @@
    so it sits with the shelf's title rather than after the last card, where two
    rows of courses would put it below the fold. */
 .lhead{display:flex;align-items:center;gap:16px;margin:0 0 14px}
-.lib h1{font-family:var(--display);font-size:clamp(2.0rem,4.4vw,2.9rem);font-weight:600;
+.lib h1{font-family:var(--mono);font-size:clamp(1.9rem,4.4vw,2.7rem);font-weight:700;
   letter-spacing:-.035em;line-height:1.07;margin:0;flex:1 1 auto;min-width:0}
 .lplus{
   flex:0 0 auto;display:inline-flex;align-items:center;gap:.5em;
@@ -45,17 +45,9 @@
 .lhit:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 /* Ops are always visible, never hover-revealed: a touch device has no hover,
    and a control that only exists under a mouse does not exist on a phone. */
-/* Management, behind one control. The row sits at the card's foot and holds a
-   single quiet button until it is pressed, so opening the course is the only
-   thing on the card competing for the reader's attention. */
-.lops{position:relative;z-index:1;display:flex;gap:8px;padding-top:13px;align-items:center}
-.lmore{
-  font-family:var(--mono);letter-spacing:.12em;line-height:1;
-  padding:5px 9px;color:var(--ink-3);background:none;
-}
-.lmore:hover,.lmore[aria-expanded="true"]{color:var(--ink-2);background:var(--surface-2)}
+.lops{position:relative;z-index:1;display:flex;gap:8px;padding-top:13px}
 .lop{
-  font-family:var(--ui);font-size:var(--fs-meta);font-weight:450;
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.07em;text-transform:uppercase;
   background:var(--surface-2);border:1px solid var(--rule);color:var(--ink-2);
   border-radius:5px;padding:5px 10px;cursor:pointer;
 }
@@ -77,8 +69,7 @@
    block. It used to sit on .lops, which left the counts floating against
    whatever length the description happened to be. */
 .lcard .lstat{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);
-  display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;align-items:baseline}
-
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
 .lbar{height:3px;background:var(--rule-2);border-radius:2px;margin-top:11px;overflow:hidden}
 .lbar i{display:block;height:100%;background:var(--hi)}
 .lempty{color:var(--ink-3);font-size:.9rem}

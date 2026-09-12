@@ -103,46 +103,30 @@ function Question({ item, ctx, showWhere, forceOpen }) {
             never be able to squeeze the content it labels. */}
         <span class="qmeta">
           <span class="qtype">{item.q.type}</span>
+          {state.on && (
+            <span class="qconf">
+              <button class={"cbtn" + (conf === 1 ? " sel" : "")} data-conf="1" data-qid={item.id}
+                      title="Predict you know this" onClick={() => predict(true)}>sure</button>
+              <button class={"cbtn" + (conf === 0 ? " sel" : "")} data-conf="0" data-qid={item.id}
+                      title="Predict you do not" onClick={() => predict(false)}>unsure</button>
+            </span>
+          )}
           {state.on && <span class={"mdot " + mastery[0]} role="img" aria-label={mastery[1]} title={mastery[1]} />}
           {showWhere && <a class="qwhere" href={`#/${cid}/${item.subId}`}>{item.num}</a>}
+          {state.on && conf != null && !shown && (
+            <a class="qstuck" href={key ? `#/${cid}/c/${key}` : `#/${cid}/${item.subId}`}
+               title="Open the course's own account of this"
+               onClick={() => append({ course: cid, loop: "A", concept: key, itemId: item.id,
+                                       type: item.q.type, helpSought: true })}>
+              stuck?
+            </a>
+          )}
           {!state.on && !shown && (
             <button class="qmark" onClick={() => setOpen(true)}>reveal</button>
           )}
         </span>
         <span class="qtext" dangerouslySetInnerHTML={{ __html: M(item.q.q) }} />
       </div>
-
-      {/* The prediction comes after the question, because it is a prediction
-          *about* the question.
-       *
-       * It used to sit in the metadata row, which renders above the text: the
-       * reader met "sure / unsure" before they had read what they were being
-       * asked, and two bare words in a row of chrome did not say they were the
-       * first step of anything. The gap between prediction and outcome is the
-       * largest signal this site collects (T18); the control that captures it
-       * cannot be the quietest thing on the card.
-       *
-       * It disappears once the answer is out, because by then it is a record
-       * rather than a control, and the grade row below states what happened. */}
-      {state.on && !shown && (
-        <div class="qask">
-          <span class="qask-l">Before you look — how sure are you?</span>
-          <span class="qconf">
-            <button class={"cbtn" + (conf === 1 ? " sel" : "")} data-conf="1" data-qid={item.id}
-                    title="Predict you know this" onClick={() => predict(true)}>Sure</button>
-            <button class={"cbtn" + (conf === 0 ? " sel" : "")} data-conf="0" data-qid={item.id}
-                    title="Predict you do not" onClick={() => predict(false)}>Unsure</button>
-          </span>
-          {conf != null && (
-            <a class="qstuck" href={key ? `#/${cid}/c/${key}` : `#/${cid}/${item.subId}`}
-               title="Open the course's own account of this"
-               onClick={() => append({ course: cid, loop: "A", concept: key, itemId: item.id,
-                                       type: item.q.type, helpSought: true })}>
-              Stuck?
-            </a>
-          )}
-        </div>
-      )}
 
       {state.on && conf != null && !shown && (
         <WhyField cid={cid} itemId={item.id} prompt={item.q.why_prompt || "Why? State it before you reveal."}

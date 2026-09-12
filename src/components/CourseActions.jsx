@@ -7,16 +7,12 @@
  * selector already uses.
  *
  * Why they move at all: on a phone six equal-weight chips wrap onto two rows
- * and cost a fifth of the viewport for the whole session. Reading needs the
- * material, navigation and search; a theme is set once, so it goes one tap
- * deeper rather than staying permanently in the way.
- *
- * `Reset` used to be here, a destructive and unrecoverable action one
- * thumb-width from `Search`. Moving it one tap deeper was never the fix: it is
- * the only control on the site that can lose work, and what it erases — the
- * answer log — is displayed and exported on the calibration page. It now sits
- * there, under the row that offers to export the thing first. */
-export default function CourseActions({ inCourse, expanded, onExpand }) {
+ * and cost a fifth of the viewport for the whole session, while `Reset` is a
+ * destructive action sitting one thumb-width from `Menu`. Reading needs the
+ * material, navigation and search; a theme is set once and a reset is rare, so
+ * those go one tap deeper rather than staying permanently in the way.
+ */
+export default function CourseActions({ inCourse, stateOn, expanded, onExpand, onReset }) {
   const toggleTheme = () => {
     const el = document.documentElement;
     let cur = el.getAttribute("data-theme");
@@ -38,6 +34,9 @@ export default function CourseActions({ inCourse, expanded, onExpand }) {
         </button>
       )}
       <button class="tbtn" onClick={toggleTheme} aria-label="Toggle colour theme">Theme</button>
+      {inCourse && stateOn && (
+        <button class="tbtn" onClick={onReset} aria-label="Clear saved progress">Reset</button>
+      )}
     </>
   );
 }

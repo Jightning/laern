@@ -22,7 +22,7 @@ import { IconTuck } from "./components/Icon.jsx";
 import Topbar from "./components/Topbar.jsx";
 import ReturnPill from "./components/ReturnPill.jsx";
 import Library from "./components/Library.jsx";
-import Desk from "./components/Desk.jsx";
+import CourseHome from "./components/CourseHome.jsx";
 import Section from "./components/Section.jsx";
 import { ConceptHub, ConceptDetail } from "./components/Concepts.jsx";
 import { CatHub, CatDetail } from "./components/Categories.jsx";
@@ -152,10 +152,6 @@ export default function App() {
      course's setting into the next would be answering a question about this
      course with an answer about a different one. */
   const onDepth = d => { setDepth(cid, d); setDepthFor(d); };
-  /* One intent sets both axes. Written through the same two setters the
-     selectors use, so a preset and a hand-set pair are the same state and
-     nothing has to be kept in sync. */
-  const onMode = m => { onLane(m.lane); onDepth(m.depth); };
 
   const idx = useMemo(() => (course ? buildIndex(course) : null), [course]);
   /* The inverted index is built once per course and costs a course-sized pass
@@ -305,8 +301,8 @@ export default function App() {
            sub ? { id: sub.id, into: -sub.getBoundingClientRect().top } : null);
   };
 
-  /* The one control on the site that can lose work. It lives on the
-     calibration page, under the row that offers to export the log first. */
+  /* Destructive, and reachable from two places (the toolbar on a wide screen,
+     the drawer on a narrow one), so it is written once. */
   const onReset = () => {
     if (!course) return;
     if (confirm(`Clear quiz history and review schedule for ${course.code}?`)) {
@@ -342,7 +338,7 @@ export default function App() {
     ? <Library courses={INDEX} order={ORDER} loading={!loadError} error={loadError}
                onChange={() => forceRender(n => n + 1)} />
     : <Library courses={INDEX} order={ORDER} onChange={() => forceRender(n => n + 1)} />;
-  else if (!rest) view = <Desk ctx={ctx} />;
+  else if (!rest) view = <CourseHome ctx={ctx} />;
   else if (rest === "concepts") view = <ConceptHub ctx={ctx} />;
   else if (rest === "practice") view = <Practice ctx={ctx} />;
   else if (rest.startsWith("practice/"))
@@ -354,19 +350,19 @@ export default function App() {
     view = <Explore ctx={ctx} seed={{ tag: decodeURIComponent(rest.slice(12)) }} />;
   else if (rest.startsWith("explore/cat/"))
     view = <Explore ctx={ctx} seed={{ cat: decodeURIComponent(rest.slice(12)) }} />;
-  else if (rest === "calibration") view = <Calibration ctx={ctx} onReset={onReset} />;
+  else if (rest === "calibration") view = <Calibration ctx={ctx} drills={drills} />;
   else if (rest === "map" || rest.startsWith("map/"))
     view = <DepMap ctx={ctx} focus={rest.slice(4)}
                    onNode={id => (location.hash = `#/${cid}/${id}`)} />;
   else if (rest.startsWith("c/")) view = <ConceptDetail ctx={ctx} k={rest.slice(2)} />;
   else if (rest.startsWith("primer/")) {
     const target = course.sections.find(x => x.id === rest.slice(7));
-    view = target ? <Primer section={target} ctx={ctx} /> : <Desk ctx={ctx} />;
+    view = target ? <Primer section={target} ctx={ctx} /> : <CourseHome ctx={ctx} />;
   }
   else if (section) view = <Section section={section} ctx={ctx} expandAll={expandAll}
                                     lane={lane} onLane={onLane}
                                     depth={depth} onDepth={onDepth} openBlock={openBlock} />;
-  else view = <Desk ctx={ctx} />;
+  else view = <CourseHome ctx={ctx} />;
 
   /* T6: a keyboard reader should not traverse the whole rail to reach the
      material. href is handled here rather than left to the browser — "#content"
@@ -405,18 +401,17 @@ export default function App() {
           <Sidebar course={course} cid={cid} rest={rest} here={reading}
                    open={menuOpen} onNavigate={() => setMenuOpen(false)}
                    onTuck={toggleTuck}
-                   lane={lane} onLane={onLane} depth={depth} onDepth={onDepth}
-                   actions={{ expanded: expandAll,
-                              onExpand: () => setExpandAll(v => !v) }} />
+                   actions={{ stateOn: state.on, expanded: expandAll,
+                              onExpand: () => setExpandAll(v => !v), onReset }} />
         )}
         <main>
-          <Topbar crumb={crumb} inCourse={!!course}
-                  reading={!!section} lane={lane} depth={depth} onMode={onMode}
+          <Topbar crumb={crumb} inCourse={!!course} stateOn={state.on}
                   zoom={zoom} onZoomReset={() => setZoom(1)}
                   onSearch={() => setSearchOpen(true)}
                   onExpand={() => setExpandAll(v => !v)} expanded={expandAll}
                   onMenu={() => setMenuOpen(v => !v)}
-                  due={due} onReview={() => (location.hash = "#/review")} />
+                  due={due} onReview={() => (location.hash = "#/review")}
+                  onReset={onReset} />
           <div class="wrap" id="content" ref={contentRef} onClick={onContentClick}>
             <div class="viewport" key={hash}>{view}</div>
           </div>

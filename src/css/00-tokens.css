@@ -8,21 +8,8 @@
      picker reads as a warning rather than as an accent. */
   --hue:170;
   --h-hi:63; --h-lo:254; --h-dc:301; --h-hz:261; --h-wn:15;
-  /* Three faces, cast by job rather than by habit.
-   *
-   * The casting was the problem, not the faces. `--mono` was the display voice:
-   * 133 declarations across 23 of 28 stylesheets, every h1 on the site, and 28
-   * uppercase transforms beside them — a terminal face doing the work of a
-   * book's, on a page whose body is a serif. Mono now holds only what it is
-   * actually for: identifiers, counts, keycaps, code.
-   *
-   * `--display` is named separately from `--serif` so the heading face is one
-   * variable rather than eight declarations, which is what makes it testable
-   * against the alternative rather than argued about. */
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --sans:"IBM Plex Serif",Georgia,"Times New Roman",serif;   /* reading body */
-  --display:var(--sans);                                     /* headings      */
-  --ui:"IBM Plex Sans",system-ui,-apple-system,sans-serif;   /* chrome        */
+  --sans:"IBM Plex Serif",Georgia,"Times New Roman",serif;
   --rail:2.375rem;   /* the number gutter in the section rail */
 
   /* Type scale for everything that is not body prose.
@@ -86,31 +73,15 @@
   --safe-r:env(safe-area-inset-right,0px);
 
   /* Ground, ink and rules are global: a course's accent rotation must not move
-     the page out from under the reader.
-   *
-   * Lab paper, not parchment. The subject is engineering and mathematics, so
-   * the stock to borrow from is the plate-glazed sheet of a lab notebook and
-   * the drafting ink on it: a cool near-white carrying a faint green bias, so
-   * the ground reads as material rather than as a UI panel. The previous
-   * neutrals were a blue-grey #DFE3E9 with content floating directly on it and
-   * no paper anywhere on the page.
-   *
-   * The bias is small on purpose. It has to survive beside every hue in the
-   * rotation without tinting one course's accent toward it. */
-  --ground:#EEF1EE;
-  --surface:#FBFCFA;
-  --surface-2:#F4F6F3;
-  /* A ground *below* the page, where --surface and --surface-2 are both above
-     it. The reading column already spends the raised direction on blocks, so a
-     surface that has to read as a different kind of thing — a question rather
-     than a passage — has nowhere to go but down. One token because two themes
-     have to agree on it and a hand-mixed colour in each would drift. */
-  --sunk:#E3E7E3;
-  --ink:#161A18;
-  --ink-2:#414843;
-  --ink-3:#666E68;   /* carries small text; verified by audit-color.mjs */
-  --rule:#D6DCD6;
-  --rule-2:#E6EAE5;
+     the page out from under the reader. */
+  --ground:#DFE3E9;
+  --surface:#FFFFFF;
+  --surface-2:#F4F6FA;
+  --ink:#141821;
+  --ink-2:#454C5A;
+  --ink-3:#5A616E;   /* was #6B7280: 3.75:1, failed on small text */
+  --rule:#CBD3DE;
+  --rule-2:#E7EBF2;
 }
 
 /* ----------------------------------------------------------------- palette
@@ -153,25 +124,6 @@
   --hz-ink:oklch(47% .018 calc(var(--h-hz) + var(--hue)));
   --wn-ink:oklch(46% .130 var(--h-wn));
   --focus:var(--lo);
-
-  /* The reader's own hand.
-   *
-   * A study page carries two hands: the book's and yours. The engine already
-   * insists on that distinction everywhere it matters — learner content carries
-   * data-nosnippet, notes are deliberately styled unlike course content so they
-   * never read as something the material said — but visually it was barely
-   * there, and on a page where the accent already marks labels, links, chips,
-   * numbers and states, there was no ink left to say "you wrote this".
-   *
-   * `--hn` is that ink, and like `--wn` it does NOT rotate with --hue. A course
-   * accent is an identity; authorship is not. Rotating it would make the
-   * reader's own margin note teal in one course and violet in the next, which
-   * is the learned-mapping cost the fixed tokens exist to avoid. It sits far
-   * enough from every rotation position to stay distinguishable from whatever
-   * accent is beside it. */
-  --hn:oklch(52% .085 258);
-  --hn-ink:oklch(46% .085 258);
-  --hn-wash:oklch(95% .018 258);
 }
 
 /* Dark palette: the accents clear AA on a dark ground on their own, so the
@@ -186,8 +138,6 @@
     --wn:oklch(74% .135 var(--h-wn));
     --hi-ink:var(--hi); --lo-ink:var(--lo); --dc-ink:var(--dc); --wn-ink:var(--wn);
     --hz-ink:oklch(71% .018 calc(var(--h-hz) + var(--hue)));
-    --hn:oklch(74% .075 258); --hn-ink:var(--hn);
-    --hn-wash:oklch(27% .030 258);
   }
 }
 :root[data-theme="dark"],
@@ -199,21 +149,19 @@
   --wn:oklch(74% .135 var(--h-wn));
   --hi-ink:var(--hi); --lo-ink:var(--lo); --dc-ink:var(--dc); --wn-ink:var(--wn);
   --hz-ink:oklch(71% .018 calc(var(--h-hz) + var(--hue)));
-  --hn:oklch(74% .075 258); --hn-ink:var(--hn);
-  --hn-wash:oklch(27% .030 258);
 }
 
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --ground:#12150F; --surface:#1A1E19; --surface-2:#212621; --sunk:#0C0F0A;
-    --ink:#E7EAE4; --ink-2:#AFB6AE; --ink-3:#8A928B;
-    --rule:#2F352F; --rule-2:#262C26;
+    --ground:#101319; --surface:#171B23; --surface-2:#1D222C;
+    --ink:#E6E9EF; --ink-2:#AEB6C4; --ink-3:#828B9A;
+    --rule:#2A303B; --rule-2:#222831;
   }
 }
 :root[data-theme="dark"]{
-  --ground:#12150F; --surface:#1A1E19; --surface-2:#212621; --sunk:#0C0F0A;
-  --ink:#E7EAE4; --ink-2:#AFB6AE; --ink-3:#8A928B;
-  --rule:#2F352F; --rule-2:#262C26;
+  --ground:#101319; --surface:#171B23; --surface-2:#1D222C;
+  --ink:#E6E9EF; --ink-2:#AEB6C4; --ink-3:#828B9A;
+  --rule:#2A303B; --rule-2:#222831;
 }
 
 /* ------------------------------------------------------------------- reset */

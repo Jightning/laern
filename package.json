@@ -12,7 +12,7 @@
     "audit": "node tools/audit-content.mjs",
     "shots": "node tools/test-ui.mjs --shots",
     "new": "node tools/new-course.mjs",
-    "check": "node tools/build.mjs && node tools/pack.mjs --private && node tools/test-replay.mjs && node tools/test-purge.mjs && node tools/test-prune.mjs && node tools/test-md.mjs && node tools/test-text.mjs && node tools/test-next.mjs && node tools/test-sync.mjs && node tools/test-cloud.mjs && node tools/test-cloud-e2e.mjs && node tools/test-author.mjs && node tools/gen-icons.mjs --check && node tools/lint-css.mjs && node tools/validate.mjs && node tools/test-schedule.mjs && node tools/test-figures.mjs && node tools/gen-materials.mjs --check && node tools/audit-content.mjs && node tools/test-ui.mjs && node tools/audit-color.mjs && node tools/check-template.mjs",
+    "check": "node tools/build.mjs && node tools/pack.mjs --private && node tools/test-replay.mjs && node tools/test-purge.mjs && node tools/test-prune.mjs && node tools/test-md.mjs && node tools/test-sync.mjs && node tools/test-cloud.mjs && node tools/test-cloud-e2e.mjs && node tools/test-author.mjs && node tools/gen-icons.mjs --check && node tools/lint-css.mjs && node tools/validate.mjs && node tools/test-schedule.mjs && node tools/test-figures.mjs && node tools/gen-materials.mjs --check && node tools/audit-content.mjs && node tools/test-ui.mjs && node tools/audit-color.mjs && node tools/check-template.mjs",
     "contrast": "node tools/audit-color.mjs",
     "author": "node tools/author.mjs",
     "deploy": "node tools/deploy.mjs",
@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/ibm-plex-sans": "^5.3.0",
     "@fontsource/ibm-plex-serif": "^5.3.0",
     "@preact/preset-vite": "^2.10.6",
     "js-yaml": "^5.3.0",

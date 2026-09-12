@@ -24,7 +24,7 @@ section.sec-body{padding:var(--view-top) 0 0;scroll-margin-top:var(--scroll-clea
 /* section headers — moved here from 20-nav.css, they are content not navigation */
 .sec-head{margin-bottom:8px}
 .sec-body h2{
-  font-family:var(--display);font-size:1.95rem;font-weight:600;letter-spacing:-.02em;
+  font-family:var(--mono);font-size:1.72rem;font-weight:700;letter-spacing:-.03em;
   line-height:1.15;margin:0 0 12px;
 }
 .sec-blurb{color:var(--ink-2);margin:0 0 4px;max-width:var(--measure)}

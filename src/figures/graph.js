@@ -21,19 +21,6 @@ export function graph (spec) {
      the layout spacing and the edge geometry, so bigger nodes push apart
      instead of colliding. --- */
   var SIZES = [11, 10, 9, 8];
-  /* How far a node may grow past its base radius to hold its own label.
-   *
-   * 1.7 was a hard cap and that made it a clipping bug rather than a limit: the
-   * text is laid out at `need` and the circle was drawn at
-   * min(base*1.7, need), so any label wanting more overflowed its own node with
-   * nothing to say it had. A node that cannot hold its label is worse than a
-   * large node, and `maxR` already feeds the layout spacing, so a grown node
-   * pushes its neighbours apart rather than colliding with them.
-   *
-   * It stays a spec option so the default is unchanged for every existing
-   * figure, and a caller that knows its labels are long — the dependency map
-   * drawing section titles — asks for the room. */
-  var GROW = spec.grow || 1.7;
   function words(raw) {
     return String(raw == null ? "" : raw).replace(/\n/g, " ").split(/\s+/).filter(Boolean);
   }
@@ -62,12 +49,8 @@ export function graph (spec) {
       var textH = lines.length * (fs + 2);
       if ((longest <= maxW && textH <= maxW) || s === SIZES.length - 1) {
         var need = Math.max(longest / 2 + 6, textH / 2 + 4);
-        /* At the smallest font the cap yields: clipping the label is not a
-           smaller node, it is a broken one. Above that the cap still holds, so
-           a label that could have been shrunk is shrunk rather than grown. */
-        var lim = (s === SIZES.length - 1) ? Math.max(base * GROW, need) : base * GROW;
         return { lines: lines, fs: fs, lh: fs + 2,
-                 rEff: Math.round(Math.min(lim, Math.max(base, need))) };
+                 rEff: Math.round(Math.min(base * 1.7, Math.max(base, need))) };
       }
     }
   }

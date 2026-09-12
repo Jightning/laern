@@ -1,9 +1,8 @@
 import { IconSearch, IconHome } from "./Icon.jsx";
 import CourseActions from "./CourseActions.jsx";
-import ModeSwitch from "./ModeSwitch.jsx";
 import { M } from "../lib/math.js";
 
-export default function Topbar({ crumb, inCourse, onSearch, onExpand, expanded, onMenu, zoom, onZoomReset, due, onReview, reading, lane, depth, onMode }) {
+export default function Topbar({ crumb, inCourse, stateOn, onSearch, onExpand, expanded, onReset, onMenu, zoom, onZoomReset, due, onReview }) {
   return (
     <div class="topbar">
       {/* Only where there is a sidebar to open. The library is `shell.solo` and
@@ -53,11 +52,6 @@ export default function Topbar({ crumb, inCourse, onSearch, onExpand, expanded, 
           Review <b>{due}</b>
         </button>
       )}
-      {/* Only while there is material on screen. The mode decides how a section
-          renders, so on a hub or the Desk it would be a control over nothing —
-          and the Desk in particular is about what to do next, not how to draw
-          it. */}
-      {reading && <ModeSwitch lane={lane} depth={depth} onMode={onMode} />}
       {inCourse && (
         <button class="tbtn" onClick={onSearch} aria-label="Search">
           <IconSearch /><span class="tb-word">Search /</span>
@@ -66,7 +60,8 @@ export default function Topbar({ crumb, inCourse, onSearch, onExpand, expanded, 
       {/* Everything past here moves into the drawer below the sidebar
           breakpoint; see CourseActions. */}
       <span class="tb-sec">
-        <CourseActions inCourse={inCourse} expanded={expanded} onExpand={onExpand} />
+        <CourseActions inCourse={inCourse} stateOn={stateOn} expanded={expanded}
+                       onExpand={onExpand} onReset={onReset} />
       </span>
     </div>
   );

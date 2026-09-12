@@ -34,19 +34,6 @@ export default function Practice({ ctx, cat }) {
   const st = state.on ? state.stats(idx.QALL.map(q => q.id)) : null;
   const n = parseInt(count, 10);
 
-  /* What Start will actually do, in words. The controls are behind a
-     disclosure, so the page has to say what it is holding rather than leave the
-     reader to open it and check. */
-  const drawing = source === "drills" && bank.has
-    ? "concepts due for recall" : "one question per type";
-  const over = scope === "all" ? "every section"
-    : scope === "due" ? "what is due"
-    : scope === "weak" ? "what you have missed"
-    : ((C.sections.find(x => x.id === scope) || {}).title || "one section");
-  const summary = source === "drills" && bank.has
-    ? `Drawn from ${drawing}, mixed across the course.`
-    : `Drawn from ${drawing}, across ${over}.`;
-
   const quizPool = () => {
     const pool = idx.QALL.filter(q => {
       if (scope === "all") return true;
@@ -78,55 +65,34 @@ export default function Practice({ ctx, cat }) {
         </p>
       )}
 
-      {/* Start first, settings behind it.
-       *
-       * This page delivers the largest effect the site has and it opened as a
-       * configuration form: three dropdowns, a dead checkbox and a ghost
-       * button, on an otherwise empty screen. Four decisions stood between the
-       * reader and the one activity the evidence is unambiguous about, and all
-       * four already had the right default — drills when the course has them,
-       * every section, ten.
-       *
-       * So the defaults are simply taken, stated in a sentence so nothing is
-       * hidden, and the controls that change them are one disclosure away.
-       * "Timed" is gone rather than moved: it had no handler and no reader, so
-       * it was a promise the page did not keep. */}
-      <div class="pgo">
-        <button class="dbtn primary" id="p-start" onClick={start}>
-          Start {n || "every"} question{n === 1 ? "" : "s"} →
-        </button>
-        <span class="pgo-w">{summary}</span>
+      <div class="pcfg">
+        {bank.has && (
+          <label>Draw from{" "}
+            <select id="p-source" value={source} onChange={e => pickSource(e.currentTarget.value)}>
+              <option value="drills">Drills</option>
+              <option value="types">Question types</option>
+            </select>
+          </label>
+        )}
+        <label class={source === "drills" && bank.has ? "off" : ""}>Scope{" "}
+          <select id="p-scope" disabled={source === "drills" && bank.has}
+                  value={scope} onChange={e => setScope(e.currentTarget.value)}>
+            <option value="all">All sections</option>
+            {state.on && <option value="due">Due for review</option>}
+            {state.on && <option value="weak">Previously missed</option>}
+            {C.sections.map(s => <option value={s.id} key={s.id}>{s.num} {s.title}</option>)}
+          </select>
+        </label>
+        <label>Count{" "}
+          <select id="p-count" value={count} onChange={e => setCount(e.currentTarget.value)}>
+            <option>10</option><option>20</option><option>40</option>
+            <option value="0">All</option>
+          </select>
+        </label>
+        <label class="pchk"><input type="checkbox" id="p-timed" /> Timed</label>
+        <button class="dbtn" id="p-start" onClick={start}>Start →</button>
+        {st && <span class="pinfo">{st.due} of {st.total} due</span>}
       </div>
-
-      <details class="pcfg">
-        <summary>Change what's drawn</summary>
-        <div class="pcfg-row">
-          {bank.has && (
-            <label>Draw from{" "}
-              <select id="p-source" value={source} onChange={e => pickSource(e.currentTarget.value)}>
-                <option value="drills">Drills</option>
-                <option value="types">Question types</option>
-              </select>
-            </label>
-          )}
-          <label class={source === "drills" && bank.has ? "off" : ""}>Scope{" "}
-            <select id="p-scope" disabled={source === "drills" && bank.has}
-                    value={scope} onChange={e => setScope(e.currentTarget.value)}>
-              <option value="all">All sections</option>
-              {state.on && <option value="due">Due for review</option>}
-              {state.on && <option value="weak">Previously missed</option>}
-              {C.sections.map(s => <option value={s.id} key={s.id}>{s.num} {s.title}</option>)}
-            </select>
-          </label>
-          <label>Count{" "}
-            <select id="p-count" value={count} onChange={e => setCount(e.currentTarget.value)}>
-              <option>10</option><option>20</option><option>40</option>
-              <option value="0">All</option>
-            </select>
-          </label>
-          {st && <span class="pinfo">{st.due} of {st.total} due</span>}
-        </div>
-      </details>
 
       <div id="p-run">
         {run && <Run run={run} setRun={setRun} ctx={ctx} onAgain={() => setRun(null)} />}

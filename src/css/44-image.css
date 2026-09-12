@@ -6,7 +6,7 @@
   border:1px solid var(--rule);background:var(--surface);
 }
 .imgblock figcaption{
-  font-family:var(--sans);font-size:var(--fs-small);line-height:1.55;
+  font-family:var(--mono);font-size:var(--fs-meta);line-height:1.5;
   color:var(--ink-3);margin-top:8px;
 }
 .imgblock .credit{display:block;margin-top:2px;opacity:.8}

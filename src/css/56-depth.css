@@ -35,10 +35,7 @@
 
 .nbrow{--row-gap:var(--sp-3)}
 
-/* A group is an object on the page, so the gap between two of them is the
-   object beat rather than the block beat. Rows inside a group sit tight
-   against each other; that contrast is the grouping. */
-.ntopic{margin:0 0 var(--sp-4)}
+.ntopic{margin:0 0 var(--sp-3)}
 .ntopic:last-child{margin-bottom:0}
 
 /* the definition that opens a topic */
@@ -47,26 +44,18 @@
   display:block;width:100%;text-align:left;background:none;border:0;padding:0;
   cursor:pointer;color:inherit;
 }
-/* The topic head is read, so it takes the reading face. Three of this view's
-   four text roles were monospace — head, run-in label and name — which at 13-15px
-   over a whole section is what made a page of notes read as a terminal dump
-   rather than as notes. Mono stays on identifiers and counts, where a fixed
-   advance is the point. */
 .ntopic-t{
-  font-family:var(--display);font-size:1.02rem;font-weight:600;letter-spacing:-.012em;
-  color:var(--ink);margin:0 0 .2rem;line-height:1.35;
+  font-family:var(--mono);font-size:.95rem;font-weight:650;letter-spacing:-.01em;
+  color:var(--ink);margin:0 0 .15rem;line-height:1.35;
 }
 .ntopic-b:hover .ntopic-t{color:var(--hi-ink)}
 .ntopic-m{margin:0 0 .2rem .15rem}
 
 /* the claims under it */
-/* The hairline down the group is the device that makes a topic read as one
-   thing, so it has to be visible: proximity plus a shared edge is what the
-   note-format evidence credits, and an invisible edge is just proximity. */
 .ntopic .nrow{
   position:relative;
-  padding:.3rem 0 .3rem 1.15rem;
-  margin-left:.2rem;
+  padding:.2rem 0 .2rem 1.1rem;
+  margin-left:.15rem;
   border-left:1px solid var(--rule);
 }
 .ntopic-h + .nrow,.ntopic .nrow + .nrow{border-left-color:var(--rule)}
@@ -95,21 +84,18 @@
   cursor:pointer;color:inherit;font:inherit;
 }
 .nclaim{
-  display:block;font-size:var(--fs-small);line-height:1.6;color:var(--ink-2);
+  display:block;font-size:var(--fs-small);line-height:1.55;color:var(--ink-2);
 }
 /* A run-in label: the classic notes device, and the reason it is run-in rather
    than stacked is that a heading per row rebuilds the very shape this view
    replaced. */
-/* The classic run-in label: the kind's own name, in the reading face at the
-   reading weight, so the claim after it continues the same line rather than
-   restarting in a second voice. */
-.nlab{font-weight:600;color:var(--ink);margin-right:.4rem}
+.nlab{font-family:var(--mono);font-weight:600;color:var(--ink);margin-right:.4rem}
 .npoints .nlab-li{padding-left:0;margin-bottom:.25rem}
 .npoints .nlab-li::before{display:none}
 .nrow-b:hover .nclaim,.nrow-b:hover .nname,.nrow-b:hover .npoints{color:var(--ink)}
 .nname{
-  display:block;font-size:var(--fs-small);
-  color:var(--ink-2);line-height:1.55;
+  display:block;font-family:var(--mono);font-size:var(--fs-meta);
+  color:var(--ink-2);line-height:1.5;
 }
 .nrow.is-caption .nname{font-style:italic}
 /* A row with nothing but a name has to be opened before it says anything, so
@@ -146,26 +132,9 @@
  * Open and close are one gesture in one place. A separate close control put the
  * way out somewhere other than the way in, which means looking for it — and it
  * sat at the foot of a block whose top is where the reader's eye already is. */
-/* A block the reader opened by hand.
- *
- * It arrives rather than appearing. Closed and open are two different renders,
- * so the row is replaced outright — which reads as the page blinking unless the
- * new content is given the moment of arrival the route change already gets
- * (220ms, same budget). Nothing here carries information the movement is the
- * only copy of: at rest the accent edge and the × in the header say the block
- * is open.
- *
- * `.nopen` is the exact hook and nothing else is: it exists only where a reader
- * pressed a closed row, never for a block the depth left open, so the animation
- * cannot fire on a page the reader merely scrolled to. */
 .nopen{
   border-left:2px solid var(--hi);padding-left:var(--sp-2);
   margin:var(--sp-2) 0 var(--sp-2) .15rem;
-  animation:nopen-in .22s cubic-bezier(.22,.61,.36,1) both;
-}
-@keyframes nopen-in{
-  from{opacity:0;transform:translateY(-3px)}
-  to{opacity:1;transform:none}
 }
 .nopen .brow{display:block}
 .nopen .bside{display:none}
@@ -188,11 +157,8 @@
 .nopen-h:hover{color:var(--hi-ink)}
 .nopen-h:hover::after{color:var(--hi-ink)}
 
-/* An open definition keeps its heading in place and marks it as open. The body
-   below it is what arrived, so that is what is animated — moving the heading
-   would move the thing the reader's eye is already fixed on. */
+/* An open definition keeps its heading in place and marks it as open. */
 .ntopic-h.is-open{margin-bottom:.2rem}
-.ntopic-h.is-open > .brow{animation:nopen-in .22s cubic-bezier(.22,.61,.36,1) both}
 .ntopic-h.is-open .ntopic-t{color:var(--hi-ink)}
 .ntopic-h.is-open .brow .blabel{display:none}
 .ntopic-h.is-open .brow{display:block}
@@ -358,7 +324,7 @@
   border:1px solid var(--rule);border-left:2px solid var(--hi);border-radius:5px;
   padding:.6rem .8rem;margin:var(--sp-2) 0;
 }
-.xcat h2{font-family:var(--display);font-size:1.02rem;font-weight:600;margin:0 0 .25rem}
+.xcat h2{font-family:var(--mono);font-size:.95rem;margin:0 0 .25rem}
 .xcat p{font-size:.85rem;color:var(--ink-2);margin:0 0 .4rem}
 
 .xcount{font-family:var(--mono);font-size:var(--fs-micro);color:var(--ink-3);margin:var(--sp-2) 0 .5rem}
@@ -383,10 +349,4 @@
   .xfacet{flex-direction:column;gap:.3rem}
   .xfacet .lane-l{width:auto;padding-top:0}
   .catpractice{margin-left:0}
-}
-
-/* T5. The edge, the header's × and the open body all say the same thing at
-   rest, so removing the movement removes nothing. */
-@media (prefers-reduced-motion:reduce){
-  .nopen,.ntopic-h.is-open > .brow{animation:none}
 }

@@ -24,7 +24,6 @@
  */
 import { Blocks, holdsOf } from "../blocks/index.js";
 import { strip, clip } from "./util.js";
-import { M } from "./math.js";
 
 /* How a block behaves at `notes` depth, when its registry entry says nothing.
    `lead` is the interesting one: show the claim, close the development. */
@@ -49,117 +48,6 @@ export const isList = b => !!leadList(leadOf(b));
 
 /** Does this block state its claim separately from its development? */
 export const hasCore = b => !!(b && b.core);
-
-/* ------------------------------------------------------- a derived claim --*/
-/*
- * What `notes` shows for a block whose author never wrote a claim.
- *
- * The architecture argues against extraction, and the argument is right about
- * what it measured. What it did not price is what the reader gets when the
- * guess is declined: `present()` fell through to the block's *name*, so on a
- * course with no claims every prose row in Review reads "Slope field …". Both
- * real courses sit at 100% unclaimed, so Review and Index rendered the same
- * page — which is exactly what a reader looking at them reported.
- *
- * The choice was therefore never "authored claim or derived claim". It was
- * "derived claim or no claim".
- *
- * And the measured failure rate turns out to be a property of the rule that was
- * measured rather than of extraction. That rule is `pretrain.js`'s, and it
- * terminates a sentence on `[.;:]` — so it cuts at the colon introducing a
- * list and returns the fragment before it, which is most of the 33% it was
- * charged with. Terminating on `[.!?]` alone and rejecting what is left over
- * yields a usable claim for **93% of ma26600's 182 unclaimed prose blocks**
- * and 82% of demo's 22 (`tools/measure-claims.mjs`). At six words the gate
- * admits "Order is the highest derivative present." — a real claim the
- * eight-word threshold rejected.
- *
- * The gate is what keeps the guess honest. A sentence ending on a colon or a
- * semicolon was leading into something that is not here; one under six words is
- * a fragment; one over 200 characters is the paragraph rather than its claim.
- * Any of those and the row falls back to the name, which is where it already
- * was — so this strictly adds and can never take a row backwards.
- *
- * `demo`, at 0% unclaimed, is what the authored version looks like, and nothing
- * here touches it: this runs only where the author wrote nothing. An authored
- * `core:` remains better than a derived claim and `audit-content.mjs` still
- * counts what is missing.
- *
- * Nothing is marked as derived on the row. The reader's question is "what does
- * this block say", and a badge on two thirds of the rows is the texture T44
- * names — the author's question is a different one and `audit-content.mjs`
- * already answers it with the unclaimed fraction.
- */
-const MIN_WORDS = 6;
-const MAX_CHARS = 200;
-
-/* Find the end of the first sentence in authored HTML.
- *
- * The claim is injected as HTML, not as text — an authored `core:` carries
- * `<m>…</m>` and cross-reference markup, and the renderer decorates it. So the
- * derived claim has to be a *slice of the source*, not a flattened string:
- * flattening rendered KaTeX to text turns `y = Ce^{x^2}` into "y=Cex2", which
- * is not the same claim and is worse than no claim at all.
- *
- * The scan therefore runs over the source and has two places it must not stop:
- * inside a tag, where a `.` belongs to an attribute, and inside `<m>…</m>`,
- * where it belongs to the maths. Returns the index just past the terminator,
- * or -1. */
-function sentenceEnd(html) {
-  let inTag = false, inMath = false;
-  for (let i = 0; i < html.length; i++) {
-    const c = html[i];
-    if (inTag) { if (c === ">") inTag = false; continue; }
-    if (c === "<") {
-      if (html.startsWith("<m>", i)) inMath = true;
-      else if (html.startsWith("</m>", i)) inMath = false;
-      inTag = true;
-      continue;
-    }
-    if (inMath) continue;
-    if ((c === "." || c === "!" || c === "?") &&
-        (i + 1 >= html.length || /\s/.test(html[i + 1]))) return i + 1;
-  }
-  return -1;
-}
-
-/* Close whatever inline tags the slice left open, innermost first, so the
-   fragment is well-formed HTML on its own. A slice that ends mid-emphasis
-   would otherwise leak its formatting into everything after it. */
-function closeTags(html) {
-  const open = [];
-  const re = /<(\/?)([a-zA-Z][\w-]*)\b[^>]*?(\/?)>/g;
-  for (let m; (m = re.exec(html));) {
-    if (m[3] === "/" || VOID.has(m[2].toLowerCase())) continue;
-    if (m[1] === "/") { const at = open.lastIndexOf(m[2].toLowerCase()); if (at >= 0) open.splice(at, 1); }
-    else open.push(m[2].toLowerCase());
-  }
-  return html + open.reverse().map(t => `</${t}>`).join("");
-}
-const VOID = new Set(["br", "img", "hr", "input", "wbr", "source"]);
-
-export function deriveLead(b) {
-  if (!b || b.core || b.gist) return null;
-  const body = String(b.h || "").trim();
-  if (!body) return null;
-
-  /* The first paragraph only. A claim that ran past a paragraph break was
-     never one sentence. */
-  const firstP = body.split(/<\/p\s*>/i)[0].replace(/^\s*<p\b[^>]*>/i, "");
-  const end = sentenceEnd(firstP);
-  const slice = end > 0 ? firstP.slice(0, end) : firstP;
-
-  /* The gate reads the flattened text; the return value keeps the markup. */
-  const t = strip(M(slice));
-  if (!t) return null;
-  if (t.length > MAX_CHARS) return null;
-  if (/[:;]$/.test(t)) return null;
-  if (t.split(/\s+/).length < MIN_WORDS) return null;
-  /* No terminator anywhere means the body is not sentence-shaped — a caption,
-     a fragment, a heading. Those keep their name. */
-  if (end <= 0) return null;
-  return closeTags(slice.trim());
-}
 
 /**
  * The name a block is known by — its Index-depth row, and the title field of
@@ -217,10 +105,6 @@ export function present(b, depth) {
    * Rule 2 only ever opens a row further: it promotes `closed` and `caption`
    * to `lead`, and never demotes `open`, because a figure with a claim beside
    * it still wants to be the figure. */
-  /* Authored first, derived only where nothing was authored. `leadOf` stays
-     authored-only because the search index and the margin cards quote it as
-     the author's own words. */
-  const shown = lead || deriveLead(b);
   const explicit = NOTES_MODES.includes(b.notes) ? b.notes : null;
   const kind = NOTES_MODES.includes(d.notes) ? d.notes : "lead";
   /* What a claim buys depends on what the block is made of. On prose it buys
@@ -230,9 +114,6 @@ export function present(b, depth) {
      can take you" and closes the four places, which is a title wearing a
      note's clothes. */
   const promote = holdsOf(b.t) === "structure" ? "open" : "lead";
-  /* A derived claim never promotes a closed or caption kind. Those are the
-     renderer saying the block is not prose — a table, a figure — and a first
-     sentence taken from one of those is not its claim. */
   const notes = explicit
     || (lead && (kind === "closed" || kind === "caption") ? promote : kind);
   const hasBody = !!String(b.h || "").trim() || b.t === "figure" || b.t === "image" ||
@@ -257,11 +138,8 @@ export function present(b, depth) {
       /* `lead`, the default. With no claim declared there is nothing to lead
          with, so the row closes to its name rather than showing prose the
          author never nominated. */
-      if (!shown) return { mode: "closed", name, lead: null, more: hasBody };
-      /* A derived claim is the opening of the body rather than a field beside
-         it, so the body always holds more than the row is showing. */
-      return { mode: "lead", name, lead: shown,
-               more: lead ? (hasCore(b) ? hasBody : true) : true };
+      if (!lead) return { mode: "closed", name, lead: null, more: hasBody };
+      return { mode: "lead", name, lead, more: hasCore(b) ? hasBody : true };
   }
 }
 
