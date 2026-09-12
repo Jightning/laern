@@ -95,3 +95,50 @@
   display:none;gap:8px;flex-wrap:wrap;
   padding:14px 20px 16px;border-bottom:1px solid var(--rule);
 }
+
+/* ---------------------------------------------------------------- the axes
+ * Lane and depth, at the foot of the navigation.
+ *
+ * They were in the content flow, between a section's blurb and its first
+ * paragraph: two segmented controls, nine combinations, named after what the
+ * engine filters. The mode switch in the toolbar is what a reader meets now,
+ * and this is where the axes themselves live — on the page being read, as far
+ * from the reading column as the layout allows, closed until asked for. */
+.axes{
+  margin:6px 0 calc(1rem + var(--safe-b));
+  border-top:1px solid var(--rule-2);padding:2px 14px 0;
+}
+.axes>summary{
+  font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-3);
+  padding:10px 0;cursor:pointer;list-style:none;
+}
+.axes>summary::-webkit-details-marker{display:none}
+/* The marker is drawn rather than inherited so it can turn with the state and
+   sit on the text baseline; the default triangle does neither. */
+.axes>summary::before{
+  content:"›";display:inline-block;width:1em;color:var(--ink-3);
+  transition:transform .15s ease;
+}
+.axes[open]>summary::before{transform:rotate(90deg)}
+.axes>summary:hover{color:var(--hi-ink)}
+.axes .lane,.axes .depth{
+  display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:0 0 8px;
+}
+/* The rail is 308px and a three-button set plus its label does not fit on one
+   line in it. The cycling button is the narrow form the responsive sheet
+   already switches to, so here it is simply the one that shows. */
+.axes .lane-set{display:flex;gap:4px;flex-wrap:wrap}
+.axes .lane-cycle{display:none}
+.axes .lane-k{display:none}
+.axes-k{
+  font-family:var(--ui);font-size:var(--fs-micro);color:var(--ink-3);
+  margin:2px 0 4px;line-height:1.7;
+}
+.axes-k kbd{
+  font-family:var(--mono);font-size:var(--fs-micro);border:1px solid var(--rule);
+  border-radius:3px;padding:0 4px;margin:0 2px;color:var(--ink-2);
+  background:var(--surface);
+}
+@media (prefers-reduced-motion:reduce){
+  .axes>summary::before{transition:none}
+}

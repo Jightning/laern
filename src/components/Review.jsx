@@ -4,6 +4,7 @@ import { indexDrills } from "../lib/drills.js";
 import { buildQueue } from "../lib/queue.js";
 import { counts } from "../lib/retention.js";
 import DrillRun from "./DrillRun.jsx";
+import { peek } from "../lib/place.js";
 
 const SESSION = 20;   /* about ten minutes */
 
@@ -50,23 +51,45 @@ export default function Review({ onClose }) {
   }
 
   if (!queue.length || i >= queue.length) {
+    /* Somewhere to go from here.
+     *
+     * An empty queue is the moment a reader decides whether to come back, and
+     * "Nothing due." with a paragraph explaining the mechanism is the worst
+     * answer the site can give: it is a dead end that reads as a scolding for
+     * being early. Nothing due is a *good* state and it is also the only state
+     * in which reading ahead is unambiguously the right thing to do.
+     *
+     * The course offered is the one the reader was last in, from the stored
+     * place, falling back to the first on the shelf. It is a link rather than a
+     * computed recommendation because the Desk is where that judgement lives —
+     * this only has to not be a wall. */
+    const p = peek();
+    const lastCid = p && (p.hash.match(/^#\/([^/]+)/) || [])[1];
+    const backTo = (lastCid && INDEX[lastCid] ? lastCid : null) || ORDER[0] || null;
+    const backC = backTo ? INDEX[backTo] : null;
+
     return (
       <div class="review done">
         <ReviewBar i={queue.length} n={queue.length} onClose={onClose} />
-        <h1>{queue.length ? "Session complete." : "Nothing due."}</h1>
+        <h1>{queue.length ? "Session complete." : "Nothing is due."}</h1>
         <p class="lede">
           {queue.length
             ? "Come back tomorrow, a concept recalled once in each of three spaced sessions outlasts one recalled three times today."
-            : "Concepts enter review two ways: open a concept's entry and drill it, or miss a quiz question you were confident about — that one is queued for the next day."}
+            : "You are ahead of the schedule. Concepts arrive here when an interval comes due, or when you miss a question you were confident about."}
         </p>
         {/* Only the forward action. Close lives in the bar above, where it sits
             during the session too, so repeating it here put two identical
             controls on a screen short enough to show both at once. */}
-        {queue.length > 0 && (
-          <div class="review-nav">
+        <div class="review-nav">
+          {queue.length > 0 && (
             <button class="dbtn" id="rv-again" onClick={again}>Another set</button>
-          </div>
-        )}
+          )}
+          {backC && (
+            <a class="dbtn" href={`#/${backTo}`}>
+              {queue.length ? "Back to" : "Read ahead in"} {backC.code || backC.title} →
+            </a>
+          )}
+        </div>
       </div>
     );
   }

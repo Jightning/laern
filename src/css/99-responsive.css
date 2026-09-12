@@ -121,3 +121,13 @@
   .sidebar .navtop a,.sidebar .rail .subs a,.sidebar .sec-btn{min-height:44px}
   .sidebar .navtop a,.sidebar .rail .subs a{display:flex;align-items:center}
 }
+
+/* The mode switch sheds to its cycling form on the same line the toolbar sheds
+   its secondary controls. Three labels plus Menu, Review and Search overflow a
+   390px bar; one labelled button is 70px and keeps the mode one tap away,
+   which matters more on a phone than on a desktop. */
+.modesw-cycle{display:none}
+@media (max-width:64em){
+  .modesw-b:not(.modesw-cycle){display:none}
+  .modesw-cycle{display:inline-block}
+}

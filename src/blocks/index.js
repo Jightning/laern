@@ -80,9 +80,30 @@ export const U = {
      claim is ungrounded; the difference is who to ask. `unverified` means a
      human should look it up, `generated` means a human should check whether it
      is even true, because a model wrote it (M30). */
-  src: b => !b.source ? "" : UNSOURCED[b.source]
-    ? `<span class="bsrc is-un">${UNSOURCED[b.source]}</span>`
-    : `<span class="bsrc">${esc(b.source)}</span>`,
+  /* A run of blocks from one place says so once.
+   *
+   * "Edwards & Penney §1.1" printed under all six blocks of a subsection, which
+   * is the defect T44 names for default labels one level up: a line repeated on
+   * every block has stopped being attribution and become page texture, and the
+   * eye learns to skip it — taking the one that *does* change with it. So a
+   * source identical to the block immediately above it is dropped, which is the
+   * `ibid.` convention and reads the same way.
+   *
+   * The comparison is against the immediate predecessor rather than against
+   * anything seen in the subsection, so A A B A still shows the fourth: the
+   * claim being made is "still the one above", and that stops being true the
+   * moment something else intervenes.
+   *
+   * An unsourced confession is never collapsed. It is a warning about this
+   * block, not a citation shared with its neighbour, and two blocks in a row
+   * that nobody grounded are two separate things to check. */
+  src: (b, env) => {
+    if (!b.source) return "";
+    if (UNSOURCED[b.source])
+      return `<span class="bsrc is-un">${UNSOURCED[b.source]}</span>`;
+    if (env && env.prevSource === b.source) return "";
+    return `<span class="bsrc">${esc(b.source)}</span>`;
+  },
   /* "Figure 3.2 — what it shows". The number is the citable half, so it is
      rendered even when the author wrote no caption. `kind` is the noun, since
      tables are numbered on the same rule as figures: a caption that cannot be
@@ -171,13 +192,13 @@ export const holdsOf = t => ((Blocks.get(t) || {}).holds === "structure" ? "stru
 R("p",    { notes: "hidden", render: b => `<p>${b.h}</p>` });
 R("def",  { apart: true, notes: "lead", defaultLabel: "Definition",
             name: b => b.term,
-            render: b => U.box("def", b.label || (b.term ? "" : "Definition"),
-              (b.term ? `<dt>${esc(b.term)}</dt>` : "") + U.body(b) + U.src(b)) });
+            render: (b, U2, env) => U.box("def", b.label || (b.term ? "" : "Definition"),
+              (b.term ? `<dt>${esc(b.term)}</dt>` : "") + U.body(b) + U.src(b, env)) });
 R("key",  { notes: "lead", defaultLabel: "Key rule",
-            render: b => U.box("key",  b.label || (b.core || b.gist ? "" : "Key rule"),
-                                                                    U.body(b) + U.src(b)) });
+            render: (b, U2, env) => U.box("key", b.label || (b.core || b.gist ? "" : "Key rule"),
+                                                              U.body(b) + U.src(b, env)) });
 R("trap", { notes: "lead", defaultLabel: "Common mistake",
-            render: b => U.box("trap", b.label || "Common mistake", U.body(b) + U.src(b)) });
+            render: (b, U2, env) => U.box("trap", b.label || "Common mistake", U.body(b) + U.src(b, env)) });
 R("note", { notes: "closed", defaultLabel: "Note",
             render: b => U.box("note", b.label || "Note",           U.body(b)) });
 R("ex",   { apart: true, notes: "closed", defaultLabel: "Worked example",

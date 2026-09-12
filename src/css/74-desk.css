@@ -1,0 +1,154 @@
+/* 74-desk — The course front page: one recommendation, then the spine.
+ *
+ * Replaces the dashboard in 75-course.css (.start/.dash/.toc), which is kept
+ * for the pager and the hero that other views still use. */
+
+.desk{padding:var(--view-top) 0 0;max-width:44rem}
+.desk h1{
+  font-family:var(--display);font-size:clamp(2rem,4.4vw,3rem);font-weight:600;
+  letter-spacing:-.025em;line-height:1.07;margin:0 0 14px;
+}
+.desk .lede{font-size:1.03rem;color:var(--ink-2);margin:0 0 26px;max-width:60ch}
+
+/* ------------------------------------------------------- the recommendation */
+/* One object, not a row of them. The accent edge is the only place on this
+   page the course's own hue appears at full strength, which is what makes it
+   read as the thing to do rather than as one card among cards. */
+.now{
+  display:flex;align-items:center;gap:20px;
+  border:1px solid var(--rule);border-left:3px solid var(--hi);
+  border-radius:6px;background:var(--surface);
+  padding:17px 20px;text-decoration:none;color:inherit;
+  /* The primary action answers when the pointer is on it. A 1px lift and the
+     button filling, nothing more: this is the one control on the page that
+     should feel like a door, and anything larger would be the page moving. */
+  transition:border-color .16s ease,transform .16s ease,box-shadow .16s ease;
+}
+.now:hover{
+  border-color:var(--hi);border-left-color:var(--hi);
+  transform:translateY(-1px);box-shadow:0 2px 0 var(--rule-2);
+}
+.now:hover .now-go{background:var(--ink);color:var(--surface)}
+.now:active{transform:none;box-shadow:none}
+.now-txt{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.now-k{
+  font-family:var(--mono);font-size:var(--fs-micro);letter-spacing:.13em;
+  text-transform:uppercase;color:var(--hi-ink);
+}
+.now-h{font-size:1.18rem;font-weight:600;letter-spacing:-.01em;line-height:1.28}
+.now-w{font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-3);line-height:1.45}
+.now-go{
+  font-family:var(--ui);font-size:var(--fs-small);font-weight:500;
+  border:1px solid var(--ink);border-radius:5px;padding:9px 16px;
+  white-space:nowrap;color:var(--ink);flex:none;
+  transition:background-color .16s ease,color .16s ease;
+}
+/* A warning edge when what leads is a miss rather than a next step. Shape is
+   not available on a border, so the eyebrow names it in words either way. */
+.now-review{border-left-color:var(--wn)}
+.now-review .now-k{color:var(--wn-ink)}
+
+/* -------------------------------------------------------------- also worth */
+.also{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.also-i{
+  display:inline-flex;align-items:baseline;gap:7px;
+  font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-2);
+  text-decoration:none;border:1px solid var(--rule);border-radius:5px;
+  padding:7px 12px;background:var(--surface);
+}
+.also-i:hover{border-color:var(--hi);color:var(--hi-ink)}
+.also-i b{font-family:var(--mono);font-weight:600;color:var(--ink);font-size:var(--fs-small)}
+
+/* ------------------------------------------------------------- the spine */
+/* The section list, carrying its own state. A column of marks that fills is
+   what the goal gradient responds to — a distance visibly closing — and the
+   course's own order is the only honest axis to draw it on. */
+.spine{list-style:none;margin:32px 0 0;padding:0;border-top:1px solid var(--rule)}
+.spine li{margin:0}
+.srow{
+  display:grid;grid-template-columns:2.1rem .75rem 1fr auto;
+  column-gap:12px;row-gap:3px;align-items:baseline;
+  padding:13px 4px;border-bottom:1px solid var(--rule-2);
+  text-decoration:none;color:inherit;
+  transition:background-color .13s ease;
+}
+.srow:hover{background:var(--surface-2)}
+.srow-n{
+  font-family:var(--mono);font-size:var(--fs-small);color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+/* The mark sits on the text baseline of the title beside it, not on the grid's
+   own, or a 9px dot floats above a 15px line. */
+.srow-m{
+  width:9px;height:9px;border-radius:50%;border:1.5px solid var(--rule);
+  justify-self:center;align-self:center;box-sizing:border-box;
+}
+.srow-m.part{border-color:var(--hi);background:linear-gradient(90deg,var(--hi) 50%,transparent 50%)}
+.srow-m.done{border-color:var(--hi);background:var(--hi)}
+.srow-t{font-weight:600;font-size:.97rem;line-height:1.35}
+/* A row answers the pointer with its own count, not with a wash: the number is
+   what the reader is scanning for. */
+.srow-c{
+  font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+  transition:color .13s ease;
+}
+.srow:hover .srow-c{color:var(--ink-2)}
+/* The state in words, for a reader who gets the row read to them rather than
+   drawn: the mark and the bar are both decorative by themselves (T26). */
+.srow-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.srow-bar{
+  grid-column:3/5;height:3px;border-radius:2px;background:var(--rule-2);
+  overflow:hidden;margin-top:5px;
+}
+/* The bar grows to its width on arrival rather than appearing at it.
+ *
+ * This is the one piece of motion on the site that is not decoration. What the
+ * goal gradient responds to is a distance visibly closing, and a bar that is
+ * simply *there* at 46% states a fact where one that moves to 46% shows a
+ * distance. It runs once, on the view the reader opens the course to, and it
+ * is the only place the animation budget is spent.
+ *
+ * The custom property is what the keyframe animates to, so the width is still
+ * declared in one place — the inline style the component writes. */
+@property --fill{syntax:"<percentage>";inherits:false;initial-value:0%}
+.srow-bar i{
+  display:block;height:100%;background:var(--hi);border-radius:2px;
+  animation:fill .62s cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.srow-s{grid-column:3/5;color:var(--ink-3);font-size:var(--fs-small);line-height:1.5;margin-top:3px}
+
+/* ------------------------------------------------------------------ tools */
+/* Not the reading path. A row of quiet links, last, at the size of chrome —
+   a reader who wants the dependency map goes looking for the dependency map. */
+.tools{
+  display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:26px;
+  padding-top:16px;border-top:1px solid var(--rule);
+}
+.tools a{
+  font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-3);
+  text-decoration:none;border-bottom:1px solid transparent;
+}
+.tools a:hover{color:var(--hi-ink);border-bottom-color:var(--hi)}
+
+.desk>*:last-child{margin-bottom:0}
+
+@media (max-width:48em){
+  /* The button leaves the row rather than shrinking it: at 390px the title
+     and a 100px control cannot share a line without the title becoming two
+     words and an ellipsis. */
+  .now{flex-direction:column;align-items:stretch;gap:14px}
+  .now-go{text-align:center}
+  .srow{grid-template-columns:1.9rem .75rem 1fr;column-gap:10px}
+  .srow-c{grid-column:3;justify-self:start;margin-top:2px}
+  .srow-bar,.srow-s{grid-column:3}
+}
+
+/* T5. Nothing here carries information that the movement is the only copy of:
+   the bar's width and the card's border say the same thing at rest. */
+@media (prefers-reduced-motion:reduce){
+  .now,.now .now-go,.srow,.srow-c{transition:none}
+  .now:hover{transform:none;box-shadow:none}
+  .srow-bar i{animation:none}
+}

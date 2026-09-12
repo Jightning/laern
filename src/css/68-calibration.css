@@ -63,3 +63,32 @@
 .sync-row input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .sync-foot{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
 .sync-msg{font:400 13px/1.4 var(--mono);color:var(--ink-3)}
+
+/* ------------------------------------------------------------ the one
+ * control that can lose work.
+ *
+ * Set apart from the export row above it rather than beside it: those two
+ * offer to *keep* the log and this one destroys it, and a row of three
+ * same-weight buttons would let a misread of one become the other. The warm
+ * accent is the site's warning hue, which does not rotate with the course. */
+.cal-danger{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  margin-top:22px;padding-top:16px;border-top:1px solid var(--rule);
+}
+.dbtn.danger{
+  color:var(--wn-ink);border-color:color-mix(in srgb,var(--wn) 40%,transparent);
+  background:var(--surface);
+}
+.dbtn.danger:hover{border-color:var(--wn);color:var(--wn-ink);
+  background:color-mix(in srgb,var(--wn) 8%,transparent)}
+.cal-danger .cal-cap{flex:1 1 16rem;min-width:0}
+
+/* The page's one finding, in a sentence.
+ *
+ * It opened on eight stat chips, seven reading 0 on a course nobody had
+ * answered in — a dashboard for an empty database. Calibration knows exactly
+ * one thing worth stating, and the two tables below already draw everything a
+ * chip could have counted. */
+.cal-lede{font-size:1.02rem;color:var(--ink-2);line-height:1.6;max-width:58ch;margin:0 0 6px}
+.cal-lede b{color:var(--ink);font-weight:600}
+.cal-miss{color:var(--wn-ink)}

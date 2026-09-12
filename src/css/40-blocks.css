@@ -7,17 +7,32 @@
 
 /* a definition is the anchor of a subsection, so it keeps the card — and the
    widest gap above it, because it is where a new idea starts */
+/* The card stays — a definition is the one block that genuinely is an object on
+   the page rather than a passage of it, and it is the anchor the primer, the
+   concept hub and the "Before you start" panel all point at. The radius comes
+   down: an 8px corner on a 600px column reads as a UI card, and this is paper. */
 .def{
   border:1px solid var(--rule);border-left:3px solid var(--lo);
-  border-radius:8px;background:var(--surface);
+  border-radius:4px;background:var(--surface);
   padding:15px 18px;margin:var(--sp-3) 0 var(--sp-2);
 }
 
-/* a rule is a statement to hold on to: flush, tinted, heavy edge, no box */
+/* a rule is a statement to hold on to: flush, heavy edge, no box
+ *
+ * The tint came off. It was a 7% wash of the course accent across the whole
+ * block, and on a subsection that alternates def and key — which is most of
+ * them — the page became a stack of filled slabs with no plain prose between
+ * them. Signalling is a contrast effect and degrades with density (T13): six
+ * marked blocks in a row is zero marked blocks, and the one that actually
+ * needed to stand out could not.
+ *
+ * What is left is the edge, which is the part that was doing the work. The
+ * weight distinguishes it from `ex` (2px, neutral) and the hue from `trap`,
+ * and the label above it names the kind in words either way (T26). */
 .key{
   border:0;border-left:3px solid var(--hi);border-radius:0;
-  background:color-mix(in srgb,var(--hi) 7%,transparent);
-  padding:12px 16px;margin:var(--sp-2) 0 var(--sp-2);
+  background:none;
+  padding:2px 0 2px 16px;margin:var(--sp-2) 0 var(--sp-2);
 }
 
 /* a trap is a warning: flush and unboxed so it reads as an interjection, and
@@ -106,7 +121,7 @@ pre code{background:none;border:0;padding:0;font-size:inherit}
 table{border-collapse:collapse;width:100%;font-size:.85rem}
 /* Same as a figure caption: it describes the table in a sentence. */
 caption{
-  caption-side:top;text-align:left;font-family:var(--mono);font-size:var(--fs-meta);
+  caption-side:top;text-align:left;font-family:var(--sans);font-size:var(--fs-small);
   letter-spacing:.02em;color:var(--ink-3);
   padding:11px 14px 9px;border-bottom:1px solid var(--rule-2);
 }
@@ -128,6 +143,8 @@ tbody tr:last-child td{border-bottom:0}
 /* Where a claim came from. Text, never colour alone: an unverified one says so
    in words and takes a dashed edge, so the marker survives a greyscale print
    and a colour-blind reader. */
-.bsrc{display:block;margin-top:.55rem;font-family:var(--mono);font-size:var(--fs-micro);
-  letter-spacing:.04em;color:var(--ink-3)}
+/* A citation is read: "Edwards, Penney & Calvis 6e" in a fixed advance is the
+   same string with its word shapes removed. */
+.bsrc{display:block;margin-top:.55rem;font-family:var(--ui);font-size:var(--fs-meta);
+  color:var(--ink-3)}
 .bsrc.is-un{border-left:2px dashed var(--wn);padding-left:.5rem;color:var(--wn-ink)}

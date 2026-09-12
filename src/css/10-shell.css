@@ -80,7 +80,9 @@ main{padding:0 0 calc(40px + var(--safe-b));min-width:0}
    real 32px height satisfies both: the hit area fits inside the box, and the
    overflow that gets cut is the deep end of the trail, which is what should
    yield first. */
-.crumb{font-family:var(--mono);font-size:var(--fs-meta);color:var(--ink-3);letter-spacing:.03em;
+/* The crumb carries section titles, which are sentences, so it takes the UI
+   face rather than the fixed advance that made the bar read as a prompt. */
+.crumb{font-family:var(--ui);font-size:var(--fs-meta);color:var(--ink-3);
   min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;
   display:flex;align-items:center;gap:.5em;min-height:32px}
 .crumb b{color:var(--ink-2);font-weight:600}
@@ -103,7 +105,7 @@ main{padding:0 0 calc(40px + var(--safe-b));min-width:0}
    the gap has to be declared because a flex container drops the whitespace
    text node that used to separate them. */
 .tbtn{
-  font-family:var(--mono);font-size:var(--fs-meta);letter-spacing:.06em;text-transform:uppercase;
+  font-family:var(--ui);font-size:var(--fs-meta);font-weight:450;
   background:none;border:1px solid var(--rule);color:var(--ink-2);
   padding:5px 11px;border-radius:5px;cursor:pointer;white-space:nowrap;
   display:inline-flex;align-items:center;justify-content:center;gap:.45em;

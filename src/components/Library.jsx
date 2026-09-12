@@ -21,6 +21,7 @@ const KNOCK_MS = 2500;
 export default function Library({ courses, order, loading, error, onChange }) {
   const [adding, setAdding] = useState(false);
   const [doomed, setDoomed] = useState(null);   /* the course a confirm is open for */
+  const [ops, setOps] = useState(null);         /* the card whose management is open */
   const [msg, setMsg] = useState(null);
   const [atRisk, setAtRisk] = useState(false);
   const mine = importedIndex();
@@ -146,23 +147,53 @@ export default function Library({ courses, order, loading, error, onChange }) {
                 {due > 0 && <span class="ldue">{due} due</span>}
                 <h3>{c.title || id}</h3>
                 <p>{clip(c.tagline || "", 120)}</p>
+                {/* State where there is state, inventory where there is not.
+                 *
+                 * The card used to print "8 sections · 16 parts · 91 questions"
+                 * whatever the reader had done — an inventory of the box rather
+                 * than a report on the reading. That is the right line for a
+                 * course nobody has opened, because "how big is this" is the
+                 * only question a stranger has; it is the wrong line the moment
+                 * there is a real answer. Same rule the Desk runs on: never a
+                 * row of counts the reader cannot act on. */}
                 <div class="lstat">
-                  <span>{c.sections} sections</span>
-                  <span>{c.subs} parts</span>
-                  <span>{c.questions} questions</span>
+                  {s && s.seen > 0
+                    /* "N due" already has the corner badge; repeating it here
+                       would be the same fact twice on one card. */
+                    ? <span>{s.got} of {s.total} mastered</span>
+                    : <>
+                        <span>{c.sections} sections</span>
+                        <span>{c.subs} parts</span>
+                        <span>{c.questions} questions</span>
+                      </>}
                 </div>
-                {s && s.total > 0 && (
+                {s && s.total > 0 && s.seen > 0 && (
                   <div class="lbar"><i style={`width:${Math.round((s.got / s.total) * 100)}%`} /></div>
                 )}
+                {/* Managing a course is not opening one.
+                 *
+                 * Export and Remove sat on the card face at the same weight as
+                 * the title, so two admin controls — one of them destructive —
+                 * competed with the only thing a reader comes to this page to
+                 * do. They are behind one control now. It is a press rather than
+                 * a hover, because a touch device has no hover and both of these
+                 * have to stay reachable there. */}
                 <div class="lops">
-                  {ownIt && (
-                    <button class="lop" onClick={() => save(id)}
-                            aria-label={`Export ${c.title || id}`}>Export</button>
+                  <button class="lop lmore" aria-expanded={ops === id}
+                          aria-label={`Manage ${c.title || id}`}
+                          onClick={() => setOps(v => (v === id ? null : id))}>···</button>
+                  {ops === id && (
+                    <>
+                      {ownIt && (
+                        <button class="lop" onClick={() => save(id)}
+                                aria-label={`Export ${c.title || id}`}>Export</button>
+                      )}
+                      <button class="lop warn" onClick={() => setDoomed(id)}
+                              aria-label={`${ownIt ? "Remove" : "Hide"} ${c.title || id}`}>
+                        {ownIt ? "Remove" : "Hide"}
+                      </button>
+                    </>
                   )}
-                  <button class="lop warn" onClick={() => setDoomed(id)}
-                          aria-label={`${ownIt ? "Remove" : "Hide"} ${c.title || id}`}>
-                    {ownIt ? "Remove" : "Hide"}
-                  </button>
                 </div>
               </div>
             );
